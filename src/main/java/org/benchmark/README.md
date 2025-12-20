@@ -4,9 +4,19 @@ It uses Java and Spring Boot along with tools like `Picoli` (CLI support for Jav
 
 
 Proposed Components for the Benchmark
-1. The main Tool Generator
+1. The data model
+2. Tool Factory
 2. A Documentation generator( generates tool documentation of varying complexity/ quality of deterioration)
 3. LLM (small sized and open source)
 4. Evaluation toolkit
 
 
+1. The Data Model
+- Tool Specification
+- Tool Complexity
+- Command Dict
+- Command Spec
+- Option Spec
+- CommandEffect
+- CommandPreCheck
+- Tool State Memory
