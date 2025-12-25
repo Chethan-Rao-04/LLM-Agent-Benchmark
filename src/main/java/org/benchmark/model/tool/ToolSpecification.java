@@ -5,7 +5,7 @@ import java.util.List;
 public record ToolSpecification(String name,
                                 String domain,
                                 ToolComplexity complexity,
-                                List<CommandSpec>  command,
+                                List<CommandSpec> commands,
                                 ToolStateMemory toolState
 
 ) {

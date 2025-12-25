@@ -1,4 +1,4 @@
-package org.benchmark.model;
+package org.benchmark.model.documentation;
 
 public record OptionSpec (
     String optionName,        // for example, "--target"
