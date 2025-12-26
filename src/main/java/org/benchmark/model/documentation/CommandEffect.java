@@ -1,10 +1,10 @@
-package org.benchmark.model;
+package org.benchmark.model.documentation;
 
-// TODO - See if u can implement this , otherwise temove
+// TODO - Idea not yet concrete, might change
 
 public record CommandEffect(
-        String variable,      // e.g., "temperature"
-        String operation,     // e.g., "ASSIGN"
-        String valueRef       // e.g., "target" (argument name) or "50" (constant)
+        String variable,      // like "temperature"
+        String operation,     // like "assign" or something
+        String valueRef       // like "target" or some constant
 ) {
 }

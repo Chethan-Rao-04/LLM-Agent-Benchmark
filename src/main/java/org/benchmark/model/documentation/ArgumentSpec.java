@@ -1,6 +1,6 @@
 package org.benchmark.model.documentation;
 
-public record OptionSpec (
+public record ArgumentSpec(
     String optionName,        // for example, "--target"
     String optionType,
     boolean isRequired,

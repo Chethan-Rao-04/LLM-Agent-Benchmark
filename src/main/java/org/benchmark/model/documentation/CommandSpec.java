@@ -1,10 +1,10 @@
-package org.benchmark.model;
+package org.benchmark.model.documentation;
 
 import java.util.List;
 
 public record CommandSpec(String commandName,
-                          List<OptionSpec> commandArgs,
+                          List<ArgumentSpec> commandArgs,
                           String description,
-                          List<CommandPreCheck> preCheckList,
+                          List<CommandPreconditions> preConditions,
                           List<CommandEffect> commandEffects) {
 }
