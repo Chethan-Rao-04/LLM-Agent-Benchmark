@@ -16,7 +16,9 @@ Proposed Components for the Benchmark
 - Tool Complexity
 - Command Dict
 - Command Spec
-- Option Spec
-- CommandEffect
-- CommandPreCheck
-- Tool State Memory
+- Argument Spec
+- CommandEffect  (Pending)
+- CommandPreConditions (Pending)
+- Tool State Memory (Pending)
+- Domain (new)
+- Tool Description Generator (in Process)
