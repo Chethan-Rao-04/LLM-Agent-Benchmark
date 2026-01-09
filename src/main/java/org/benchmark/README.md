@@ -22,3 +22,14 @@ Proposed Components for the Benchmark
 - Tool State Memory (Pending)
 - Domain (new)
 - Tool Description Generator (in Process)
+
+
+
+
+
+
+
+-TODO
+Improve  state, effects, arguments  and precondition, incommplete implemetaion )also foe eval
+SOmtines two tools are having same commands, fix this pr add a way to check after llm responds 
+Try to make it converational like a chatbot involving LLM-simulated user
