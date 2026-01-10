@@ -158,19 +158,19 @@ public class CommandDict {
     }
 
 
-//    bug, need to update state var model
-//    public String getRandomStateVariable(Domain domain) {
-//        switch (domain) {
-//            case MANUFACTURING:
-//                return pickOne(STATE_VARS_MAN);
-//            case NETWORK_INFRA:
-//                return pickOne(STATE_VARS_NET);
-//            case HEALTHCARE:
-//                return pickOne(STATE_VARS_MED);
-//            default:
-//                return pickOne(STATE_VARS_MAN);
-//        }
-//    }
+    // bug, need to update state var model
+    public String getRandomStateVariable(Domain domain) {
+        switch (domain) {
+            case MANUFACTURING:
+                return pickOne(STATE_VARS_MAN);
+            case NETWORK_INFRA:
+                return pickOne(STATE_VARS_NET);
+            case HEALTHCARE:
+                return pickOne(STATE_VARS_MED);
+            default:
+                return pickOne(STATE_VARS_MAN);
+        }
+    }
 
 
     private String pickOne(List<String> list) {
