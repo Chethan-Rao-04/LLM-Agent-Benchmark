@@ -1,4 +1,4 @@
-package org.benchmark.model;
+package org.benchmark.model.tool;
 
 //TODO - check if needed
 
