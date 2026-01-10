@@ -22,7 +22,7 @@ public class LangChainClient {
                 .baseUrl(baseUrl)
                 .modelName(modelName)
                 .temperature(0.0) // 0.0 - reproducible
-                .timeout(Duration.ofSeconds(120))
+                .timeout(Duration.ofSeconds(360))
                 .build();
     }
 
