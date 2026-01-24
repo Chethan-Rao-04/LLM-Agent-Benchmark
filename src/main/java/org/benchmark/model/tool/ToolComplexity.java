@@ -1,10 +1,10 @@
-package org.benchmark.model;
+package org.benchmark.model.tool;
 
 public enum ToolComplexity {
 
 
         SIMPLE,    // simple commands like pinging
-        MODERATE,  // Changes the state
+        MEDIUM,  // Changes the state
         COMPLEX // should satisfy some pre-conditions before execution
 
 }

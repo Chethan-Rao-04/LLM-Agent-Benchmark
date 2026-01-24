@@ -3,8 +3,8 @@ package org.benchmark.model.documentation;
 import java.util.List;
 
 public record CommandObject(String commandName,
-                            List<ArgumentSpec> commandArgs,
+                            List<OptionSpec> commandArgs,
                             String description,
-                            List<CommandPreconditions> preConditions,
+                            List<CommandPreconditions> commandPreConditions,
                             List<CommandEffect> commandEffects) {
 }

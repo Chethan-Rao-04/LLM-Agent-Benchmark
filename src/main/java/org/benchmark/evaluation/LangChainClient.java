@@ -29,7 +29,7 @@ public class LangChainClient {
     /**
      * Sends the prompt and returns the raw response + metadata.
      */
-    public LlmResult generate(String systemInstruction, String userQuery) {
+    public LlmResult LlmExecute(String systemInstruction, String userQuery) {
 
 
         SystemMessage sysMsg = SystemMessage.from(systemInstruction);
