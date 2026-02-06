@@ -1,16 +1,16 @@
 package org.benchmark;
 
 import lombok.extern.slf4j.Slf4j;
-import org.benchmark.model.documentation.CommandObject;
-import org.benchmark.model.documentation.CommandEffect;
-import org.benchmark.model.documentation.CommandPreconditions;
-import org.benchmark.model.documentation.OptionSpec;
-import org.benchmark.evaluation.LangChainClient;
-import org.benchmark.evaluation.ResponseParser;
-import org.benchmark.evaluation.ResponseParser.ParsedToolCall;
+import org.benchmark.model.tool.CommandObject;
+import org.benchmark.model.tool.CommandEffect;
+import org.benchmark.model.tool.CommandPreconditions;
+import org.benchmark.llm.LangChainClient;
+import org.benchmark.llm.ResponseParser;
+import org.benchmark.llm.ResponseParser.ParsedToolCall;
 import org.benchmark.model.tool.ToolComplexity;
 import org.benchmark.task.DynamicCliExecutor;
 import org.benchmark.task.StateRetentionManager;
+import org.benchmark.factory.ToolKitFactory;
 import org.benchmark.utils.BenchmarkLogger;
 
 import java.util.Map;
@@ -44,7 +44,7 @@ public class BenchmarkEngine {
 
     public void runBenchmark() {
         LangChainClient client = new LangChainClient(modelName, "http://localhost:11434");
-        ToolKitGenerator generator = new ToolKitGenerator();
+        ToolKitFactory generator = new ToolKitFactory();
         System.out.println("Generating Autonomous Execution Benchmark..");
 
         var toolKit = generator.generateToolKit(toolComplexity, iterations, 2, null);
@@ -57,12 +57,14 @@ public class BenchmarkEngine {
             String sessionId = UUID.randomUUID().toString();
 
             // Initialize default state
+            // TODO- add more states like "SHUTDOWN" so the llm has to change it to "READY" using the correct command before executing the target command
             stateManager.updateState(sessionId, "system_status", "READY");
 
             String userGoal = toolKitInst.generateUserQuery(toolKitInst.targetToolObject());
             CommandObject targetCmd = toolKitInst.targetCommand();
+            String targetOptionName = toolKitInst.targetOptionName();
 
-            // --- Log Ground Truth & Expectation ---
+            // --- BEGIN-Log Ground Truth & Expectation ---
             System.out.println("\n============================================================");
             System.out.printf(" Run %d: %s %n", i + 1, userGoal);
             System.out.println("------------------------------------------------------------");
@@ -78,6 +80,12 @@ public class BenchmarkEngine {
                 System.out.println("     Available Options: [ None ]");
             }
 
+            if(!targetOptionName.isEmpty()){
+                System.out.println("     Target Option:  " + targetOptionName);
+            }else {
+                System.out.println("    Target Option is null");
+            }
+
             if (targetCmd.commandPreConditions() != null && !targetCmd.commandPreConditions().isEmpty()) {
                 System.out.println("     Preconditions: ");
                 for (CommandPreconditions pc : targetCmd.commandPreConditions()) {
@@ -87,8 +95,10 @@ public class BenchmarkEngine {
                 System.out.println("     Preconditions: [ None ]");
             }
             System.out.println("============================================================\n");
+            // --- END-Log Ground Truth & Expectation ---
 
 
+            // Prepare for loop
             String conversationHistory = "";
             boolean goalAchieved = false;
             int attempt = 0;
@@ -103,20 +113,31 @@ public class BenchmarkEngine {
                 String historyContext = "\n[HISTORY]:" + conversationHistory;
                 String fullPrompt = BASE_SYSTEM_PROMPT + toolKitInst.combinedToolDesc() + stateContext + historyContext;
 
+                //start time 
                 long tStart = System.nanoTime();
+
+                // Execute LLM call with the full prompt and user goal, get response and token usage
                 var result = client.LlmExecute(fullPrompt, userGoal);
 
+                // Calculate time taken for execution
                 long tLat = (System.nanoTime() - tStart) / 1_000_000;
                 totalTime += tLat;
+
+                // get token usage from the result 
                 totalTokens += result.tokenUsage();
 
+
+                // Log Raw Response
+                System.out.println("   [Raw LLM Response]: " + result.content());
+
+                // parse raw llm response
                 ResponseParser parser = new ResponseParser();
                 ParsedToolCall parsed = parser.parse(result.content());
-                String stepOutput;
+                // Initialize stepOutput to avoid compilation errors
+                String stepOutput = "ERROR: Unknown execution failure";
 
                 if (parsed.isHasToolAndCmdName()) {
                     try {
-                        // 1. Resolve Command Object (Handle Unknown Commands Safely)
                         CommandObject actualCommandObject = findCommandObjectByName(parsed.getCommandName(), toolKitInst);
 
                         if (actualCommandObject == null) {
@@ -126,69 +147,55 @@ public class BenchmarkEngine {
                         // 2. Validate Preconditions
                         if (!validatePreconditions(actualCommandObject, stateManager, sessionId)) {
                             stepOutput = "ERROR: Preconditions failed for " + parsed.getCommandName();
-
-                            // Log hint to history
-                            conversationHistory += "\nAssistant: called " + parsed.getToolName() + ":" + parsed.getCommandName();
-                            conversationHistory += "\nSystem: " + stepOutput;
-                            conversationHistory += "\n[HINT] Review the 'Preconditions' section in the tool documentation.";
-
-                            System.out.printf("  Attempt %d (%dms): %s:%s -> %s%n",
-                                    attempt, tLat, parsed.getToolName(), parsed.getCommandName(), stepOutput);
-
-                            continue; // Skip execution
+                            // Update history here before continuing or let it fall through (using fall-through logic below)
                         } else {
-                            // System.out.println("   [Precondition Check] PASSED");
-                        }
+                            // 3. Execution & Evaluation of Identity
+                            String actualToolName = toolKitInst.targetToolObject().name();
+                            String actualCommand = toolKitInst.targetCommand().commandName();
 
-                        // 3. Execution & Scoring
-                        String actualToolName = toolKitInst.targetToolObject().name();
-                        String actualCommand = toolKitInst.targetCommand().commandName();
+                            boolean correctTool = parsed.getToolName().equalsIgnoreCase(actualToolName);
+                            boolean correctCommand = parsed.getCommandName().equalsIgnoreCase(actualCommand);
 
-                        boolean correctTool = parsed.getToolName().equalsIgnoreCase(actualToolName);
-                        boolean correctCommand = parsed.getCommandName().equalsIgnoreCase(actualCommand);
+                            String predictedOption = parsed.getOption();
+                            System.out.println("   [Parsed option (LLM Response)]: " + predictedOption);
 
-                        // Capture Parsed Options from LLM
-                        Set<String> providedFlags = parsed.getFlags();
-
-                        // Execute Command (Validates if provided options exist in the specific command)
-                        Map<String, String> validParams = cliExecutor.execute(actualCommandObject, providedFlags, stateManager, sessionId);
-
-                        // Update State based on enabled flags
-                        for (Map.Entry<String, String> entry : validParams.entrySet()) {
-                            stateManager.updateState(sessionId, entry.getKey().replace("--", ""), entry.getValue());
-                        }
-
-                        applyCommandEffects(actualCommandObject, stateManager, sessionId);
-
-                        // Provide visual feedback on options selected
-                        String optionsStr = providedFlags.isEmpty() ? "[None]" : providedFlags.toString();
-                        stepOutput = "SUCCESS: executed " + parsed.getToolName() + ":" + parsed.getCommandName() + " with options " + optionsStr;
-
-                        if (correctTool && correctCommand) {
-                            double stateScore = validateStateTransition(toolKitInst.expectedState(), stateManager.getAllStates(sessionId));
-                            if (stateScore >= 0.8) {
-                                goalAchieved = true;
-                                toolMatch = true;
+                            if (!correctTool) {
+                                // Fix: Explicitly report tool mismatch
+                                stepOutput = "ERROR: Tool Mismatch. Executed on '" + parsed.getToolName() + "' but expected '" + actualToolName + "'.";
+                            } else if (!correctCommand) {
+                                stepOutput = "ERROR: Command Mismatch. Executed '" + parsed.getCommandName() + "' but expected '" + actualCommand + "'.";
                             } else {
-                                stepOutput += " (State score: " + String.format("%.2f", stateScore) + ")";
+                                // Tool & Command are correct, now check Option
+                                boolean correctOption = predictedOption != null && predictedOption.equalsIgnoreCase(toolKitInst.targetOptionName());
+
+                                if (!correctOption) {
+                                    stepOutput = "ERROR: Option Mismatch. Expected: " + toolKitInst.targetOptionName() +
+                                            ", but received: " + predictedOption;
+                                } else {
+                                    // All checks passed
+                                    applyCommandEffects(actualCommandObject, stateManager, sessionId);
+
+                                    goalAchieved = true;
+                                    toolMatch = true;
+                                    stepOutput = "SUCCESS: executed " + parsed.getToolName() + ":" +
+                                            parsed.getCommandName() + " with option " + predictedOption;
+                                }
                             }
-                        } else {
-                            stepOutput += " (Wrong tool/command selected)";
                         }
+
                     } catch (Exception e) {
                         stepOutput = "ERROR: " + e.getMessage();
-                        stateManager.incrementRetryCount(sessionId, parsed.getCommandName());
                     }
                 } else {
-                    stepOutput = "ERROR: Invalid JSON format. Please output valid JSON.";
+                    stepOutput = "ERROR: Invalid JSON format. Please output valid JSON. No additional Text";
                 }
 
+                // Update history and Log (Consolidated at the bottom to ensure stepOutput is always used)
                 conversationHistory += "\nAssistant: called " + parsed.getToolName() + ":" + parsed.getCommandName();
                 conversationHistory += "\nSystem: " + stepOutput;
 
                 System.out.printf("  Attempt %d (%dms): %s:%s -> %s%n", attempt, tLat, parsed.getToolName(), parsed.getCommandName(), stepOutput);
             }
-
             // Calculate final state score
             double finalStateScore = goalAchieved ?
                     validateStateTransition(toolKitInst.expectedState(), stateManager.getAllStates(sessionId)) : 0.0;
@@ -206,7 +213,7 @@ public class BenchmarkEngine {
         System.out.println("\nFinal Success Rate: " + totalSuccess + "/" + iterations);
         System.out.println("Autonomous Recoveries: " + autonomousRecoveries);
     }
-
+  // TODO- implement correctly
     private void applyCommandEffects(CommandObject cmdObj, StateRetentionManager stateManager, String sessionId) {
         if (cmdObj.commandEffects() != null) {
             for (CommandEffect effect : cmdObj.commandEffects()) {
@@ -231,7 +238,7 @@ public class BenchmarkEngine {
             }
         }
     }
-
+  // TODO- implement correctly
     private double validateStateTransition(Map<String, String> expectedState, Map<String, String> actualState) {
         if (expectedState.isEmpty()) return 1.0;
 
@@ -245,7 +252,9 @@ public class BenchmarkEngine {
         return (double) matches / expectedState.size();
     }
 
-    private CommandObject findCommandObjectByName(String commandName, ToolKitGenerator.ToolKitObjectModel inst) {
+
+    // Helper method
+    private CommandObject findCommandObjectByName(String commandName, ToolKitFactory.ToolKitObjectModel inst) {
         if (inst.targetCommand().commandName().equalsIgnoreCase(commandName)) {
             return inst.targetCommand();
         }
@@ -264,6 +273,7 @@ public class BenchmarkEngine {
         return null; // Not found
     }
 
+    // TODO- implement correctly
     private boolean validatePreconditions(CommandObject cmd, StateRetentionManager stateManager, String sessionId) {
         if (cmd.commandPreConditions() == null || cmd.commandPreConditions().isEmpty()) {
             return true;
@@ -283,9 +293,9 @@ public class BenchmarkEngine {
         }
         return true;
     }
-
+    // TODO- implement correctly
     private boolean evaluateCondition(String currentValue, String operator, String expectedValue) {
-        if (currentValue == null) return false;
+        if (currentValue == null) return operator.equals("!=");
 
         switch (operator) {
             case "==":

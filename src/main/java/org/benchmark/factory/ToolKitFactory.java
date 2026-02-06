@@ -6,7 +6,6 @@ import org.benchmark.factory.DocFactory;
 import org.benchmark.model.tool.*;
 import org.benchmark.model.documentation.*;
 import org.benchmark.task.NLQueryGenerator;
-import org.benchmark.model.documentation.CommandObject;
 
 import java.util.*;
 
@@ -40,6 +39,18 @@ public class ToolKitGenerator {
             int noOfCommands = targetTool.commands().size();
             CommandObject targetCommand = targetTool.commands().get(random.nextInt(noOfCommands));
 
+
+
+
+            // 1. Pick Random Target Options (Ground Truth)
+            // TODO enable option description as well only for generating documentation, not as ground truth
+            String targetOptionName = "" ;
+            if (targetCommand.commandOptions() != null && !(targetCommand.commandOptions().isEmpty())){
+                int randomIndex = random.nextInt(targetCommand.commandOptions().size());
+                OptionSpec selectedOption = targetCommand.commandOptions().get(randomIndex);
+                targetOptionName = selectedOption.optionName();
+            }
+
             // CALCULATE GROUND TRUTH (Expected State)
             // This reads the 'CommandEffect' logic to see what SHOULD happen
             Map<String, String> expectedState = new HashMap<>();
@@ -51,15 +62,24 @@ public class ToolKitGenerator {
                         case "ASSIGN":
                             expectedState.put(effect.variable(), effect.valueRef());
                             break;
+                        // Note: We assume initial state is 0 for numeric ops if not previously set
                         case "INCREMENT":
+                            expectedState.put(effect.variable(), "1"); // 0 + 1
+                            break;
                         case "DECREMENT":
+                            expectedState.put(effect.variable(), "-1"); // 0 - 1
+                            break;
                         case "DELETE":
-                            // Handle other operations as needed
+                            expectedState.put(effect.variable(), null);
+                            break;
+                            
+                        default:
                             log.debug("Operation {} not yet implemented", effect.operation());
                             break;
                     }
                 }
             }
+            
             else{
                 log.info("The target command has no effects(expected state) set");
             }
@@ -70,7 +90,7 @@ public class ToolKitGenerator {
                 distractors.add(toolFactory.generateTool(complexity, domains.get(random.nextInt(domains.size()))));
             }
 
-            // 5. Combined Docs
+            // 5. Combined Docs ( TODO: Add Different documentation levels later)
             StringBuilder combinedDoc = new StringBuilder(docFactory.generateDocumentation(targetTool, DocumentComplexity.CLEAN));
             for (ToolSpecification dist : distractors) {
                 combinedDoc.append("\n").append(docFactory.generateDocumentation(dist, DocumentComplexity.CLEAN));
@@ -80,6 +100,7 @@ public class ToolKitGenerator {
                     targetTool,
                     targetCommand,
                     combinedDoc.toString(),
+                    targetOptionName,
                     expectedState,
                     distractors,
                     complexity,
@@ -95,6 +116,7 @@ public class ToolKitGenerator {
             ToolSpecification targetToolObject,
             CommandObject targetCommand,
             String combinedToolDesc,
+            String targetOptionName,
             Map<String, String> expectedState,
             List<ToolSpecification> distractors,
             ToolComplexity complexity,
