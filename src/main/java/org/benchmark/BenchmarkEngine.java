@@ -21,7 +21,7 @@ import java.util.UUID;
 public class BenchmarkEngine {
 
     private final String modelName = "llama3";
-    private final int iterations = 5;
+    private final int iterations = 10;
     private final ToolComplexity toolComplexity = ToolComplexity.MEDIUM;
 
     private final StateRetentionManager stateManager = new StateRetentionManager();
@@ -48,7 +48,6 @@ public class BenchmarkEngine {
         System.out.println("Generating Autonomous Execution Benchmark..");
 
         var toolKit = generator.generateToolKit(toolComplexity, iterations, 2, null);
-
         int totalSuccess = 0;
         int autonomousRecoveries = 0;
 
@@ -157,17 +156,22 @@ public class BenchmarkEngine {
                             boolean correctCommand = parsed.getCommandName().equalsIgnoreCase(actualCommand);
 
                             String predictedOption = parsed.getOption();
-                            System.out.println("   [Parsed option (LLM Response)]: " + predictedOption);
+                           // System.out.println("   [Parsed option (LLM Response)]: " + predictedOption);
 
                             if (!correctTool) {
                                 // Fix: Explicitly report tool mismatch
-                                stepOutput = "ERROR: Tool Mismatch. Executed on '" + parsed.getToolName() + "' but expected '" + actualToolName + "'.";
+                                stepOutput = "ERROR: Tool Mismatch. Executed on '" + parsed.getToolName() + " but expected another tool" ;
                             } else if (!correctCommand) {
-                                stepOutput = "ERROR: Command Mismatch. Executed '" + parsed.getCommandName() + "' but expected '" + actualCommand + "'.";
+                                stepOutput = "ERROR: Command Mismatch. Executed '" + parsed.getCommandName() + " but expected another command";
                             } else {
-                                // Tool & Command are correct, now check Option
-                                boolean correctOption = predictedOption != null && predictedOption.equalsIgnoreCase(toolKitInst.targetOptionName());
 
+                                // Tool & Command are correct, now check Option
+                                String expectedOpt =  toolKitInst.targetOptionName().trim();
+                                System.out.println("Expected option after trim " + expectedOpt);
+
+                                String receivedOpt = predictedOption == null ? "" : predictedOption;
+                                System.out.println("Predicted option after trim " + predictedOption);
+                                boolean correctOption = receivedOpt.equalsIgnoreCase(expectedOpt);
                                 if (!correctOption) {
                                     stepOutput = "ERROR: Option Mismatch. Expected: " + toolKitInst.targetOptionName() +
                                             ", but received: " + predictedOption;
@@ -177,7 +181,7 @@ public class BenchmarkEngine {
 
                                     goalAchieved = true;
                                     toolMatch = true;
-                                    stepOutput = "SUCCESS: executed " + parsed.getToolName() + ":" +
+                                    stepOutput = "\nSUCCESS: executed " + parsed.getToolName() + ":" +
                                             parsed.getCommandName() + " with option " + predictedOption;
                                 }
                             }
@@ -207,6 +211,9 @@ public class BenchmarkEngine {
             if (goalAchieved) {
                 totalSuccess++;
                 if (attempt > 1) autonomousRecoveries++;
+            }
+            else {
+                System.out.println("   [FAILURE]: Unable to achieve goal after " + MAX_RETRIES + " attempts.");
             }
         }
 
