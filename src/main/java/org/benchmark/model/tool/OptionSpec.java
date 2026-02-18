@@ -1,7 +1,4 @@
-package org.benchmark.model.documentation;
-
-
-import java.util.List;
+package org.benchmark.model.tool;
 
 public record OptionSpec(
         String optionName,           // "--target"

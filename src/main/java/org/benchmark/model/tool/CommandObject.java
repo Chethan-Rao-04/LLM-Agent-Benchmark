@@ -1,4 +1,4 @@
-package org.benchmark.model.documentation;
+package org.benchmark.model.tool;
 
 import java.util.List;
 
