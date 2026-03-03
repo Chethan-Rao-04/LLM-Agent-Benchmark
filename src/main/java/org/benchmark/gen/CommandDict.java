@@ -1,6 +1,7 @@
-package org.benchmark.factory;
+package org.benchmark.gen;
 
-import org.benchmark.model.tool.Domain;
+import org.benchmark.model.enums.Domain;
+import org.benchmark.model.spec.OptionSpec;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -86,39 +87,15 @@ public class CommandDict {
             "connection_count", "drop_rate", "latency_jitter", "power_level"
     );
 
-    // health care
 
-    public static final List<String> VERBS_MED = Arrays.asList(
-            "monitor", "authorize", "admit", "discharge", "assign", "transfer",
-            "dispense", "audit", "retrieve", "calibrate", "inspect", "scan",
-            "anesthetize", "bill", "consult", "diagnose", "evaluate", "intubate",
-            "prescribe", "record", "refer", "screen", "treat", "vaccinate",
-            "resuscitate", "sterilize", "implant", "extract", "amplify", "stabilize"
+
+    public static final List<String> COMMON_OPTS = Arrays.asList(
+            "help", "version", "verbose", "quiet",
+            "debug", "dry-run", "simulate", "output",
+            "input", "timeout", "retry", "interactive",
+            "confirm", "force"
     );
 
-    public static final List<String> NOUNS_MED = Arrays.asList(
-            "report", "patient", "scan", "test", "lab", "appointment",
-            "medication", "xray-machine", "mri-machine", "icu", "incubator",
-            "bandage", "chart", "clinic", "dosage", "ekg", "folder", "gown",
-            "gurney", "hospital", "infusion", "kit", "ledger", "nursery",
-            "pharmacy", "specimen", "ward", "stretcher", "ventilator", "monitor",
-            "cart", "prescription", "diagnostic", "vitals", "biopsy"
-    );
-
-    public static final List<String> STATE_VARS_MED = Arrays.asList(
-            "patient_id", "heart_rate", "blood_pressure", "oxygen_level", "test_result",
-            "timestamp", "device_status", "measurement_value", "diagnosis_code",
-            "glucose_level", "body_temp", "respiratory_rate", "bmi", "cholesterol_count",
-            "hydration_status", "pain_scale", "white_cell_count", "pulse_oximetry",
-            "hemoglobin", "bilirubin", "creatinine", "sodium_level", "potassium_level",
-            "calcium_level", "platelet_count", "iv_drip_rate", "oxygen_saturation"
-    );
-
-
-
-    public List<Domain> getAllDomains() {
-        return DOMAINS;
-    }
 
 
 
@@ -135,7 +112,6 @@ public class CommandDict {
         return switch (domain) {
             case MANUFACTURING -> pickOne(VERBS_MAN);
             case NETWORK_INFRA -> pickOne(VERBS_NET);
-            case HEALTHCARE -> pickOne(VERBS_MED);
             default -> pickOne(VERBS_MAN);
         };
         }
@@ -150,23 +126,61 @@ public class CommandDict {
                 return pickOne(NOUNS_MAN);
             case NETWORK_INFRA:
                 return pickOne(NOUNS_NET);
-            case HEALTHCARE:
-                return pickOne(NOUNS_MED);
             default:
                 return pickOne(NOUNS_MAN);
         }
     }
 
 
-    // bug, need to update state var model
+// --------------------------------------------------------------------------------------
+// OPTIONS
+
+    // OptionSpec (name + description) for docs + NL hints
+    public OptionSpec getRandomCommonOptionSpec() {
+        String optionNameFromDict = pickOne(COMMON_OPTS);
+        return new OptionSpec("--" + optionNameFromDict, getCommonFlagDescription(optionNameFromDict));
+    }
+    /**
+     * Converts an option name like \`--simulate\` into a NL hint
+     * using the same mapping as docs.
+     */
+    public static String hintFromOptionSpec(OptionSpec optionSpec) {
+        if (optionSpec == null || optionSpec.description() ==null)return null;
+
+
+        String desc = optionSpec.description().trim();
+        return desc.isEmpty()?  null : desc;
+    }
+
+    private static String getCommonFlagDescription(String optionNameFromDict) {
+        return switch (optionNameFromDict) {
+            case "help" -> "Show help information and exit.";
+            case "version" -> "Show version information and exit.";
+            case "verbose" -> "Enable verbose logging/output.";
+            case "quiet" -> "Suppress non-essential output.";
+            case "debug" -> "Enable debug output.";
+            case "dry-run" -> "Simulate execution without making changes.";
+            case "simulate" -> "Run in simulation mode.";
+            case "output" -> "Write output to a file.";
+            case "input" -> "Read input from a file.";
+            case "timeout" -> "Set a timeout for the operation.";
+            case "retry" -> "Retry the operation on failure.";
+            case "interactive" -> "Prompt for confirmations interactively.";
+            case "confirm" -> "Require explicit confirmation before proceeding.";
+            case "force" -> "Force the operation even if warnings are present.";
+            default -> "Enable " + optionNameFromDict + " mode.";
+        };
+    }
+
+// --------------------------------------------------------------------------------------
+// STATE
+
     public String getRandomStateVariable(Domain domain) {
         switch (domain) {
             case MANUFACTURING:
                 return pickOne(STATE_VARS_MAN);
             case NETWORK_INFRA:
                 return pickOne(STATE_VARS_NET);
-            case HEALTHCARE:
-                return pickOne(STATE_VARS_MED);
             default:
                 return pickOne(STATE_VARS_MAN);
         }
@@ -177,4 +191,3 @@ public class CommandDict {
         return list.get(random.nextInt(list.size()));
     }
 }
-

@@ -1,4 +1,4 @@
-package org.benchmark.model.tool;
+package org.benchmark.model.enums;
 
 public enum Domain {
     MANUFACTURING,

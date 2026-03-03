@@ -1,35 +1,21 @@
-This project consists of a benchmark for evaluating llm-based agents as guidance for operating proprietary CLI-tools.
+This project benchmarks LLM agents for operating proprietary industrial-style CLI tools.
 
-It uses Java and Spring Boot along with tools like `Picoli` (CLI support for Java ) , `LangChain4j` for integration support , and `Spring AI`.
+Core packages:
+- `org.benchmark.app`: entry point (`BenchmarkRunner`)
+- `org.benchmark.gen`: synthetic tool + documentation + user-query generation
+- `org.benchmark.exec`: dummy CLI execution, precondition checks, and state updates
+- `org.benchmark.llm`: model client (`LlmClient`) and output parser (`ToolCallParser`)
+- `org.benchmark.eval`: CSV logging (`CsvBenchmarkLogger`)
+- `org.benchmark.model.spec`: immutable specs (`ToolSpec`, `CommandSpec`, `OptionSpec`, `Precondition`, `Effect`, `ToolState`)
+- `org.benchmark.model.enums`: enum types (`Domain`, `DocumentComplexity`, `ConditionOp`, `EffectOp`)
 
+Main flow:
+1. Generate benchmark cases (`BenchmarkCaseGenerator`).
+2. Build tool documentation with distractors (`DocumentationGenerator`).
+3. Prompt the model and parse tool/command/option JSON.
+4. Execute command in dummy CLI (`DummyCli`) with precondition validation.
+5. Apply command effects (`CommandEffectApplier`) to session state.
+6. Score and log results (`CsvBenchmarkLogger`).
 
-Proposed Components for the Benchmark
-1. The data model
-2. Tool Factory
-2. A Documentation generator( generates tool documentation of varying complexity/ quality of deterioration)
-3. LLM (small sized and open source)
-4. Evaluation toolkit
-
-
-1. The Data Model
-- Tool Specification
-- Tool Complexity
-- Command Dict
-- Command Spec
-- Argument Spec
-- CommandEffect  (Pending)
-- CommandPreConditions (Pending)
-- Tool State Memory (Pending)
-- Domain (new)
-- Tool Description Generator (in Process)
-
-
-
-
-
-
-
--TODO
-Improve  state, effects, arguments  and precondition, incommplete implemetaion )also foe eval
-SOmtines two tools are having same commands, fix this pr add a way to check after llm responds 
-Try to make it converational like a chatbot involving LLM-simulated user
+Current entry point:
+- `org.benchmark.app.BenchmarkRunner`

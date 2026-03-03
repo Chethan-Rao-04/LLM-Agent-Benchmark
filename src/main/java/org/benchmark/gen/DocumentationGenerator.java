@@ -1,19 +1,20 @@
-package org.benchmark.factory;
+package org.benchmark.gen;
 
-
-
-import org.benchmark.model.documentation.*;
-import org.benchmark.model.tool.ToolSpecification;
+import org.benchmark.model.enums.DocumentComplexity;
+import org.benchmark.model.spec.CommandSpec;
+import org.benchmark.model.spec.Effect;
+import org.benchmark.model.spec.OptionSpec;
+import org.benchmark.model.spec.Precondition;
+import org.benchmark.model.spec.ToolSpec;
 
 import java.util.Arrays;
 import java.util.List;
 
 
-// TODO- Add more noice, and spoil structure for UNSTRUCTURED
 
-public class DocFactory {
+public class DocumentationGenerator {
 
-    public String generateDocumentation(ToolSpecification tool, DocumentComplexity quality) {
+    public String generateDocumentation(ToolSpec tool, DocumentComplexity quality) {
         if(quality == DocumentComplexity.CLEAN) {
             return this.generateCleanDoc(tool);
         }else if(quality == DocumentComplexity.GIBBERISH_NOISE){
@@ -36,54 +37,62 @@ public class DocFactory {
 
     }
     // Documentation Generation for Complexity level - Clean
-    private String generateCleanDoc(ToolSpecification tool) {
+    private String generateCleanDoc(ToolSpec tool) {
         StringBuilder sb = new StringBuilder();
         sb.append("# Documentation for the tool :  ").append(tool.name());
         sb.append("## This tool belongs to the ").append(tool.domain()).append(" industry").append("\n\n");
         sb.append("## Tool Description : ").append(tool.description()).append("\n\n");
 
         sb.append("## List of commands supported by the tool : ");
-        for(CommandObject command : tool.commands()){
+        for(CommandSpec command : tool.commands()){
             sb.append("### Command Name : ").append(command.commandName()).append("\n");;
             sb.append("Command Description : ").append(command.description()).append("\n");
 
             sb.append("#### Command Arguments : ").append("\n");
             sb.append("Name | " + "Type | " + "Description | ");
             sb.append("| :--- | :--- | :--- |\n");
-            for(ArgumentSpec arg : command.commandArgs()){
-                sb.append("`" + arg.optionName()).append("` | ").append( arg.optionType()).append(" | ").append(arg.optionDescription()).append("\n");
+            for (OptionSpec arg : command.commandOptions()) {
+                sb.append("`" + arg.optionName()).append(" | ").append(arg.description()).append("\n");
             }
 
-            // NOTE:Used backticks  for commands
 
-//            if(command.preConditions() != null){
-//                sb.append("#### Requirements before executing a command : ");
-//                sb.append("Pre-Re variable | ` " + "Pre-condition operator | " + "Pre-condition value | ");
-//                for(CommandPreconditions preconditions : command.preConditions()){
-//                    sb.append("- Ensure that the system variable `").append(preconditions.variable())
-//                            .append("` is currently ").append(preconditions.operator())
-//                            .append(" ").append(preconditions.value()).append(".\n");
-//                }
-//            }        sb.append("\n");
 
-//            if(command.commandEffects() != null){
-//                sb.append("#### Command Effects : ");
-//                sb.append("CommandEffect variable  | ` " + "CommandEffect operation |  " + "CommandEffect valueRef  ");
-//                for(CommandEffect effect : command.commandEffects()){
-//                    sb.append("- Successfully running this will update `").append(effect.variable())
-//                            .append("` by applying a `").append(effect.operation())
-//                            .append("` operation against value `").append(effect.valueRef()).append("`.\n");
-//                }
-//            }        sb.append("\n");
+            if (command.commandPreConditions() != null) {
+                sb.append("#### Requirements before executing a command : ");
+                sb.append("Pre-Re variable | ` " + "Pre-condition operator | " + "Pre-condition value | ");
+                for (Precondition preconditions : command.commandPreConditions()) {
+                    sb.append("- Ensure that the system variable `").append(preconditions.variable())
+                            .append("` is currently ").append(preconditions.operator())
+                            .append(" ").append(preconditions.value()).append(".\n");
+                }
+            }        sb.append("\n");
+
+            if (command.commandEffects() != null) {
+                sb.append("#### Command Effects : ");
+                sb.append("Effect variable  | ` " + "Effect operation |  " + "Effect valueRef  ");
+                for (Effect effect : command.commandEffects()) {
+                    String valueRef = formatValueRef(effect.valueRef());
+                    sb.append("- Successfully running this will update `").append(effect.variable())
+                            .append("` by applying a `").append(effect.operation())
+                            .append("` operation against value `").append(valueRef).append("`.\n");
+                }
+            }        sb.append("\n");
         }
         sb.append("\n");
         sb.append("-------------------------END OF DOCUMENT FOR THIS TOOL " + tool.name() +" -------------------------------");
         return sb.toString();
     }
 
+    private String formatValueRef(String valueRef) {
+        if (Effect.OPTION_REF.equals(valueRef)) {
+            return "selected option";
+        }
+        return valueRef;
+    }
+
     // Adds noise (SEMANTIC),  not gibberish
     //tests the model's Reasoning & Filtering.
-    private String genNoise(ToolSpecification tool) {
+    private String genNoise(ToolSpec tool) {
         String cleanDoc = generateCleanDoc(tool);
         List<String> splitLines = Arrays.asList(cleanDoc.split("\\R"));
         int sizeOfList = splitLines.size();
@@ -104,7 +113,7 @@ public class DocFactory {
 
     // Adds noise (GIBBERISH)
     // tests the model's the Attention Mechanism
-    private String genGibberishNoise(ToolSpecification tool) {
+    private String genGibberishNoise(ToolSpec tool) {
         String cleanDoc = generateCleanDoc(tool);
         List<String> splitLines = Arrays.asList(cleanDoc.split("\\R"));
         int sizeOfList = splitLines.size();
@@ -123,24 +132,24 @@ public class DocFactory {
     }
 
 
-    private String generateIncompleteDoc(ToolSpecification tool) {
+    private String generateIncompleteDoc(ToolSpec tool) {
         StringBuilder sb = new StringBuilder();
         sb.append("\n");
         sb.append("# Documentation for the tool :  ").append(tool.name());
         sb.append("belonging to the ").append(tool.domain()).append(" industry").append("\n\n");
         sb.append("# Tool Description : ").append(tool.description()).append("\n");
         int count =1;
-        for (CommandObject command : tool.commands()) {
+        for (CommandSpec command : tool.commands()) {
             if(!(count++ %4==0)) { // skip every fourth command
                 sb.append("Command Name : ").append(command.commandName()).append("\n");;
                 sb.append("Command Description : ").append(command.description()).append("\n");
             }
-            for(ArgumentSpec arg : command.commandArgs()){
+            for (OptionSpec arg : command.commandOptions()) {
                 if(!(count++ %3==0)) {//skip every third argument
-                    sb.append(arg.optionName()).append(" ; ").append( arg.optionType()).append(" ; ").append(arg.optionDescription()).append("\n");
+                    sb.append(arg.optionName()).append(" ; ").append(arg.description()).append("\n");
                 }
             }
-            if(command.preConditions()!=null && !command.preConditions().isEmpty()){
+            if(command.commandPreConditions()!=null && !command.commandPreConditions().isEmpty()){
                 sb.append("\n").append("Note: There are certain pre-conditions that needs to be followed \n");
             }
             if(command.commandEffects()!=null && !command.commandEffects().isEmpty()){
@@ -153,7 +162,7 @@ public class DocFactory {
 
     //  STRUCTURAL_LOSS:
     // This tests if the model depends on Markdown formatters
-    private String generateUnstructured(ToolSpecification tool) {
+    private String generateUnstructured(ToolSpec tool) {
         String clean = generateCleanDoc(tool);
 
         // makes it unstructured by removing line breaks , back ticks for code bits etc.
@@ -165,13 +174,13 @@ public class DocFactory {
     }
 
     //  LOGICAL_CONFLICT: Contradictory instructions to confuse model, checks if it listens to warnings or something similar
-    private String genLogicalConflict(ToolSpecification tool) {
+    private String genLogicalConflict(ToolSpec tool) {
         StringBuilder sb = new StringBuilder();
         sb.append("# Documentation for the tool (with known inconsistencies)\n\n");
         sb.append("WARNING: The following manual has conflicting statements due to outdated revisions.\n");
         sb.append("When in doubt, you must prioritize the *most recent* and *explicit* safety instructions.\n\n");
 
-        for (CommandObject command : tool.commands()) {
+        for (CommandSpec command : tool.commands()) {
             String cmdName = command.commandName();
             String humanName = cmdName.replace("_", " ");
 
