@@ -1,72 +1,72 @@
 package org.benchmark.llm;
 
-import dev.langchain4j.data.message.AiMessage;
-import dev.langchain4j.data.message.SystemMessage;
-import dev.langchain4j.data.message.UserMessage;
-import dev.langchain4j.model.chat.ChatLanguageModel;
-import dev.langchain4j.model.openai.OpenAiChatModel;
-import dev.langchain4j.model.output.Response;
+import org.springframework.ai.chat.messages.AssistantMessage;
+import org.springframework.ai.chat.messages.SystemMessage;
+import org.springframework.ai.chat.messages.UserMessage;
+import org.springframework.ai.chat.model.ChatModel;
+import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.ai.openai.OpenAiChatOptions;
+import org.springframework.ai.tool.ToolCallbackProvider;
+import org.springframework.stereotype.Component;
 
-import java.time.Duration;
+import java.util.List;
 
 /**
- * Langchain client to connect to Hugging Face Router
+ * Thin wrapper over Spring AI chat execution with MCP tool-callback support.
  */
+@Component
 public class LlmClient {
 
-    private static final String DEFAULT_BASE_URL = "https://router.huggingface.co/v1/";
-    private static final String DEFAULT_MODEL = "openai/gpt-oss-20b:groq";
+    private final ChatModel chatModel;
 
-    private final ChatLanguageModel model;
-
-    public LlmClient(String modelName) {
-        this(modelName, null, null);
-    }
-
-    public LlmClient(String modelName, String baseUrl, String apiKey) {
-        String resolvedModel = firstNonBlank(modelName, System.getenv("LLM_MODEL"), DEFAULT_MODEL);
-        String resolvedBaseUrl = firstNonBlank(baseUrl, System.getenv("LLM_BASE_URL"), DEFAULT_BASE_URL);
-        String resolvedApiKey = firstNonBlank(apiKey, System.getenv("HF_API_KEY"), System.getenv("OPENAI_API_KEY"));
-
-        if (resolvedApiKey == null || resolvedApiKey.isBlank()) {
-            throw new IllegalStateException("Missing API key. Set HF_API_KEY or OPENAI_API_KEY.");
-        }
-
-        this.model = OpenAiChatModel.builder()
-                .baseUrl(resolvedBaseUrl)
-                .apiKey(resolvedApiKey)
-                .modelName(resolvedModel)
-                .temperature(0.0)
-                .timeout(Duration.ofSeconds(720))
-                .logRequests(true)
-                .logResponses(true)
-                .build();
+    public LlmClient(ChatModel chatModel) {
+        this.chatModel = chatModel;
     }
 
     /**
-     * Sends the prompt and returns the raw response + metadata.
+     * Executes one chat-model turn with MCP tool callbacks enabled.
+     *
+     * @param systemInstruction system prompt content
+     * @param userQuery user prompt content
+     * @param toolCallbackProvider provider exposing MCP-backed tool callbacks
+     * @return assistant text plus total token usage
      */
-    public LlmResult execute(String systemInstruction, String userQuery) {
-        SystemMessage sysMsg = SystemMessage.from(systemInstruction);
-        UserMessage userMsg = UserMessage.from(userQuery);
+    public LlmResult execute(String systemInstruction, String userQuery, ToolCallbackProvider toolCallbackProvider) {
+        OpenAiChatOptions options = OpenAiChatOptions.builder()
+                .internalToolExecutionEnabled(true)
+                .toolCallbacks(toolCallbackProvider.getToolCallbacks())
+                .build();
 
-        Response<AiMessage> response = model.generate(sysMsg, userMsg);
+        Prompt prompt = new Prompt(
+                List.of(
+                        new SystemMessage(systemInstruction),
+                        new UserMessage(userQuery)
+                ),
+                options
+        );
 
-        String content = response.content().text();
-        int tokenCount = response.tokenUsage() != null ? response.tokenUsage().totalTokenCount() : 0;
+        ChatResponse response = chatModel.call(prompt);
+        AssistantMessage assistantMessage = response.getResult() == null ? null : response.getResult().getOutput();
+        String content = assistantMessage == null || assistantMessage.getText() == null
+                ? ""
+                : assistantMessage.getText();
+
+        int tokenCount = response.getMetadata() != null
+                && response.getMetadata().getUsage() != null
+                && response.getMetadata().getUsage().getTotalTokens() != null
+                ? response.getMetadata().getUsage().getTotalTokens()
+                : 0;
 
         return new LlmResult(content, tokenCount);
     }
 
-    // LLM result record
-    public record LlmResult(String content, int tokenUsage) {}
-
-    private static String firstNonBlank(String... values) {
-        for (String value : values) {
-            if (value != null && !value.isBlank()) {
-                return value;
-            }
-        }
-        return null;
+    /**
+     * Minimal result wrapper for one LLM call.
+     *
+     * @param content assistant text content
+     * @param tokenUsage total tokens reported by the model provider
+     */
+    public record LlmResult(String content, int tokenUsage) {
     }
 }

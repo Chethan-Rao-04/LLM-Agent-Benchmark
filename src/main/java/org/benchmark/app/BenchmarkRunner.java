@@ -1,299 +1,398 @@
 package org.benchmark.app;
 
-import org.benchmark.model.spec.CommandSpec;
-import org.benchmark.model.spec.Precondition;
-import org.benchmark.model.spec.ToolSpec;
-import org.benchmark.llm.LlmClient;
-import org.benchmark.llm.ToolCallParser;
-import org.benchmark.llm.ToolCallParser.ParsedToolCall;
-import org.benchmark.exec.CliSimulator;
+import org.benchmark.config.Config;
 import org.benchmark.exec.SessionStateManager;
 import org.benchmark.gen.BenchmarkCaseGenerator;
-import org.benchmark.gen.ToolSpecGenerator;
-import org.benchmark.utils.CsvBenchmarkLogger;
+import org.benchmark.llm.LlmClient;
+import org.benchmark.mcp.runtime.BenchmarkCaseToolCallbackFactory;
+import org.benchmark.mcp.runtime.BenchmarkExecutionRecord;
+import org.benchmark.mcp.runtime.BenchmarkSessionRegistry;
+import org.benchmark.utils.RunEventLogger;
+import io.modelcontextprotocol.client.McpSyncClient;
+import org.springframework.ai.mcp.SyncMcpToolCallbackProvider;
+import org.springframework.ai.tool.StaticToolCallbackProvider;
+import org.springframework.ai.tool.ToolCallback;
+import org.springframework.ai.tool.ToolCallbackProvider;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class BenchmarkRunner {
+/**
+ * Orchestrates end-to-end benchmark execution using Spring AI chat execution
+ * with an MCP tool surface for documentation access and command execution.
+ */
+@Component
+public class BenchmarkRunner implements ApplicationRunner {
 
-    private final String modelName = "llama3";
-    private final int iterations = 10;
-    private final SessionStateManager stateManager = new SessionStateManager();
-    private final CliSimulator cliSimulator = new CliSimulator();
-    private final CsvBenchmarkLogger logger = new CsvBenchmarkLogger("benchmark_results_autonomous.csv");
+    private final Config config;
+    private final LlmClient client;
+    private final List<McpSyncClient> mcpSyncClients;
+    private final SessionStateManager stateManager;
+    private final BenchmarkSessionRegistry sessionRegistry;
+    private final BenchmarkCaseToolCallbackFactory toolCallbackFactory;
+    private final RunEventLogger eventLogger;
+    private final ConfigurableApplicationContext applicationContext;
 
-    private static final int MAX_RETRIES = 3;
-
-    private static final String BASE_SYSTEM_PROMPT =
-            "You are an autonomous agent. Select the correct tool from the provided set of tools to solve the user query.\n" +
-                    "CRITICAL: You must respond with ONLY valid JSON. Do not include any explanatory text, comments, or formatting.\n" +
-                    "Output format: {\"tool\": \"<tool_name>\", \"command\": \"<command_name>\", \"option\": \"<value>\"}\n" +
-                    "Example output: {\"tool\": \"MAN-ROUTER-456\", \"command\": \"reset_router\", \"option\": \"--verbose\"}\n" +
-                    "Remember: Your entire response must be valid JSON only.\n";
-
-    public static void main(String[] args) {
-        BenchmarkRunner runner = new BenchmarkRunner();
-        runner.runBenchmark();
+    public BenchmarkRunner(Config config,
+                           LlmClient client,
+                           List<McpSyncClient> mcpSyncClients,
+                           SessionStateManager stateManager,
+                           BenchmarkSessionRegistry sessionRegistry,
+                           BenchmarkCaseToolCallbackFactory toolCallbackFactory,
+                           RunEventLogger eventLogger,
+                           ConfigurableApplicationContext applicationContext) {
+        this.config = config;
+        this.client = client;
+        this.mcpSyncClients = mcpSyncClients;
+        this.stateManager = stateManager;
+        this.sessionRegistry = sessionRegistry;
+        this.toolCallbackFactory = toolCallbackFactory;
+        this.eventLogger = eventLogger;
+        this.applicationContext = applicationContext;
     }
 
-    public void runBenchmark() {
-        // Init components for this benchmark run.
-        LlmClient client = new LlmClient(modelName);
-        BenchmarkCaseGenerator caseGenerator = new BenchmarkCaseGenerator();
-        System.out.println("Generating Autonomous Execution Benchmark..");
+    @Override
+    public void run(ApplicationArguments args) {
+        try {
+            runBenchmark();
+        } finally {
+            closeLoopbackMcpClients();
+            applicationContext.close();
+        }
+    }
 
-        // List of cases, Each case = one target tool/command (+ distractors) + expected state delta.
-        var benchmarkCases = caseGenerator.generateCases(iterations, 2, null);
+    /**
+     * Runs the autonomous execution benchmark for the configured number of iterations.
+     */
+    public void runBenchmark() {
+
+        // Initialise MCP clients and expose their tools available in the MCP servers
+        ToolCallbackProvider mcpToolCallbacks = initializeLoopbackMcpClients();
+
+        BenchmarkCaseGenerator caseGenerator = new BenchmarkCaseGenerator(config.documentComplexity());
+        System.out.println("Generating Autonomous Execution Benchmark..");
+        eventLogger.log("benchmark_run_started", Map.of(
+                "model", config.getLlm().getModel(),
+                "iterations", config.getBenchmark().getIterations(),
+                "documentComplexity", config.getBenchmark().getDocumentComplexity(),
+                "maxRetries", config.getBenchmark().getMaxRetries(),
+                "distractorCount", config.getBenchmark().getDistractorCount()
+        ));
+
+        var benchmarkCases = caseGenerator.generateCases(
+                config.getBenchmark().getIterations(),
+                config.getBenchmark().getDistractorCount(),
+                config.getBenchmark().getDomain()
+        );
         int totalSuccess = 0;
         int autonomousRecoveries = 0;
 
         for (int i = 0; i < benchmarkCases.size(); i++) {
             var benchmarkCase = benchmarkCases.get(i);
             String sessionId = UUID.randomUUID().toString();
-
-            // Start in SHUTDOWN so the model needs to run initialize_system before target command.
-            stateManager.updateState(sessionId, ToolSpecGenerator.CONTROL_STATE_KEY, ToolSpecGenerator.CONTROL_STATE_SHUTDOWN);
+            sessionRegistry.register(sessionId, benchmarkCase);
+            stateManager.initializeSession(sessionId, benchmarkCase.allTools());
+            ToolCallbackProvider caseToolCallbacks = combineToolCallbacks(
+                    mcpToolCallbacks,
+                    toolCallbackFactory.create(sessionId, benchmarkCase)
+            );
 
             String userQuery = benchmarkCase.generateUserQuery(benchmarkCase.targetToolObject());
-            CommandSpec targetCmd = benchmarkCase.targetCommand();
-            String targetOptionName = benchmarkCase.targetOptionName();
+            logCaseStart(i, sessionId, userQuery, benchmarkCase);
 
-            // --- BEGIN-Log Ground Truth & Expectation ---
-            System.out.println("\n============================================================");
-            System.out.printf(" Run %d: %s %n", i + 1, userQuery);
-            System.out.println("------------------------------------------------------------");
-            System.out.println("   [TARGET EXPECTATION]");
-            System.out.printf("     Tool:          %s%n", benchmarkCase.targetToolObject().name());
-            System.out.printf("     Command:       %s%n", targetCmd.commandName());
-
-            if (targetCmd.commandOptions() != null && !targetCmd.commandOptions().isEmpty()) {
-                System.out.print("     Available Options: [ ");
-                targetCmd.commandOptions().forEach(opt -> System.out.print(opt.optionName() + " "));
-                System.out.println("]");
-            } else {
-                System.out.println("     Available Options: [ None ]");
-            }
-
-            if(!targetOptionName.isEmpty()){
-                System.out.println("     Target Option:  " + targetOptionName);
-            }else {
-                System.out.println("    Target Option is null");
-            }
-
-            if (targetCmd.commandPreConditions() != null && !targetCmd.commandPreConditions().isEmpty()) {
-                System.out.println("     Preconditions: ");
-                for (Precondition pc : targetCmd.commandPreConditions()) {
-                    System.out.printf("       * %s %s %s%n", pc.variable(), pc.operator(), pc.value());
-                }
-            } else {
-                System.out.println("     Preconditions: [ None ]");
-            }
-            System.out.println("============================================================\n");
-            // --- END-Log Ground Truth & Expectation ---
-
-
-            // Per-case execution stats.
-            String conversationHistory = "";
             boolean goalAchieved = false;
-            int attempt = 0;
-            long totalTime = 0;
-            int totalTokens = 0;
             boolean toolMatch = false;
+            int attempt = 0;
+            long totalTimeTaken = 0;
+            int totalTokenUsage = 0;
+            String conversationHistory = "";
 
-            // Autonomous retry loop: send feedback from each failed attempt back to the model.
-            while (attempt < MAX_RETRIES && !goalAchieved) {
+            while (attempt < config.getBenchmark().getMaxRetries() && !goalAchieved) {
                 attempt++;
+                int logStartIndex = sessionRegistry.executionLog(sessionId).size();
 
-                String stateContext = "\n[CURRENT STATE]: " + stateManager.getAllStates(sessionId);
-                String historyContext = "\n[HISTORY]:" + conversationHistory;
-                String systemInstruction = BASE_SYSTEM_PROMPT + benchmarkCase.combinedToolDesc() + stateContext + historyContext;
+                String systemInstruction = buildSystemInstruction(sessionId, conversationHistory);
+                String userPrompt = buildUserPrompt(sessionId, userQuery);
+                logAttemptStarted(sessionId, attempt, conversationHistory);
 
-                //start time 
                 long tStart = System.nanoTime();
+                LlmClient.LlmResult result = client.execute(systemInstruction, userPrompt, caseToolCallbacks);
+                long timeTaken = (System.nanoTime() - tStart) / 1_000_000;
 
-                // Execute LLM call with the system instruction as well as the User query, get response and token usage
-                var result = client.execute(systemInstruction, userQuery);
+                totalTimeTaken += timeTaken;
+                totalTokenUsage += result.tokenUsage();
 
-                // Calculate time taken for execution
-                long tLat = (System.nanoTime() - tStart) / 1_000_000;
-                totalTime += tLat;
+                List<BenchmarkExecutionRecord> newExecutions =
+                        sessionRegistry.executionLog(sessionId).subList(logStartIndex, sessionRegistry.executionLog(sessionId).size());
 
-                // get token usage from the result 
-                totalTokens += result.tokenUsage();
+                toolMatch = toolMatch || hasSuccessfulTargetExecution(sessionRegistry.executionLog(sessionId), benchmarkCase);
+                goalAchieved = toolMatch
+                        && scoreExpectedState(benchmarkCase.expectedState(), targetToolState(sessionId, benchmarkCase)) == 1.0;
 
+                String attemptFeedback = buildAttemptFeedback(newExecutions, sessionId, goalAchieved);
+                conversationHistory += "\nAssistant: " + result.content();
+                conversationHistory += "\nSystem: " + attemptFeedback;
+                logAttemptCompleted(sessionId, attempt, timeTaken, result, newExecutions, goalAchieved, toolMatch);
 
-                // Log Raw Response
-                System.out.println("   [Raw LLM Response]: " + result.content());
-
-                // parse raw llm response
-                ToolCallParser parser = new ToolCallParser();
-                ParsedToolCall parsed = parser.parse(result.content());
-                // Initialize stepOutput to avoid compilation errors
-                String stepOutput = "ERROR: Unknown execution failure";
-
-                if (parsed.hasToolAndCmdName()) {
-                    try {
-                        // Resolve command by (tool, command), not command-only, to avoid cross-tool collisions.
-                        CommandSpec actualCommandSpec =
-                                findCommandSpecForTool(parsed.toolName(), parsed.commandName(), benchmarkCase);
-                        if (actualCommandSpec == null) {
-                            if (!toolExists(parsed.toolName(), benchmarkCase)) {
-                                throw new IllegalArgumentException("Unknown tool '" + parsed.toolName() + "'. Please check documentation.");
-                            }
-                            throw new IllegalArgumentException(
-                                    "Unknown command '" + parsed.commandName() + "' for tool '" + parsed.toolName() + "'.");
-                        }
-
-                        String actualToolName = benchmarkCase.targetToolObject().name();
-                        String actualCommand = benchmarkCase.targetCommand().commandName();
-
-                        boolean correctTool = parsed.toolName().equalsIgnoreCase(actualToolName);
-                        boolean prepCommand = actualCommandSpec.commandName().equalsIgnoreCase(ToolSpecGenerator.PREP_COMMAND_NAME);
-                        String predictedOption = parsed.option();
-
-                        if (prepCommand) {
-                            // Prep command is allowed as an intermediate step before target command.
-                            if (!correctTool) {
-                                stepOutput = "ERROR: Tool Mismatch. Executed on '" + parsed.toolName() + " but expected another tool";
-                            } else {
-                                CliSimulator.ExecutionResult execResult =
-                                        cliSimulator.execute(actualCommandSpec, predictedOption, stateManager, sessionId);
-                                stepOutput = execResult.success()
-                                        ? "INFO: prep command executed (" + ToolSpecGenerator.PREP_COMMAND_NAME + "). Now retry target command."
-                                        : "ERROR: " + execResult.stderr();
-                            }
-                        } else {
-                            boolean correctCommand = parsed.commandName().equalsIgnoreCase(actualCommand);
-                            if (!correctTool) {
-                                stepOutput = "ERROR: Tool Mismatch. Executed on '" + parsed.toolName() + " but expected another tool";
-                            } else if (!correctCommand) {
-                                stepOutput = "ERROR: Command Mismatch. Executed '" + parsed.commandName() + " but expected another command";
-                            } else {
-                                // Benchmark checks exact target option to keep scoring deterministic.
-                                String expectedOpt = benchmarkCase.targetOptionName().trim();
-                                String receivedOpt = predictedOption == null ? "" : predictedOption;
-                                boolean correctOption = receivedOpt.equalsIgnoreCase(expectedOpt);
-
-                                if (!correctOption) {
-                                    stepOutput = "ERROR: Option Mismatch. Expected: " + benchmarkCase.targetOptionName() +
-                                            ", but received: " + predictedOption;
-                                } else {
-                                    CliSimulator.ExecutionResult execResult =
-                                            cliSimulator.execute(actualCommandSpec, predictedOption, stateManager, sessionId);
-                                    if (!execResult.success()) {
-                                        stepOutput = "ERROR: " + execResult.stderr();
-                                    } else {
-                                        goalAchieved = true;
-                                        toolMatch = true;
-                                        stepOutput = "\nSUCCESS: executed " + parsed.toolName() + ":" +
-                                                parsed.commandName() + " with option " + predictedOption;
-                                    }
-                                }
-                            }
-                        }
-
-                    } catch (Exception e) {
-                        stepOutput = "ERROR: " + e.getMessage();
-                    }
-                } else {
-                    stepOutput = "ERROR: Invalid JSON format. Please output valid JSON. No additional Text";
-                }
-
-                // Persist structured feedback into history so the next retry can self-correct.
-                String historyTool = parsed.toolName() == null ? "UNKNOWN_TOOL" : parsed.toolName();
-                String historyCommand = parsed.commandName() == null ? "UNKNOWN_COMMAND" : parsed.commandName();
-                conversationHistory += "\nAssistant: called " + historyTool + ":" + historyCommand;
-                conversationHistory += "\nSystem: " + stepOutput;
-
-                System.out.printf("  Attempt %d (%dms): %s:%s -> %s%n", attempt, tLat, parsed.toolName(), parsed.commandName(), stepOutput);
+                System.out.printf("  Attempt %d (%dms)%n", attempt, timeTaken);
+                System.out.println("   [Assistant Response]: " + result.content());
+                System.out.println("   [MCP Feedback]: " + attemptFeedback);
             }
-            // State score is only computed on success; failed runs receive 0.
-            double finalStateScore = goalAchieved ?
-                    scoreExpectedState(benchmarkCase.expectedState(), stateManager.getAllStates(sessionId)) : 0.0;
 
-            logger.log(modelName, 0, totalTime, totalTokens,
-                    toolMatch, finalStateScore, goalAchieved);
-            stateManager.clearSession(sessionId);
+            double finalStateScore = goalAchieved
+                    ? scoreExpectedState(benchmarkCase.expectedState(), targetToolState(sessionId, benchmarkCase))
+                    : 0.0;
+
+            logCaseCompleted(sessionId, goalAchieved, toolMatch, attempt, totalTimeTaken, totalTokenUsage, finalStateScore);
 
             if (goalAchieved) {
                 totalSuccess++;
-                if (attempt > 1) autonomousRecoveries++;
+                if (attempt > 1) {
+                    autonomousRecoveries++;
+                }
+            } else {
+                System.out.println("   [FAILURE]: Unable to achieve goal after "
+                        + config.getBenchmark().getMaxRetries() + " attempts.");
             }
-            else {
-                System.out.println("   [FAILURE]: Unable to achieve goal after " + MAX_RETRIES + " attempts.");
-            }
+
+            sessionRegistry.clear(sessionId);
+            stateManager.clearSession(sessionId);
         }
 
-        System.out.println("\nFinal Success Rate: " + totalSuccess + "/" + iterations);
+        System.out.println("\nFinal Success Rate: " + totalSuccess + "/" + config.getBenchmark().getIterations());
         System.out.println("Autonomous Recoveries: " + autonomousRecoveries);
+        eventLogger.log("benchmark_run_completed", Map.of(
+                "model", config.getLlm().getModel(),
+                "successes", totalSuccess,
+                "iterations", config.getBenchmark().getIterations(),
+                "autonomousRecoveries", autonomousRecoveries
+        ));
     }
 
-    // Scores only keys touched by command effects (expected state delta), not full session state.
+    private ToolCallbackProvider initializeLoopbackMcpClients() {
+        for (McpSyncClient mcpSyncClient : mcpSyncClients) {
+            if (!mcpSyncClient.isInitialized()) {
+                mcpSyncClient.initialize();
+            }
+        }
+        return SyncMcpToolCallbackProvider.builder()
+                .mcpClients(mcpSyncClients)
+                .build();
+    }
+
+    private ToolCallbackProvider combineToolCallbacks(ToolCallbackProvider... providers) {
+        List<ToolCallback> combined = new java.util.ArrayList<>();
+        for (ToolCallbackProvider provider : providers) {
+            if (provider == null) {
+                continue;
+            }
+            for (ToolCallback toolCallback : provider.getToolCallbacks()) {
+                combined.add(toolCallback);
+            }
+        }
+        return new StaticToolCallbackProvider(combined);
+    }
+
+    private void closeLoopbackMcpClients() {
+        for (McpSyncClient mcpSyncClient : mcpSyncClients) {
+            try {
+                if (mcpSyncClient.isInitialized() && !mcpSyncClient.closeGracefully()) {
+                    mcpSyncClient.close();
+                }
+            } catch (Exception ignored) {
+                try {
+                    mcpSyncClient.close();
+                } catch (Exception ignoredAgain) {
+                    // Shutdown should not fail because an MCP client was already torn down.
+                }
+            }
+        }
+    }
+
+    private void logCaseStart(int index,
+                              String sessionId,
+                              String userQuery,
+                              BenchmarkCaseGenerator.BenchmarkCase benchmarkCase) {
+        eventLogger.log("case_started", caseStartPayload(index, sessionId, userQuery, benchmarkCase));
+
+        System.out.println("\n============================================================");
+        System.out.printf(" Run %d: %s %n", index + 1, userQuery);
+        System.out.println("------------------------------------------------------------");
+        System.out.println("   [TARGET EXPECTATION]");
+        System.out.printf("     Tool:          %s%n", benchmarkCase.targetToolObject().name());
+        System.out.printf("     Command:       %s%n", benchmarkCase.targetCommand().name());
+        System.out.printf("     Target Option: %s%n",
+                benchmarkCase.targetOptionName().isBlank() ? "[ None ]" : benchmarkCase.targetOptionName());
+        System.out.println("============================================================\n");
+    }
+
+    private void logAttemptStarted(String sessionId, int attempt, String conversationHistory) {
+        eventLogger.log("attempt_started", Map.of(
+                "sessionId", sessionId,
+                "attempt", attempt,
+                "currentState", stateManager.getSessionStateSnapshot(sessionId),
+                "historyLength", conversationHistory.length()
+        ));
+    }
+
+    private void logAttemptCompleted(String sessionId,
+                                     int attempt,
+                                     long timeTaken,
+                                     LlmClient.LlmResult result,
+                                     List<BenchmarkExecutionRecord> newExecutions,
+                                     boolean goalAchieved,
+                                     boolean toolMatch) {
+        eventLogger.log("attempt_completed", Map.of(
+                "sessionId", sessionId,
+                "attempt", attempt,
+                "latencyMs", timeTaken,
+                "tokenUsage", result.tokenUsage(),
+                "assistantResponse", result.content(),
+                "newExecutions", newExecutions,
+                "goalAchieved", goalAchieved,
+                "toolMatch", toolMatch,
+                "currentState", stateManager.getSessionStateSnapshot(sessionId)
+        ));
+    }
+
+    private void logCaseCompleted(String sessionId,
+                                  boolean goalAchieved,
+                                  boolean toolMatch,
+                                  int attempt,
+                                  long totalTimeTaken,
+                                  int totalTokenUsage,
+                                  double finalStateScore) {
+        BenchmarkCaseGenerator.BenchmarkCase benchmarkCase = sessionRegistry.getBenchmarkCase(sessionId);
+        Map<String, Object> payload = new LinkedHashMap<>();
+        payload.put("model", config.getLlm().getModel());
+        payload.put("sessionId", sessionId);
+        payload.put("passed", goalAchieved);
+        payload.put("toolMatch", toolMatch);
+        payload.put("attempts", attempt);
+        payload.put("totalLatencyMs", totalTimeTaken);
+        payload.put("totalTokenUsage", totalTokenUsage);
+        payload.put("finalStateScore", finalStateScore);
+        payload.put("targetToolState", targetToolState(sessionId, benchmarkCase));
+        payload.put("sessionState", stateManager.getSessionStateSnapshot(sessionId));
+        payload.put("executionLog", sessionRegistry.executionLog(sessionId));
+        eventLogger.log("case_completed", payload);
+    }
+
+    private String buildSystemInstruction(String sessionId, String conversationHistory) {
+        String stateContext = "\n[CURRENT STATE]: " + stateManager.getSessionStateSnapshot(sessionId);
+        String historyContext = "\n[HISTORY]:" + conversationHistory;
+
+        return config.getPrompt().getBaseSystemPrompt()
+                + "\nSession ID: " + sessionId
+                + "\nUse the MCP tools to inspect degraded documentation and inspect state."
+                + "\nUse the benchmark tool callbacks directly to execute commands on the generated tools."
+                + "\nEach benchmark tool accepts exactly one command and one option per call."
+                + "\nIf command execution fails, recover autonomously using documentation and state feedback."
+                + "\nDo not invent tool names or commands. Use the provided tool callbacks."
+                + stateContext
+                + historyContext;
+    }
+
+    private String buildUserPrompt(String sessionId, String userQuery) {
+        return "Benchmark session: " + sessionId + "\nUser goal: " + userQuery;
+    }
+
+    private Map<String, Object> caseStartPayload(int index,
+                                                 String sessionId,
+                                                 String userQuery,
+                                                 BenchmarkCaseGenerator.BenchmarkCase benchmarkCase) {
+        Map<String, Object> payload = new LinkedHashMap<>();
+        payload.put("caseIndex", index + 1);
+        payload.put("sessionId", sessionId);
+        payload.put("userQuery", userQuery);
+        payload.put("targetTool", benchmarkCase.targetToolObject().name());
+        payload.put("targetCommand", benchmarkCase.targetCommand().name());
+        payload.put("targetOption", benchmarkCase.targetOptionName());
+        payload.put("expectedState", benchmarkCase.expectedState());
+        payload.put("candidateTools", benchmarkCase.allTools().stream().map(tool -> tool.name()).toList());
+        payload.put("documentComplexity", config.getBenchmark().getDocumentComplexity());
+        return payload;
+    }
+
+    /**
+     * Builds the retry feedback appended to conversation history between attempts.
+     */
+    private String buildAttemptFeedback(List<BenchmarkExecutionRecord> newExecutions,
+                                        String sessionId,
+                                        boolean goalAchieved) {
+        if (goalAchieved) {
+            return "SUCCESS: Goal achieved. Final state: " + stateManager.getSessionStateSnapshot(sessionId);
+        }
+
+        if (newExecutions.isEmpty()) {
+            return "ERROR: No benchmark tool execution occurred. Use MCP for documentation/state and the benchmark tool callbacks for execution.";
+        }
+
+        StringBuilder feedback = new StringBuilder();
+        for (BenchmarkExecutionRecord record : newExecutions) {
+            feedback.append("\n- ")
+                    .append(record.success() ? "SUCCESS" : "ERROR")
+                    .append(" tool=").append(record.toolName())
+                    .append(", command=").append(record.commandName())
+                    .append(", option=").append(record.option())
+                    .append(", message=").append(record.message());
+        }
+        feedback.append("\nCurrent state: ").append(stateManager.getSessionStateSnapshot(sessionId));
+        return feedback.toString();
+    }
+
+    /**
+     * Returns whether the target tool/command/option was ever executed successfully.
+     */
+    private boolean hasSuccessfulTargetExecution(List<BenchmarkExecutionRecord> executions,
+                                                 BenchmarkCaseGenerator.BenchmarkCase benchmarkCase) {
+        String expectedTool = benchmarkCase.targetToolObject().name();
+        String expectedCommand = benchmarkCase.targetCommand().name();
+        String expectedOption = benchmarkCase.targetOptionName() == null ? "" : benchmarkCase.targetOptionName().trim();
+
+        return executions.stream().anyMatch(record ->
+                record.success()
+                        && record.toolName().equalsIgnoreCase(expectedTool)
+                        && record.commandName().equalsIgnoreCase(expectedCommand)
+                        && normalize(record.option()).equalsIgnoreCase(expectedOption));
+    }
+
+    private String normalize(String option) {
+        return option == null ? "" : option.trim();
+    }
+
+    /**
+     * Scores the expected state delta against the actual target-tool runtime state.
+     */
     private double scoreExpectedState(Map<String, String> expectedState, Map<String, String> actualState) {
-        if (expectedState.isEmpty()) return 1.0;
+        if (expectedState.isEmpty()) {
+            return 1.0;
+        }
 
         int matches = 0;
         for (Map.Entry<String, String> expected : expectedState.entrySet()) {
             String actualValue = actualState.get(expected.getKey());
             String expectedValue = expected.getValue();
             if (expectedValue == null) {
-                // DELETE semantics: expected to be missing or null
                 if (actualValue == null) {
                     matches++;
                 }
                 continue;
             }
-            if (expectedValue.equals(actualValue)) matches++;
+            if (expectedValue.equals(actualValue)) {
+                matches++;
+            }
         }
         return (double) matches / expectedState.size();
     }
 
-    // Checks whether the model-selected tool exists among target + distractors in this case.
-    private boolean toolExists(String toolName, BenchmarkCaseGenerator.BenchmarkCase benchmarkCase) {
-        if (toolName == null || toolName.isBlank()) {
-            return false;
-        }
-        if (benchmarkCase.targetToolObject().name().equalsIgnoreCase(toolName)) {
-            return true;
-        }
-        for (ToolSpec distractor : benchmarkCase.distractors()) {
-            if (distractor.name().equalsIgnoreCase(toolName)) {
-                return true;
-            }
-        }
-        return false;
+    private Map<String, String> targetToolState(String sessionId, BenchmarkCaseGenerator.BenchmarkCase benchmarkCase) {
+        return stateManager.getToolStateSnapshot(sessionId, benchmarkCase.targetToolObject().name());
     }
-
-    // Finds a command in the selected tool only (prevents false positives across tools).
-    private CommandSpec findCommandSpecForTool(String toolName, String commandName,
-                                               BenchmarkCaseGenerator.BenchmarkCase benchmarkCase) {
-        if (toolName == null || commandName == null) {
-            return null;
-        }
-
-        ToolSpec selectedTool = null;
-        if (benchmarkCase.targetToolObject().name().equalsIgnoreCase(toolName)) {
-            selectedTool = benchmarkCase.targetToolObject();
-        } else {
-            for (ToolSpec distractor : benchmarkCase.distractors()) {
-                if (distractor.name().equalsIgnoreCase(toolName)) {
-                    selectedTool = distractor;
-                    break;
-                }
-            }
-        }
-
-        if (selectedTool == null) {
-            return null;
-        }
-
-        for (CommandSpec cmd : selectedTool.commands()) {
-            if (cmd.commandName().equalsIgnoreCase(commandName)) {
-                return cmd;
-            }
-        }
-        return null;
-    }
-
 }

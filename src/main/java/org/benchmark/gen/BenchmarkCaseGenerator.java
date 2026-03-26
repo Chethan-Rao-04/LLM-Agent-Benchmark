@@ -1,28 +1,54 @@
 package org.benchmark.gen;
 
 import org.benchmark.exec.CommandEffectApplier;
+import org.benchmark.gen.doc_generator.DocumentationGenerator;
+import org.benchmark.gen.query_generator.UserQueryGenerator;
+import org.benchmark.gen.tool_generator.ToolSpecGenerator;
 import org.benchmark.model.enums.DocumentComplexity;
 import org.benchmark.model.enums.Domain;
-import org.benchmark.model.spec.CommandSpec;
-import org.benchmark.model.spec.OptionSpec;
-import org.benchmark.model.spec.ToolSpec;
+import org.benchmark.model.objects.CommandObject;
+import org.benchmark.model.objects.OptionEntity;
+import org.benchmark.model.objects.ToolObject;
+import org.benchmark.gen.tool_generator.CommandDict;
 
 import java.util.*;
 
-
+/**
+ * Generates synthetic benchmark cases consisting of one target tool and a set
+ * of distractor tools plus degraded documentation.
+ */
 public class BenchmarkCaseGenerator {
     private final ToolSpecGenerator toolSpecGenerator;
     private final DocumentationGenerator documentationGenerator;
     private final Random random;
     private final UserQueryGenerator queryGenerator;
+    private final DocumentComplexity documentationComplexity;
 
     public BenchmarkCaseGenerator() {
-        this.random = new Random();
-        this.toolSpecGenerator = new ToolSpecGenerator();  //can add seed for reproducibility
-        this.documentationGenerator = new DocumentationGenerator();
-        this.queryGenerator = new UserQueryGenerator(); // can add seed for reproducibility
+        this(DocumentComplexity.CLEAN);
     }
 
+    /**
+     * Creates a generator configured for the given documentation complexity.
+     *
+     * @param documentationComplexity complexity profile applied to generated docs
+     */
+    public BenchmarkCaseGenerator(DocumentComplexity documentationComplexity) {
+        this.random = new Random();
+        this.toolSpecGenerator = new ToolSpecGenerator();
+        this.documentationGenerator = new DocumentationGenerator();
+        this.queryGenerator = new UserQueryGenerator();
+        this.documentationComplexity = documentationComplexity == null ? DocumentComplexity.CLEAN : documentationComplexity;
+    }
+
+    /**
+     * Generates a batch of benchmark cases.
+     *
+     * @param count number of cases to create
+     * @param distractorCount number of distractor tools per case
+     * @param specificDomain optional fixed domain; {@code null} samples all domains
+     * @return generated benchmark cases
+     */
     public List<BenchmarkCase> generateCases(int count, int distractorCount, Domain specificDomain) {
         List<BenchmarkCase> cases = new ArrayList<>();
         List<Domain> domains = (specificDomain != null) ? List.of(specificDomain) : Arrays.asList(Domain.values());
@@ -30,53 +56,48 @@ public class BenchmarkCaseGenerator {
         for (int i = 0; i < count; i++) {
             Domain domain = domains.get(random.nextInt(domains.size()));
 
-            // Generate Target Tool
-            ToolSpec targetTool = toolSpecGenerator.generateTool(domain);
+            ToolObject targetTool = toolSpecGenerator.generateTool(domain);
 
-            //  Pick a Random Command from the selected target tool
-            List<CommandSpec> eligibleTargetCommands = targetTool.commands().stream()
-                    .filter(cmd -> !cmd.commandName().equalsIgnoreCase(ToolSpecGenerator.PREP_COMMAND_NAME))
+            List<CommandObject> eligibleTargetCommands = targetTool.commands().stream()
+                    .filter(cmd -> !cmd.name().equalsIgnoreCase(ToolSpecGenerator.PREP_COMMAND_NAME))
                     .toList();
 
-            List<CommandSpec> commandPool = eligibleTargetCommands.isEmpty()
+            List<CommandObject> commandPool = eligibleTargetCommands.isEmpty()
                     ? targetTool.commands()
                     : eligibleTargetCommands;
-            CommandSpec targetCommand = commandPool.get(random.nextInt(commandPool.size()));
+            CommandObject targetCommand = commandPool.get(random.nextInt(commandPool.size()));
 
-
-
-
-            // 1. Pick Random Target Options (Ground Truth)
-    
-            String targetOptionName = "" ;
-            if (targetCommand.commandOptions() != null && !(targetCommand.commandOptions().isEmpty())){
+            String targetOptionName = "";
+            if (targetCommand.commandOptions() != null && !targetCommand.commandOptions().isEmpty()) {
                 int randomIndex = random.nextInt(targetCommand.commandOptions().size());
-                OptionSpec selectedOption = targetCommand.commandOptions().get(randomIndex);
+                OptionEntity selectedOption = targetCommand.commandOptions().get(randomIndex);
                 targetOptionName = selectedOption.optionName();
             }
 
-            // CALCULATE GROUND TRUTH (Expected State)
-            // Expected state delta: only keys touched by effects
             Map<String, String> expectedState = new HashMap<>();
             String optionForExpected = targetOptionName == null ? "" : targetOptionName;
-            CommandEffectApplier.applyEffectsToMap(targetCommand.commandEffects(), optionForExpected, expectedState);
+            CommandEffectApplier.applyEffectsToMap(targetCommand.commandEffectObjects(), optionForExpected, expectedState);
 
-            // 4. Distractors
-            List<ToolSpec> distractors = new ArrayList<>();
+            List<ToolObject> distractors = new ArrayList<>();
             for (int d = 0; d < distractorCount; d++) {
                 distractors.add(toolSpecGenerator.generateTool(domains.get(random.nextInt(domains.size()))));
             }
 
-            // 5. Combined Docs
-            StringBuilder combinedDoc = new StringBuilder(documentationGenerator.generateDocumentation(targetTool, DocumentComplexity.CLEAN));
-            for (ToolSpec dist : distractors) {
-                combinedDoc.append("\n").append(documentationGenerator.generateDocumentation(dist, DocumentComplexity.CLEAN));
+            Map<String, String> docsByToolName = new LinkedHashMap<>();
+            docsByToolName.put(targetTool.name(), documentationGenerator.generateDocumentation(targetTool, documentationComplexity));
+
+            StringBuilder combinedDoc = new StringBuilder(docsByToolName.get(targetTool.name()));
+            for (ToolObject dist : distractors) {
+                String doc = documentationGenerator.generateDocumentation(dist, documentationComplexity);
+                docsByToolName.put(dist.name(), doc);
+                combinedDoc.append("\n").append(doc);
             }
 
             cases.add(new BenchmarkCase(
                     targetTool,
                     targetCommand,
                     combinedDoc.toString(),
+                    docsByToolName,
                     targetOptionName,
                     expectedState,
                     distractors,
@@ -87,48 +108,103 @@ public class BenchmarkCaseGenerator {
         return cases;
     }
 
-
+    /**
+     * Immutable benchmark-case representation consumed by the runner and MCP server.
+     *
+     * @param targetToolObject tool that should satisfy the user request
+     * @param targetCommand target command to execute
+     * @param combinedToolDesc concatenated documentation across target and distractors
+     * @param docsByToolName per-tool documentation lookup map
+     * @param targetOptionName expected option for the target command
+     * @param expectedState expected state delta after successful execution
+     * @param distractors distractor tools included in the case
+     * @param queryGenerator helper used to convert command metadata into user requests
+     */
     public record BenchmarkCase(
-            ToolSpec targetToolObject,
-            CommandSpec targetCommand,
+            ToolObject targetToolObject,
+            CommandObject targetCommand,
             String combinedToolDesc,
+            Map<String, String> docsByToolName,
             String targetOptionName,
             Map<String, String> expectedState,
-            List<ToolSpec> distractors,
+            List<ToolObject> distractors,
             UserQueryGenerator queryGenerator
     ) {
-        public String generateUserQuery(ToolSpec targetTool) {
-
-            // Splits the target command and assigns it as action and target, 
-            // Example - Run the tool , action = run & target = tool
-
-            String rawCmdName = targetCommand.commandName();
+        /**
+         * Generates the user-facing request corresponding to this benchmark case.
+         *
+         * @param targetTool target tool used for fallback phrasing
+         * @return synthetic natural-language user request
+         */
+        public String generateUserQuery(ToolObject targetTool) {
+            String rawCmdName = targetCommand.name();
             String[] parts = rawCmdName.split("_");
 
             String action = parts.length > 0 ? capitalize(parts[0]) : "Execute";
             String target = parts.length > 1 ? capitalize(parts[1]) : targetTool.name();
 
-            // Connects the targetOptionName -> real OptionSpec -> Natural Language Hint
             String optionHint = null;
             if (targetOptionName != null && !targetOptionName.isEmpty() && targetCommand.commandOptions() != null) {
                 optionHint = targetCommand.commandOptions().stream()
                         .filter(opt -> opt.optionName().equals(targetOptionName))
                         .findFirst()
-                        .map(CommandDict::hintFromOptionSpec) // Uses the utility in Command Dictionary
+                        .map(CommandDict::hintFromOptionSpec)
                         .orElse(null);
             }
 
-            // Generate natural language query with the hint
             return queryGenerator.generate(action, target, optionHint);
         }
 
+        /**
+         * Returns the target tool followed by all distractor tools.
+         *
+         * @return ordered list of all tools visible in this case
+         */
+        public List<ToolObject> allTools() {
+            List<ToolObject> tools = new ArrayList<>();
+            tools.add(targetToolObject);
+            tools.addAll(distractors);
+            return tools;
+        }
 
+        /**
+         * Finds a tool in this case by case-insensitive name.
+         *
+         * @param toolName tool name to search for
+         * @return matching tool or {@code null}
+         */
+        public ToolObject findTool(String toolName) {
+            if (toolName == null || toolName.isBlank()) {
+                return null;
+            }
+            return allTools().stream()
+                    .filter(tool -> tool.name().equalsIgnoreCase(toolName))
+                    .findFirst()
+                    .orElse(null);
+        }
 
-        // helper to capitalize
+        /**
+         * Returns documentation for a tool in this case by case-insensitive name.
+         *
+         * @param toolName tool name to search for
+         * @return matching documentation text or {@code null}
+         */
+        public String documentationForTool(String toolName) {
+            if (toolName == null || toolName.isBlank()) {
+                return null;
+            }
+            return docsByToolName.entrySet().stream()
+                    .filter(entry -> entry.getKey().equalsIgnoreCase(toolName))
+                    .map(Map.Entry::getValue)
+                    .findFirst()
+                    .orElse(null);
+        }
+
         private String capitalize(String word) {
-        if (word == null || word.isEmpty()) return word;
-        return word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase();
+            if (word == null || word.isEmpty()) {
+                return word;
+            }
+            return word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase();
+        }
     }
-
-}
 }

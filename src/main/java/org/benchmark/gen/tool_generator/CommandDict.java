@@ -1,7 +1,7 @@
-package org.benchmark.gen;
+package org.benchmark.gen.tool_generator;
 
 import org.benchmark.model.enums.Domain;
-import org.benchmark.model.spec.OptionSpec;
+import org.benchmark.model.objects.OptionEntity;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -11,14 +11,19 @@ import java.util.List;
 
 
 /**
- * A dictionary of commands terms for the industrial domains (to be re-checked)
+ * Domain vocabulary source for synthetic tool and command generation.
+ *
+ * <p>This dictionary provides verbs, nouns, state variable names, and common options
+ * used by generators to create realistic but synthetic CLI specifications.</p>
  */
-
-
-
 public class CommandDict {
     private final Random random;
 
+    /**
+     * Creates a dictionary wrapper that samples terms using the provided random source.
+     *
+     * @param random random source used for value selection
+     */
     public CommandDict(Random random){
         this.random = random;
     }
@@ -99,6 +104,12 @@ public class CommandDict {
 
 
 
+    /**
+     * Generates a tool name in the format {@code XXX-NOUN-123}.
+     *
+     * @param domain domain to sample noun from
+     * @return generated tool name
+     */
     public String generateToolName(Domain domain) {
         return domain.name().substring(0, 3).toUpperCase() + "-" +
                 getRandomNoun(domain).toUpperCase() + "-" +
@@ -106,8 +117,12 @@ public class CommandDict {
     }
 
 
-     //Returns a random verb  for the given domain.
-
+    /**
+     * Returns a random command verb for the given domain.
+     *
+     * @param domain source domain
+     * @return random verb
+     */
     public String getRandomVerb(Domain domain) {
         return switch (domain) {
             case MANUFACTURING -> pickOne(VERBS_MAN);
@@ -118,7 +133,10 @@ public class CommandDict {
 
 
     /**
-     * Returns a random noun for a domain
+     * Returns a random command noun for the given domain.
+     *
+     * @param domain source domain
+     * @return random noun
      */
     public String getRandomNoun(Domain domain) {
         switch (domain) {
@@ -135,16 +153,23 @@ public class CommandDict {
 // --------------------------------------------------------------------------------------
 // OPTIONS
 
-    // OptionSpec (name + description) for docs + NL hints
-    public OptionSpec getRandomCommonOptionSpec() {
-        String optionNameFromDict = pickOne(COMMON_OPTS);
-        return new OptionSpec("--" + optionNameFromDict, getCommonFlagDescription(optionNameFromDict));
-    }
     /**
-     * Converts an option name like \`--simulate\` into a NL hint
-     * using the same mapping as docs.
+     * Returns a random common option specification.
+     *
+     * @return random option spec
      */
-    public static String hintFromOptionSpec(OptionSpec optionSpec) {
+    public OptionEntity getRandomCommonOptionSpec() {
+        String optionNameFromDict = pickOne(COMMON_OPTS);
+        return new OptionEntity("--" + optionNameFromDict, getCommonFlagDescription(optionNameFromDict));
+    }
+
+    /**
+     * Converts an option specification into a natural-language hint.
+     *
+     * @param optionSpec option to describe
+     * @return hint text, or {@code null} when option is missing/empty
+     */
+    public static String hintFromOptionSpec(OptionEntity optionSpec) {
         if (optionSpec == null || optionSpec.description() ==null)return null;
 
 
@@ -175,6 +200,12 @@ public class CommandDict {
 // --------------------------------------------------------------------------------------
 // STATE
 
+    /**
+     * Returns a random state variable name for the given domain.
+     *
+     * @param domain source domain
+     * @return state variable name
+     */
     public String getRandomStateVariable(Domain domain) {
         switch (domain) {
             case MANUFACTURING:

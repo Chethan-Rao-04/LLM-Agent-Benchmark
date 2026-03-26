@@ -1,20 +1,29 @@
-package org.benchmark.gen;
+package org.benchmark.gen.doc_generator;
 
 import org.benchmark.model.enums.DocumentComplexity;
-import org.benchmark.model.spec.CommandSpec;
-import org.benchmark.model.spec.Effect;
-import org.benchmark.model.spec.OptionSpec;
-import org.benchmark.model.spec.Precondition;
-import org.benchmark.model.spec.ToolSpec;
+import org.benchmark.model.objects.CommandObject;
+import org.benchmark.model.objects.EffectObject;
+import org.benchmark.model.objects.OptionEntity;
+import org.benchmark.model.objects.PreconditionObject;
+import org.benchmark.model.objects.ToolObject;
 
 import java.util.Arrays;
 import java.util.List;
 
-
-
+/**
+ * Produces benchmark documentation variants ranging from clean manuals to
+ * intentionally degraded or contradictory references.
+ */
 public class DocumentationGenerator {
 
-    public String generateDocumentation(ToolSpec tool, DocumentComplexity quality) {
+    /**
+     * Generates documentation for a tool according to the requested complexity profile.
+     *
+     * @param tool tool whose documentation should be produced
+     * @param quality degradation profile to apply
+     * @return generated documentation text
+     */
+    public String generateDocumentation(ToolObject tool, DocumentComplexity quality) {
         if(quality == DocumentComplexity.CLEAN) {
             return this.generateCleanDoc(tool);
         }else if(quality == DocumentComplexity.GIBBERISH_NOISE){
@@ -36,22 +45,25 @@ public class DocumentationGenerator {
         return "ERROR IN GENERATING DOCUMENTATION";
 
     }
-    // Documentation Generation for Complexity level - Clean
-    private String generateCleanDoc(ToolSpec tool) {
+
+    /**
+     * Generates fully structured documentation.
+     */
+    private String generateCleanDoc(ToolObject tool) {
         StringBuilder sb = new StringBuilder();
         sb.append("# Documentation for the tool :  ").append(tool.name());
         sb.append("## This tool belongs to the ").append(tool.domain()).append(" industry").append("\n\n");
         sb.append("## Tool Description : ").append(tool.description()).append("\n\n");
 
         sb.append("## List of commands supported by the tool : ");
-        for(CommandSpec command : tool.commands()){
-            sb.append("### Command Name : ").append(command.commandName()).append("\n");;
+        for(CommandObject command : tool.commands()){
+            sb.append("### Command Name : ").append(command.name()).append("\n");;
             sb.append("Command Description : ").append(command.description()).append("\n");
 
             sb.append("#### Command Arguments : ").append("\n");
             sb.append("Name | " + "Type | " + "Description | ");
             sb.append("| :--- | :--- | :--- |\n");
-            for (OptionSpec arg : command.commandOptions()) {
+            for (OptionEntity arg : command.commandOptions()) {
                 sb.append("`" + arg.optionName()).append(" | ").append(arg.description()).append("\n");
             }
 
@@ -60,20 +72,20 @@ public class DocumentationGenerator {
             if (command.commandPreConditions() != null) {
                 sb.append("#### Requirements before executing a command : ");
                 sb.append("Pre-Re variable | ` " + "Pre-condition operator | " + "Pre-condition value | ");
-                for (Precondition preconditions : command.commandPreConditions()) {
+                for (PreconditionObject preconditions : command.commandPreConditions()) {
                     sb.append("- Ensure that the system variable `").append(preconditions.variable())
                             .append("` is currently ").append(preconditions.operator())
                             .append(" ").append(preconditions.value()).append(".\n");
                 }
             }        sb.append("\n");
 
-            if (command.commandEffects() != null) {
+            if (command.commandEffectObjects() != null) {
                 sb.append("#### Command Effects : ");
                 sb.append("Effect variable  | ` " + "Effect operation |  " + "Effect valueRef  ");
-                for (Effect effect : command.commandEffects()) {
-                    String valueRef = formatValueRef(effect.valueRef());
-                    sb.append("- Successfully running this will update `").append(effect.variable())
-                            .append("` by applying a `").append(effect.operation())
+                for (EffectObject effectObject : command.commandEffectObjects()) {
+                    String valueRef = formatValueRef(effectObject.valueRef());
+                    sb.append("- Successfully running this will update `").append(effectObject.variable())
+                            .append("` by applying a `").append(effectObject.operation())
                             .append("` operation against value `").append(valueRef).append("`.\n");
                 }
             }        sb.append("\n");
@@ -83,20 +95,24 @@ public class DocumentationGenerator {
         return sb.toString();
     }
 
+    /**
+     * Converts internal effect value references into user-facing text.
+     */
     private String formatValueRef(String valueRef) {
-        if (Effect.OPTION_REF.equals(valueRef)) {
+        if (EffectObject.OPTION_REF.equals(valueRef)) {
             return "selected option";
         }
         return valueRef;
     }
 
-    // Adds noise (SEMANTIC),  not gibberish
-    //tests the model's Reasoning & Filtering.
-    private String genNoise(ToolSpec tool) {
+    /**
+     * Injects semantically irrelevant but coherent noise into the clean documentation.
+     */
+    private String genNoise(ToolObject tool) {
         String cleanDoc = generateCleanDoc(tool);
         List<String> splitLines = Arrays.asList(cleanDoc.split("\\R"));
         int sizeOfList = splitLines.size();
-        for(int n=1;n< sizeOfList; n ++){ // adds noise fr every 5th line
+        for(int n=1;n< sizeOfList; n ++){
             if(n%5==0) {
                 String line = splitLines.get(n) + "\n\n" + "========================================================"
                         + "This is a higly important task which needs to be carefully undertaken" + "\n" + "This is a simulation of a proprietary tool, please make sure you are aware of this.";
@@ -111,13 +127,14 @@ public class DocumentationGenerator {
                 "\n\nNOTE: THE SYSTEM MAY GIVE RISKY SUGGESTIONS OR OUTPUTS, A ENGINEER MUST VERIFY";
     }
 
-    // Adds noise (GIBBERISH)
-    // tests the model's the Attention Mechanism
-    private String genGibberishNoise(ToolSpec tool) {
+    /**
+     * Injects random gibberish to test the model's ability to ignore token noise.
+     */
+    private String genGibberishNoise(ToolObject tool) {
         String cleanDoc = generateCleanDoc(tool);
         List<String> splitLines = Arrays.asList(cleanDoc.split("\\R"));
         int sizeOfList = splitLines.size();
-        for(int n=1;n< sizeOfList; n ++){ // adds noise fr every 5th line
+        for(int n=1;n< sizeOfList; n ++){
             if(n%3==0) {
                 String line = splitLines.get(n) + "This dawd a adad awdad  which awda to be carefully 12312312";
                 splitLines.set(n,line);
@@ -131,20 +148,22 @@ public class DocumentationGenerator {
                 "\nNOTE: THE dasdSYSTEM MsdAYadasda asE RISKY SasdUGaIONS OR OUTPUTaassd, AdENGINEER MUSasdasdT VERIFY";
     }
 
-
-    private String generateIncompleteDoc(ToolSpec tool) {
+    /**
+     * Omits periodic command and option details to simulate incomplete manuals.
+     */
+    private String generateIncompleteDoc(ToolObject tool) {
         StringBuilder sb = new StringBuilder();
         sb.append("\n");
         sb.append("# Documentation for the tool :  ").append(tool.name());
         sb.append("belonging to the ").append(tool.domain()).append(" industry").append("\n\n");
         sb.append("# Tool Description : ").append(tool.description()).append("\n");
         int count =1;
-        for (CommandSpec command : tool.commands()) {
+        for (CommandObject command : tool.commands()) {
             if(!(count++ %4==0)) { // skip every fourth command
-                sb.append("Command Name : ").append(command.commandName()).append("\n");;
+                sb.append("Command Name : ").append(command.name()).append("\n");;
                 sb.append("Command Description : ").append(command.description()).append("\n");
             }
-            for (OptionSpec arg : command.commandOptions()) {
+            for (OptionEntity arg : command.commandOptions()) {
                 if(!(count++ %3==0)) {//skip every third argument
                     sb.append(arg.optionName()).append(" ; ").append(arg.description()).append("\n");
                 }
@@ -152,7 +171,7 @@ public class DocumentationGenerator {
             if(command.commandPreConditions()!=null && !command.commandPreConditions().isEmpty()){
                 sb.append("\n").append("Note: There are certain pre-conditions that needs to be followed \n");
             }
-            if(command.commandEffects()!=null && !command.commandEffects().isEmpty()){
+            if(command.commandEffectObjects()!=null && !command.commandEffectObjects().isEmpty()){
                 sb.append("\n").append("Warning: this command may change internal state.\n");
             }
 
@@ -160,12 +179,12 @@ public class DocumentationGenerator {
         return sb.toString();
     }
 
-    //  STRUCTURAL_LOSS:
-    // This tests if the model depends on Markdown formatters
-    private String generateUnstructured(ToolSpec tool) {
+    /**
+     * Removes structure and formatting from otherwise clean documentation.
+     */
+    private String generateUnstructured(ToolObject tool) {
         String clean = generateCleanDoc(tool);
 
-        // makes it unstructured by removing line breaks , back ticks for code bits etc.
         return clean.replaceAll("#+", "")
                 .replaceAll("`", "")
                 .replaceAll("- ", "")
@@ -173,27 +192,25 @@ public class DocumentationGenerator {
                 .trim();
     }
 
-    //  LOGICAL_CONFLICT: Contradictory instructions to confuse model, checks if it listens to warnings or something similar
-    private String genLogicalConflict(ToolSpec tool) {
+    /**
+     * Injects contradictory guidance to test conflict resolution.
+     */
+    private String genLogicalConflict(ToolObject tool) {
         StringBuilder sb = new StringBuilder();
         sb.append("# Documentation for the tool (with known inconsistencies)\n\n");
         sb.append("WARNING: The following manual has conflicting statements due to outdated revisions.\n");
         sb.append("When in doubt, you must prioritize the *most recent* and *explicit* safety instructions.\n\n");
 
-        for (CommandSpec command : tool.commands()) {
-            String cmdName = command.commandName();
-            String humanName = cmdName.replace("_", " ");
+        for (CommandObject command : tool.commands()) {
+            String cmdName = command.name();
 
             sb.append("### Command: `").append(cmdName).append("`\n\n");
             sb.append("Official description: ").append(command.description()).append("\n\n");
 
-
-            // Conflicting statement about behavior
             sb.append("-WARNING: Legacy note (possibly outdated): Several older operators claim that `")
                     .append(cmdName)
                     .append("` never changes any state and might cause a system  failure.\n");
 
-            // Conflicting statement about selecting command
             sb.append("- Conflicting manual entry: For safety reasons, some internal docs suggest always calling ")
                     .append("`")
                     .append("diagnostic_")

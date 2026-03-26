@@ -1,8 +1,8 @@
-package org.benchmark.gen;
+package org.benchmark.gen.tool_generator;
 import java.util.Random;
 
 /**
- * Creates natural language descriptions(diff complexities) for tools
+ * Generates brief natural-language descriptions for tools.
  */
 public class ToolDescriptionGenerator {
 
@@ -15,6 +15,13 @@ public class ToolDescriptionGenerator {
         this.random = new Random(); // can add seed for reproducibility
     }
 
+    /**
+     * Generates a tool description sentence.
+     *
+     * @param action primary action verb
+     * @param target primary noun target
+     * @return generated description text
+     */
     public String generate(String action, String target) {
         return generateMedium(action, target);
     }

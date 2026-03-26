@@ -1,9 +1,9 @@
-package org.benchmark.gen;
+package org.benchmark.gen.query_generator;
 
 import java.util.Random;
 
 /**
- * QUERY GENERATOR: Creates natural language inputs
+ * Generates synthetic natural-language user requests.
  */
 public class UserQueryGenerator {
 
@@ -18,6 +18,14 @@ public class UserQueryGenerator {
         this.random = new Random(); // can pass seed as
     }
 
+    /**
+     * Generates one user query from action/target tokens and optional option hint.
+     *
+     * @param action command action token (for example "Start")
+     * @param target command target token (for example "Router")
+     * @param optionHint optional hint derived from the expected option
+     * @return user-facing query sentence
+     */
     public String generate(String action, String target, String optionHint) {
         String baseQuery = generateMedium(action, target);
         if (optionHint != null && !optionHint.isEmpty()) {
