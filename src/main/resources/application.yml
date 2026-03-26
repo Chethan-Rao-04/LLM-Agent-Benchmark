@@ -1,0 +1,24 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: benchmark-llm-agent
+  http:
+    client:
+      factory: jdk
+  ai:
+    mcp:
+      server:
+        enabled: true
+        name: benchmark-loopback-server
+        version: 1.0.0
+        type: SYNC
+        protocol: STREAMABLE
+        mcp-endpoint: /mcp
+      client:
+        enabled: false
+        initialized: false
+        type: SYNC
+        toolcallback:
+          enabled: true

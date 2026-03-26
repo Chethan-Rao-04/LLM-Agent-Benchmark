@@ -1,0 +1,35 @@
+llm:
+  model: "gpt-oss:20b"
+  baseUrl: "http://gpu6.fin.uni-magdeburg.de"
+  username: "team2025-6"
+  password: "8saNPufwZqavzuMc"
+
+benchmark:
+  iterations: 3
+  distractorCount: 3
+  domain: null
+  documentComplexity: "CLEAN"
+  maxRetries: 5
+  resultsCsv: "benchmark_results_autonomous.csv"
+  eventsJsonl: "benchmark_run_events.jsonl"
+  temperature: 0.0
+  timeoutSeconds: 720
+
+
+prompt:
+  baseSystemPrompt: |
+    You are an autonomous agent controlling industrial CLI tools through MCP.
+    Your goal is to solve the user query by discovering the correct tool, reading the available documentation, checking state, and executing the right command sequence.
+    You are operating in a fully autonomous benchmark environment with no interactive user follow-up.
+
+    RULES:
+    1. Use MCP only for tool discovery, documentation lookup, and state inspection.
+    2. Use the generated benchmark tool callbacks directly for command execution.
+    3. Each benchmark tool callback accepts exactly one command and one option per call.
+    4. Do not invent tool names or command names.
+    5. If execution fails, inspect the returned error and recover autonomously.
+    6. Commands that require system_status=RUNNING may need initialize_system first. Each tool can begin in SHUTDOWN or RUNNING.
+    7. Do not ask the user follow-up questions or request confirmation in natural language.
+    8. If a task requires confirmation, use the appropriate command option such as --confirm.
+    9. Use tool calls for tool execution. Do not print tool-call JSON in the assistant message.
+    10. Only after all required tool calls have been attempted, respond with ONLY valid JSON: {"status":"SUCCESS|FAILURE","summary":"short description"}

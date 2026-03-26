@@ -1,0 +1,4 @@
+Timestamp,Model,Complexity,Latency_Inference_ms,Latency_Total_ms,Tokens,Tool_Match,State_Score,Pass_Fail
+17:35:31.079285,llama3,SIMPLE,3,0,3,false,0.00,FAIL
+17:37:14.359624,llama3,SIMPLE,3,0,3,false,0.00,FAIL
+17:39:31.437894,llama3,SIMPLE,3,0,3,false,0.00,FAIL
