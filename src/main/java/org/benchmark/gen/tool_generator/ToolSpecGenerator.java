@@ -149,6 +149,24 @@ public class ToolSpecGenerator {
             commands.add(new CommandObject(cmdName, args, desc, preconditionObjects, commandEffectObjects));
         }
 
+        // Guarantee at least one command has a domain precondition (for multi-step viability)
+        boolean hasDomainPrecond = commands.stream().anyMatch(cmd ->
+            cmd.commandPreConditions() != null && cmd.commandPreConditions().stream()
+                .anyMatch(p -> !p.variable().equals(ToolEnvironment.SYSTEM_STATUS_KEY)));
+
+        if (!hasDomainPrecond && !capabilityVars.isEmpty() && !commands.isEmpty()) {
+            // Pick a random command and rebuild it with an added capability precondition
+            int idx = random.nextInt(commands.size());
+            CommandObject original = commands.get(idx);
+            List<PreconditionObject> newPreconds = new ArrayList<>(original.commandPreConditions());
+            newPreconds.add(new PreconditionObject(
+                capabilityVars.get(random.nextInt(capabilityVars.size())),
+                ConditionOp.EQ, "enabled"));
+            commands.set(idx, new CommandObject(
+                original.name(), original.commandOptions(), original.description(),
+                newPreconds, original.commandEffectObjects()));
+        }
+
         // Generate configure_* commands for each capability var used as a precondition
         Set<String> domainPrecondVars = new HashSet<>();
         for (CommandObject cmd : commands) {

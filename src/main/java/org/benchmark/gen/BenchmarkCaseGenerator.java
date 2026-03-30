@@ -86,9 +86,22 @@ public class BenchmarkCaseGenerator {
                     .filter(cmd -> !cmd.name().startsWith("configure_"))
                     .toList();
 
-            List<CommandObject> commandPool = eligibleTargetCommands.isEmpty()
-                    ? targetTool.commands()
-                    : eligibleTargetCommands;
+            // For multi-step: prefer commands that have domain preconditions (real chain)
+            List<CommandObject> commandPool;
+            if (multiStep) {
+                List<CommandObject> withDomainPrecond = eligibleTargetCommands.stream()
+                    .filter(cmd -> cmd.commandPreConditions() != null
+                        && cmd.commandPreConditions().stream()
+                            .anyMatch(p -> !p.variable().equals(ToolEnvironment.SYSTEM_STATUS_KEY)))
+                    .toList();
+                commandPool = withDomainPrecond.isEmpty() ? eligibleTargetCommands : withDomainPrecond;
+            } else {
+                commandPool = eligibleTargetCommands;
+            }
+
+            if (commandPool.isEmpty()) {
+                commandPool = targetTool.commands();
+            }
             CommandObject targetCommand = commandPool.get(random.nextInt(commandPool.size()));
 
             String targetOptionName = "";
