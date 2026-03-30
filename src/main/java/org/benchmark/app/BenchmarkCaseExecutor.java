@@ -37,14 +37,12 @@ public class BenchmarkCaseExecutor {
             double optionSelection,
             double stateAccuracy,
             double efficiency,
-            double discoveryUsage,
-            double prerequisiteHandling,
             double planningAccuracy,
             boolean recovery,
             boolean passed
     ) {
         public double composite() {
-            return (toolSelection + commandSelection + optionSelection + stateAccuracy + efficiency + prerequisiteHandling + planningAccuracy) / 7.0;
+            return (toolSelection + commandSelection + optionSelection + stateAccuracy + efficiency + planningAccuracy) / 6.0;
         }
     }
 
@@ -125,23 +123,11 @@ public class BenchmarkCaseExecutor {
         double optSel = logs.stream().anyMatch(e -> e.toolName().equalsIgnoreCase(tTool) && e.commandName().equalsIgnoreCase(tCmd) && normalize(e.option()).equalsIgnoreCase(tOpt)) ? 1.0 : 0.0;
         double stateAcc = scoreExpectedState(benchmarkCase.expectedState(), targetToolState(sessionId, benchmarkCase));
         double efficiency = 1.0 / attempts;
-        double discUsage = stateManager.discoveryUsed(sessionId) ? 1.0 : 0.0;
         boolean recovery = failedFirstAttempt && goalAchieved;
-
-        boolean initRequired = wasInitRequired(sessionId, benchmarkCase);
-        double prereqScore;
-        if (!initRequired) {
-            prereqScore = 1.0;
-        } else {
-            prereqScore = logs.stream().anyMatch(e ->
-                    e.toolName().equalsIgnoreCase(tTool)
-                    && e.commandName().equalsIgnoreCase("initialize_system")
-                    && e.success()) ? 1.0 : 0.0;
-        }
 
         double planningAcc = scorePlanningAccuracy(logs, benchmarkCase);
 
-        return new BenchmarkScore(toolSel, cmdSel, optSel, stateAcc, efficiency, discUsage, prereqScore, planningAcc, recovery, goalAchieved);
+        return new BenchmarkScore(toolSel, cmdSel, optSel, stateAcc, efficiency, planningAcc, recovery, goalAchieved);
     }
 
     private double scorePlanningAccuracy(List<ExecutionRecord> logs, BenchmarkCaseGenerator.BenchmarkCase benchmarkCase) {
@@ -163,12 +149,6 @@ public class BenchmarkCaseExecutor {
             }
         }
         return (double) stepIndex / steps.size();
-    }
-
-    private boolean wasInitRequired(String sessionId, BenchmarkCaseGenerator.BenchmarkCase benchmarkCase) {
-        String initialStatus = stateManager.getInitialSystemStatus(sessionId, benchmarkCase.targetToolObject().name());
-        if (initialStatus == null) return false;
-        return initialStatus.equals("SHUTDOWN");
     }
 
     // ---- Prompt Building ----
