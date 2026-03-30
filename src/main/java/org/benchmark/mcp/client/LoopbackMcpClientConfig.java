@@ -26,7 +26,7 @@ public class LoopbackMcpClientConfig {
      */
     @Bean
     public McpSyncClient loopbackMcpSyncClient(Config config) {
-        HttpClientStreamableHttpTransport transport = HttpClientStreamableHttpTransport.builder("http://localhost:8080/mcp")
+        HttpClientStreamableHttpTransport transport = HttpClientStreamableHttpTransport.builder("http://127.0.0.1:8080/mcp")
                 .openConnectionOnStartup(false)
                 .build();
 

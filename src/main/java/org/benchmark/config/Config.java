@@ -6,19 +6,15 @@ import org.benchmark.model.enums.Domain;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.Files;
 
 /**
- * Root configuration model loaded from {@code config.yaml}.
+ * Root configuration model loaded from {@code config.yaml} on the classpath.
  *
  * <p>This class intentionally mirrors the YAML structure so the benchmark can
  * be configured without relying on Spring's property binding.</p>
  */
 @Data
 public class Config {
-    private static final Path CONFIG_PATH = Paths.get("src/main/java/org/benchmark/config.yaml");
 
     private LlmConfig llm;
     private BenchmarkConfig benchmark;
@@ -29,6 +25,8 @@ public class Config {
      */
     @Data
     public static class LlmConfig {
+        /** Connection type, for example {@code local} or {@code remote}. */
+        private String type;
         /** Model identifier exposed by the remote LLM server. */
         private String model;
         /** Base URL of the OpenAI-compatible LLM server. */
@@ -59,11 +57,16 @@ public class Config {
         private int iterations;
         /** Maximum retries allowed per case. */
         private int maxRetries;
+        /** Flag to generate multi-step command sequences instead of single commands. */
+        private boolean multiStep;
 
         /** CSV output path for aggregate benchmark results. */
         private String resultsCsv;
         /** JSONL output path for detailed benchmark event traces. */
         private String eventsJsonl;
+
+        /** Seed for reproducible random generation; {@code null} for unseeded. */
+        private Long randomSeed;
     }
 
     /**
@@ -76,20 +79,22 @@ public class Config {
     }
 
     /**
-     * Loads benchmark configuration from the repository-local YAML file.
+     * Loads benchmark configuration from {@code config.yaml} on the classpath.
      *
      * @return parsed configuration object
      */
     public static Config load() {
-        try (InputStream in = Files.newInputStream(CONFIG_PATH)) {
+        try (InputStream in = Config.class.getResourceAsStream("/config.yaml")) {
             if (in == null) {
-                throw new RuntimeException("config.yaml not found at " + CONFIG_PATH);
+                throw new RuntimeException("config.yaml not found on classpath");
             }
             Config config = new Yaml().loadAs(in, Config.class);
             if (config == null) {
                 throw new RuntimeException("config.yaml is empty.");
             }
             return config;
+        } catch (RuntimeException e) {
+            throw e;
         } catch (Exception e) {
             throw new RuntimeException("Failed to load config.yaml", e);
         }

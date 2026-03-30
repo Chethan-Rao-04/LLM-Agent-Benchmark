@@ -5,8 +5,6 @@ import org.benchmark.model.objects.OptionEntity;
 
 import java.util.Arrays;
 import java.util.Random;
-
-
 import java.util.List;
 
 
@@ -24,13 +22,15 @@ public class CommandDict {
      *
      * @param random random source used for value selection
      */
-    public CommandDict(Random random){
+    public CommandDict(Random random) {
         this.random = random;
     }
+
     public static final List<Domain> DOMAINS = List.of(
-           Domain.MANUFACTURING,  Domain.NETWORK_INFRA,  Domain.HEALTHCARE
+            Domain.MANUFACTURING, Domain.NETWORK_INFRA
     );
 
+    // --------------------------------------------------------------------------------------
     // Manufacturing
 
     public static final List<String> VERBS_MAN = Arrays.asList(
@@ -61,6 +61,7 @@ public class CommandDict {
             "wear_level", "lubrication_index", "coolant_temp", "psi_reading"
     );
 
+    // --------------------------------------------------------------------------------------
     // Network Infra
 
     public static final List<String> VERBS_NET = Arrays.asList(
@@ -70,7 +71,7 @@ public class CommandDict {
             "configure", "encrypt", "decrypt", "filter", "forward", "handshake",
             "isolate", "lease", "map", "optimize", "propagate", "release",
             "synchronize", "tunnel", "whitelist", "blacklist", "throttle",
-            "advertise", "broadcast", "peer", "inspect"
+            "advertise", "peer", "inspect"
     );
 
     public static final List<String> NOUNS_NET = Arrays.asList(
@@ -92,16 +93,14 @@ public class CommandDict {
             "connection_count", "drop_rate", "latency_jitter", "power_level"
     );
 
-
+    // --------------------------------------------------------------------------------------
+    // Common Options
 
     public static final List<String> COMMON_OPTS = Arrays.asList(
             "help", "version", "verbose", "quiet",
-            "debug", "dry-run", "simulate", "output",
-            "input", "timeout", "retry", "interactive",
+            "debug", "dry-run", "simulate", "output", "timeout", "retry", "interactive",
             "confirm", "force"
     );
-
-
 
 
     /**
@@ -113,7 +112,7 @@ public class CommandDict {
     public String generateToolName(Domain domain) {
         return domain.name().substring(0, 3).toUpperCase() + "-" +
                 getRandomNoun(domain).toUpperCase() + "-" +
-                (100 + random.nextInt(900)); // 100 is used to get atleast a 3 dig number
+                (100 + random.nextInt(900));
     }
 
 
@@ -127,9 +126,8 @@ public class CommandDict {
         return switch (domain) {
             case MANUFACTURING -> pickOne(VERBS_MAN);
             case NETWORK_INFRA -> pickOne(VERBS_NET);
-            default -> pickOne(VERBS_MAN);
         };
-        }
+    }
 
 
     /**
@@ -139,19 +137,15 @@ public class CommandDict {
      * @return random noun
      */
     public String getRandomNoun(Domain domain) {
-        switch (domain) {
-            case MANUFACTURING:
-                return pickOne(NOUNS_MAN);
-            case NETWORK_INFRA:
-                return pickOne(NOUNS_NET);
-            default:
-                return pickOne(NOUNS_MAN);
-        }
+        return switch (domain) {
+            case MANUFACTURING -> pickOne(NOUNS_MAN);
+            case NETWORK_INFRA -> pickOne(NOUNS_NET);
+        };
     }
 
 
-// --------------------------------------------------------------------------------------
-// OPTIONS
+    // --------------------------------------------------------------------------------------
+    // OPTIONS
 
     /**
      * Returns a random common option specification.
@@ -170,11 +164,11 @@ public class CommandDict {
      * @return hint text, or {@code null} when option is missing/empty
      */
     public static String hintFromOptionSpec(OptionEntity optionSpec) {
-        if (optionSpec == null || optionSpec.description() ==null)return null;
-
-
+        if (optionSpec == null || optionSpec.description() == null) {
+            return null;
+        }
         String desc = optionSpec.description().trim();
-        return desc.isEmpty()?  null : desc;
+        return desc.isEmpty() ? null : desc;
     }
 
     private static String getCommonFlagDescription(String optionNameFromDict) {
@@ -187,7 +181,6 @@ public class CommandDict {
             case "dry-run" -> "Simulate execution without making changes.";
             case "simulate" -> "Run in simulation mode.";
             case "output" -> "Write output to a file.";
-            case "input" -> "Read input from a file.";
             case "timeout" -> "Set a timeout for the operation.";
             case "retry" -> "Retry the operation on failure.";
             case "interactive" -> "Prompt for confirmations interactively.";
@@ -197,8 +190,8 @@ public class CommandDict {
         };
     }
 
-// --------------------------------------------------------------------------------------
-// STATE
+    // --------------------------------------------------------------------------------------
+    // STATE
 
     /**
      * Returns a random state variable name for the given domain.
@@ -207,14 +200,10 @@ public class CommandDict {
      * @return state variable name
      */
     public String getRandomStateVariable(Domain domain) {
-        switch (domain) {
-            case MANUFACTURING:
-                return pickOne(STATE_VARS_MAN);
-            case NETWORK_INFRA:
-                return pickOne(STATE_VARS_NET);
-            default:
-                return pickOne(STATE_VARS_MAN);
-        }
+        return switch (domain) {
+            case MANUFACTURING -> pickOne(STATE_VARS_MAN);
+            case NETWORK_INFRA -> pickOne(STATE_VARS_NET);
+        };
     }
 
 

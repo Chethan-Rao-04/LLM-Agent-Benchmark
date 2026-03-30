@@ -5,10 +5,11 @@ import org.benchmark.exec.SessionStateManager;
 import org.benchmark.gen.BenchmarkCaseGenerator;
 import org.benchmark.llm.LlmClient;
 import org.benchmark.mcp.runtime.BenchmarkCaseToolCallbackFactory;
-import org.benchmark.mcp.runtime.BenchmarkExecutionRecord;
-import org.benchmark.mcp.runtime.BenchmarkSessionRegistry;
+import org.benchmark.app.BenchmarkCaseExecutor.BenchmarkScore;
 import org.benchmark.utils.RunEventLogger;
 import io.modelcontextprotocol.client.McpSyncClient;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.mcp.SyncMcpToolCallbackProvider;
 import org.springframework.ai.tool.StaticToolCallbackProvider;
 import org.springframework.ai.tool.ToolCallback;
@@ -19,14 +20,19 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 
 /**
- * Orchestrates end-to-end benchmark execution using Spring AI chat execution
- * with an MCP tool surface for documentation access and command execution.
+ * The primary entry point for the benchmark application. It coordinates the
+ * entire benchmark lifecycle: generating test cases, spinning up MCP servers,
+ * sending prompts to the LLM,
+ * managing session states, and collecting telemetry/scores across multiple
+ * iterations.
  */
+@Slf4j
+@RequiredArgsConstructor
 @Component
 public class BenchmarkRunner implements ApplicationRunner {
 
@@ -34,28 +40,9 @@ public class BenchmarkRunner implements ApplicationRunner {
     private final LlmClient client;
     private final List<McpSyncClient> mcpSyncClients;
     private final SessionStateManager stateManager;
-    private final BenchmarkSessionRegistry sessionRegistry;
     private final BenchmarkCaseToolCallbackFactory toolCallbackFactory;
     private final RunEventLogger eventLogger;
     private final ConfigurableApplicationContext applicationContext;
-
-    public BenchmarkRunner(Config config,
-                           LlmClient client,
-                           List<McpSyncClient> mcpSyncClients,
-                           SessionStateManager stateManager,
-                           BenchmarkSessionRegistry sessionRegistry,
-                           BenchmarkCaseToolCallbackFactory toolCallbackFactory,
-                           RunEventLogger eventLogger,
-                           ConfigurableApplicationContext applicationContext) {
-        this.config = config;
-        this.client = client;
-        this.mcpSyncClients = mcpSyncClients;
-        this.stateManager = stateManager;
-        this.sessionRegistry = sessionRegistry;
-        this.toolCallbackFactory = toolCallbackFactory;
-        this.eventLogger = eventLogger;
-        this.applicationContext = applicationContext;
-    }
 
     @Override
     public void run(ApplicationArguments args) {
@@ -68,113 +55,97 @@ public class BenchmarkRunner implements ApplicationRunner {
     }
 
     /**
-     * Runs the autonomous execution benchmark for the configured number of iterations.
+     * Runs the autonomous execution benchmark for the configured number of
+     * iterations.
      */
     public void runBenchmark() {
 
-        // Initialise MCP clients and expose their tools available in the MCP servers
+        // Boot up the internal MCP clients (used by the LLM to inspect tool schemas and
+        // documentation) and wrap them in a Spring AI callback provider so they can be
+        // sent to the LLM.
         ToolCallbackProvider mcpToolCallbacks = initializeLoopbackMcpClients();
 
-        BenchmarkCaseGenerator caseGenerator = new BenchmarkCaseGenerator(config.documentComplexity());
-        System.out.println("Generating Autonomous Execution Benchmark..");
+        // Configure the case generator. The 'documentComplexity' controls how
+        // convoluted the generated tool
+        // documentation will be, testing the LLM's reading comprehension.
+        Long seed = config.getBenchmark().getRandomSeed();
+        BenchmarkCaseGenerator caseGenerator = new BenchmarkCaseGenerator(
+                config.documentComplexity(), seed, config.getBenchmark().isMultiStep());
+        log.info("Generating Autonomous Execution Benchmark..");
         eventLogger.log("benchmark_run_started", Map.of(
                 "model", config.getLlm().getModel(),
                 "iterations", config.getBenchmark().getIterations(),
                 "documentComplexity", config.getBenchmark().getDocumentComplexity(),
                 "maxRetries", config.getBenchmark().getMaxRetries(),
-                "distractorCount", config.getBenchmark().getDistractorCount()
-        ));
+                "distractorCount", config.getBenchmark().getDistractorCount()));
 
+        // Generate the requested number of synthetic cases (sessions). Each case
+        // contains a specific goal and a mix of useful and distracting tools.
         var benchmarkCases = caseGenerator.generateCases(
                 config.getBenchmark().getIterations(),
                 config.getBenchmark().getDistractorCount(),
-                config.getBenchmark().getDomain()
-        );
+                config.getBenchmark().getDomain());
         int totalSuccess = 0;
         int autonomousRecoveries = 0;
 
+        // Instantiate the executor that manages the individual retry-loops and LLM API
+        // calls for each case.
+        BenchmarkCaseExecutor caseExecutor = new BenchmarkCaseExecutor(
+                config, client, stateManager, eventLogger);
+
+        // Run through each case sequentially, ensuring state isolation between runs.
         for (int i = 0; i < benchmarkCases.size(); i++) {
             var benchmarkCase = benchmarkCases.get(i);
             String sessionId = UUID.randomUUID().toString();
-            sessionRegistry.register(sessionId, benchmarkCase);
-            stateManager.initializeSession(sessionId, benchmarkCase.allTools());
+
+            // Register immutable case metadata + initialize mutable runtime tool state.
+            stateManager.initializeSession(sessionId, benchmarkCase, benchmarkCase.allTools(),
+                    new Random(seed != null ? seed : System.currentTimeMillis()));
+
+            // Combine the global introspection tools (to let the LLM read documentation)
+            // with the case-specific execution tools (to let the LLM actually run
+            // commands).
             ToolCallbackProvider caseToolCallbacks = combineToolCallbacks(
                     mcpToolCallbacks,
-                    toolCallbackFactory.create(sessionId, benchmarkCase)
-            );
+                    toolCallbackFactory.create(sessionId, benchmarkCase));
 
+            // Generate the English prompt that tells the LLM what its goal is for this
+            // session.
             String userQuery = benchmarkCase.generateUserQuery(benchmarkCase.targetToolObject());
-            logCaseStart(i, sessionId, userQuery, benchmarkCase);
 
-            boolean goalAchieved = false;
-            boolean toolMatch = false;
-            int attempt = 0;
-            long totalTimeTaken = 0;
-            int totalTokenUsage = 0;
-            String conversationHistory = "";
+            // Hand off execution to the executor, which handles the conversational
+            // retry-loop until the LLM succeeds or fails.
+            BenchmarkScore result = caseExecutor.execute(
+                    sessionId, benchmarkCase, caseToolCallbacks, userQuery, i + 1);
 
-            while (attempt < config.getBenchmark().getMaxRetries() && !goalAchieved) {
-                attempt++;
-                int logStartIndex = sessionRegistry.executionLog(sessionId).size();
-
-                String systemInstruction = buildSystemInstruction(sessionId, conversationHistory);
-                String userPrompt = buildUserPrompt(sessionId, userQuery);
-                logAttemptStarted(sessionId, attempt, conversationHistory);
-
-                long tStart = System.nanoTime();
-                LlmClient.LlmResult result = client.execute(systemInstruction, userPrompt, caseToolCallbacks);
-                long timeTaken = (System.nanoTime() - tStart) / 1_000_000;
-
-                totalTimeTaken += timeTaken;
-                totalTokenUsage += result.tokenUsage();
-
-                List<BenchmarkExecutionRecord> newExecutions =
-                        sessionRegistry.executionLog(sessionId).subList(logStartIndex, sessionRegistry.executionLog(sessionId).size());
-
-                toolMatch = toolMatch || hasSuccessfulTargetExecution(sessionRegistry.executionLog(sessionId), benchmarkCase);
-                goalAchieved = toolMatch
-                        && scoreExpectedState(benchmarkCase.expectedState(), targetToolState(sessionId, benchmarkCase)) == 1.0;
-
-                String attemptFeedback = buildAttemptFeedback(newExecutions, sessionId, goalAchieved);
-                conversationHistory += "\nAssistant: " + result.content();
-                conversationHistory += "\nSystem: " + attemptFeedback;
-                logAttemptCompleted(sessionId, attempt, timeTaken, result, newExecutions, goalAchieved, toolMatch);
-
-                System.out.printf("  Attempt %d (%dms)%n", attempt, timeTaken);
-                System.out.println("   [Assistant Response]: " + result.content());
-                System.out.println("   [MCP Feedback]: " + attemptFeedback);
-            }
-
-            double finalStateScore = goalAchieved
-                    ? scoreExpectedState(benchmarkCase.expectedState(), targetToolState(sessionId, benchmarkCase))
-                    : 0.0;
-
-            logCaseCompleted(sessionId, goalAchieved, toolMatch, attempt, totalTimeTaken, totalTokenUsage, finalStateScore);
-
-            if (goalAchieved) {
+            // Update metrics based on result
+            if (result.passed()) {
                 totalSuccess++;
-                if (attempt > 1) {
-                    autonomousRecoveries++;
-                }
-            } else {
-                System.out.println("   [FAILURE]: Unable to achieve goal after "
-                        + config.getBenchmark().getMaxRetries() + " attempts.");
+            }
+            if (result.recovery()) {
+                autonomousRecoveries++;
             }
 
-            sessionRegistry.clear(sessionId);
+            // Wipe the runtime state to guarantee the next benchmark iteration starts witha
+            // clean slate.
             stateManager.clearSession(sessionId);
         }
 
-        System.out.println("\nFinal Success Rate: " + totalSuccess + "/" + config.getBenchmark().getIterations());
-        System.out.println("Autonomous Recoveries: " + autonomousRecoveries);
+        // Log the final tallies to the console and to the telemetry events file.
+        log.info("\nFinal Success Rate: {}/{}", totalSuccess, config.getBenchmark().getIterations());
+        log.info("Autonomous Recoveries: {}", autonomousRecoveries);
         eventLogger.log("benchmark_run_completed", Map.of(
                 "model", config.getLlm().getModel(),
                 "successes", totalSuccess,
                 "iterations", config.getBenchmark().getIterations(),
-                "autonomousRecoveries", autonomousRecoveries
-        ));
+                "autonomousRecoveries", autonomousRecoveries));
     }
 
+    /**
+     * Ensures all internal MCP clients are connected and ready to process
+     * introspection requests,
+     * then wraps them in a unified Provider so the LLM can easily invoke them.
+     */
     private ToolCallbackProvider initializeLoopbackMcpClients() {
         for (McpSyncClient mcpSyncClient : mcpSyncClients) {
             if (!mcpSyncClient.isInitialized()) {
@@ -186,6 +157,12 @@ public class BenchmarkRunner implements ApplicationRunner {
                 .build();
     }
 
+    /**
+     * Merges multiple parallel ToolCallbackProviders into a single static provider
+     * list.
+     * This builds the final, complete toolkit that is shipped attached to the LLM
+     * system prompt.
+     */
     private ToolCallbackProvider combineToolCallbacks(ToolCallbackProvider... providers) {
         List<ToolCallback> combined = new java.util.ArrayList<>();
         for (ToolCallbackProvider provider : providers) {
@@ -199,6 +176,10 @@ public class BenchmarkRunner implements ApplicationRunner {
         return new StaticToolCallbackProvider(combined);
     }
 
+    /**
+     * Gracefully shuts down the long-running MCP clients to free up server
+     * resources before the application exits.
+     */
     private void closeLoopbackMcpClients() {
         for (McpSyncClient mcpSyncClient : mcpSyncClients) {
             try {
@@ -213,186 +194,5 @@ public class BenchmarkRunner implements ApplicationRunner {
                 }
             }
         }
-    }
-
-    private void logCaseStart(int index,
-                              String sessionId,
-                              String userQuery,
-                              BenchmarkCaseGenerator.BenchmarkCase benchmarkCase) {
-        eventLogger.log("case_started", caseStartPayload(index, sessionId, userQuery, benchmarkCase));
-
-        System.out.println("\n============================================================");
-        System.out.printf(" Run %d: %s %n", index + 1, userQuery);
-        System.out.println("------------------------------------------------------------");
-        System.out.println("   [TARGET EXPECTATION]");
-        System.out.printf("     Tool:          %s%n", benchmarkCase.targetToolObject().name());
-        System.out.printf("     Command:       %s%n", benchmarkCase.targetCommand().name());
-        System.out.printf("     Target Option: %s%n",
-                benchmarkCase.targetOptionName().isBlank() ? "[ None ]" : benchmarkCase.targetOptionName());
-        System.out.println("============================================================\n");
-    }
-
-    private void logAttemptStarted(String sessionId, int attempt, String conversationHistory) {
-        eventLogger.log("attempt_started", Map.of(
-                "sessionId", sessionId,
-                "attempt", attempt,
-                "currentState", stateManager.getSessionStateSnapshot(sessionId),
-                "historyLength", conversationHistory.length()
-        ));
-    }
-
-    private void logAttemptCompleted(String sessionId,
-                                     int attempt,
-                                     long timeTaken,
-                                     LlmClient.LlmResult result,
-                                     List<BenchmarkExecutionRecord> newExecutions,
-                                     boolean goalAchieved,
-                                     boolean toolMatch) {
-        eventLogger.log("attempt_completed", Map.of(
-                "sessionId", sessionId,
-                "attempt", attempt,
-                "latencyMs", timeTaken,
-                "tokenUsage", result.tokenUsage(),
-                "assistantResponse", result.content(),
-                "newExecutions", newExecutions,
-                "goalAchieved", goalAchieved,
-                "toolMatch", toolMatch,
-                "currentState", stateManager.getSessionStateSnapshot(sessionId)
-        ));
-    }
-
-    private void logCaseCompleted(String sessionId,
-                                  boolean goalAchieved,
-                                  boolean toolMatch,
-                                  int attempt,
-                                  long totalTimeTaken,
-                                  int totalTokenUsage,
-                                  double finalStateScore) {
-        BenchmarkCaseGenerator.BenchmarkCase benchmarkCase = sessionRegistry.getBenchmarkCase(sessionId);
-        Map<String, Object> payload = new LinkedHashMap<>();
-        payload.put("model", config.getLlm().getModel());
-        payload.put("sessionId", sessionId);
-        payload.put("passed", goalAchieved);
-        payload.put("toolMatch", toolMatch);
-        payload.put("attempts", attempt);
-        payload.put("totalLatencyMs", totalTimeTaken);
-        payload.put("totalTokenUsage", totalTokenUsage);
-        payload.put("finalStateScore", finalStateScore);
-        payload.put("targetToolState", targetToolState(sessionId, benchmarkCase));
-        payload.put("sessionState", stateManager.getSessionStateSnapshot(sessionId));
-        payload.put("executionLog", sessionRegistry.executionLog(sessionId));
-        eventLogger.log("case_completed", payload);
-    }
-
-    private String buildSystemInstruction(String sessionId, String conversationHistory) {
-        String stateContext = "\n[CURRENT STATE]: " + stateManager.getSessionStateSnapshot(sessionId);
-        String historyContext = "\n[HISTORY]:" + conversationHistory;
-
-        return config.getPrompt().getBaseSystemPrompt()
-                + "\nSession ID: " + sessionId
-                + "\nUse the MCP tools to inspect degraded documentation and inspect state."
-                + "\nUse the benchmark tool callbacks directly to execute commands on the generated tools."
-                + "\nEach benchmark tool accepts exactly one command and one option per call."
-                + "\nIf command execution fails, recover autonomously using documentation and state feedback."
-                + "\nDo not invent tool names or commands. Use the provided tool callbacks."
-                + stateContext
-                + historyContext;
-    }
-
-    private String buildUserPrompt(String sessionId, String userQuery) {
-        return "Benchmark session: " + sessionId + "\nUser goal: " + userQuery;
-    }
-
-    private Map<String, Object> caseStartPayload(int index,
-                                                 String sessionId,
-                                                 String userQuery,
-                                                 BenchmarkCaseGenerator.BenchmarkCase benchmarkCase) {
-        Map<String, Object> payload = new LinkedHashMap<>();
-        payload.put("caseIndex", index + 1);
-        payload.put("sessionId", sessionId);
-        payload.put("userQuery", userQuery);
-        payload.put("targetTool", benchmarkCase.targetToolObject().name());
-        payload.put("targetCommand", benchmarkCase.targetCommand().name());
-        payload.put("targetOption", benchmarkCase.targetOptionName());
-        payload.put("expectedState", benchmarkCase.expectedState());
-        payload.put("candidateTools", benchmarkCase.allTools().stream().map(tool -> tool.name()).toList());
-        payload.put("documentComplexity", config.getBenchmark().getDocumentComplexity());
-        return payload;
-    }
-
-    /**
-     * Builds the retry feedback appended to conversation history between attempts.
-     */
-    private String buildAttemptFeedback(List<BenchmarkExecutionRecord> newExecutions,
-                                        String sessionId,
-                                        boolean goalAchieved) {
-        if (goalAchieved) {
-            return "SUCCESS: Goal achieved. Final state: " + stateManager.getSessionStateSnapshot(sessionId);
-        }
-
-        if (newExecutions.isEmpty()) {
-            return "ERROR: No benchmark tool execution occurred. Use MCP for documentation/state and the benchmark tool callbacks for execution.";
-        }
-
-        StringBuilder feedback = new StringBuilder();
-        for (BenchmarkExecutionRecord record : newExecutions) {
-            feedback.append("\n- ")
-                    .append(record.success() ? "SUCCESS" : "ERROR")
-                    .append(" tool=").append(record.toolName())
-                    .append(", command=").append(record.commandName())
-                    .append(", option=").append(record.option())
-                    .append(", message=").append(record.message());
-        }
-        feedback.append("\nCurrent state: ").append(stateManager.getSessionStateSnapshot(sessionId));
-        return feedback.toString();
-    }
-
-    /**
-     * Returns whether the target tool/command/option was ever executed successfully.
-     */
-    private boolean hasSuccessfulTargetExecution(List<BenchmarkExecutionRecord> executions,
-                                                 BenchmarkCaseGenerator.BenchmarkCase benchmarkCase) {
-        String expectedTool = benchmarkCase.targetToolObject().name();
-        String expectedCommand = benchmarkCase.targetCommand().name();
-        String expectedOption = benchmarkCase.targetOptionName() == null ? "" : benchmarkCase.targetOptionName().trim();
-
-        return executions.stream().anyMatch(record ->
-                record.success()
-                        && record.toolName().equalsIgnoreCase(expectedTool)
-                        && record.commandName().equalsIgnoreCase(expectedCommand)
-                        && normalize(record.option()).equalsIgnoreCase(expectedOption));
-    }
-
-    private String normalize(String option) {
-        return option == null ? "" : option.trim();
-    }
-
-    /**
-     * Scores the expected state delta against the actual target-tool runtime state.
-     */
-    private double scoreExpectedState(Map<String, String> expectedState, Map<String, String> actualState) {
-        if (expectedState.isEmpty()) {
-            return 1.0;
-        }
-
-        int matches = 0;
-        for (Map.Entry<String, String> expected : expectedState.entrySet()) {
-            String actualValue = actualState.get(expected.getKey());
-            String expectedValue = expected.getValue();
-            if (expectedValue == null) {
-                if (actualValue == null) {
-                    matches++;
-                }
-                continue;
-            }
-            if (expectedValue.equals(actualValue)) {
-                matches++;
-            }
-        }
-        return (double) matches / expectedState.size();
-    }
-
-    private Map<String, String> targetToolState(String sessionId, BenchmarkCaseGenerator.BenchmarkCase benchmarkCase) {
-        return stateManager.getToolStateSnapshot(sessionId, benchmarkCase.targetToolObject().name());
     }
 }

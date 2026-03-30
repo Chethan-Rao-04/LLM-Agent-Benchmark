@@ -2,6 +2,7 @@ package org.benchmark.model.objects;
 
 import org.benchmark.model.enums.Domain;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Immutable tool specification containing commands and state schema.
@@ -10,13 +11,12 @@ import java.util.List;
  * @param description natural-language tool description
  * @param domain tool domain
  * @param commands commands supported by this tool
- * @param toolStateObject state schema associated with this tool
+ * @param stateVariables state variable schema (name → type)
  */
 public record ToolObject(String name,
                          String description,
                          Domain domain,
                          List<CommandObject> commands,
-                         ToolStateObject toolStateObject
-
+                         Map<String, String> stateVariables
 ) {
 }

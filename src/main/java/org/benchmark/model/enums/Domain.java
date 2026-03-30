@@ -7,7 +7,5 @@ public enum Domain {
     /** Equipment/manufacturing process tools. */
     MANUFACTURING,
     /** Network infrastructure and configuration tools. */
-    NETWORK_INFRA,
-    /** Healthcare workflow/device style tools. */
-    HEALTHCARE
+    NETWORK_INFRA
 }

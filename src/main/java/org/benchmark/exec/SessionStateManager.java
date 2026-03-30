@@ -1,120 +1,161 @@
 package org.benchmark.exec;
 
+import org.benchmark.gen.BenchmarkCaseGenerator;
+
 import org.benchmark.model.objects.ToolObject;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.CopyOnWriteArrayList;
+import org.springframework.stereotype.Component;
 
 /**
- * Thread-safe session state manager that stores one mutable tool environment
- * per generated tool in a benchmark case.
+ * Unified session manager: tool environments, case metadata, and execution logs.
+ *
+ * <p>Every benchmark session is represented by one entry here, containing:
+ * <ul>
+ *   <li>A {@link ToolEnvironment} per tool (mutable machine state)</li>
+ *   <li>The immutable {@link BenchmarkCaseGenerator.BenchmarkCase}</li>
+ *   <li>An append-only execution log of {@link ExecutionRecord}</li>
+ * </ul></p>
  */
+@Component
 public class SessionStateManager {
 
-    private final Map<String, Map<String, ToolEnvironment>> toolEnvironmentsBySession = new ConcurrentHashMap<>();
+    /**
+     * Captures one benchmark-tool execution attempt for later scoring.
+     */
+    public record ExecutionRecord(String toolName, String commandName, String option, boolean success, String message) {}
+
+    private final Map<String, SessionData> sessions = new ConcurrentHashMap<>();
 
     /**
-     * Initializes tool-scoped runtime state for every tool visible in a case.
+     * Initializes a session: registers the case, creates tool environments,
+     * and sets random initial system_status using the provided seeded Random.
      *
-     * <p>Each tool receives all declared schema variables up front and a random
-     * initial {@code system_status} of either {@code SHUTDOWN} or {@code RUNNING}.</p>
+     * @param sessionId unique session identifier
+     * @param benchmarkCase the benchmark case to bind
+     * @param tools all tools visible in the case
+     * @param random seeded random source for deterministic initialization
      */
-    public void initializeSession(String sessionId, List<ToolObject> tools) {
+    public void initializeSession(String sessionId,
+                                   BenchmarkCaseGenerator.BenchmarkCase benchmarkCase,
+                                   List<ToolObject> tools,
+                                   Random random) {
+        SessionData data = sessions.computeIfAbsent(sessionId, k -> new SessionData());
+        data.benchmarkCase = benchmarkCase;
+
         if (tools == null || tools.isEmpty()) {
             return;
         }
-
         for (ToolObject tool : tools) {
-            ToolEnvironment toolEnvironment = getOrCreateToolEnvironment(sessionId, tool.name());
-            toolEnvironment.declareVariables(tool.toolStateObject().variables().keySet());
-            // Each tool begins independently in either RUNNING or SHUTDOWN.
-            toolEnvironment.updateState(
-                    ToolEnvironment.SYSTEM_STATUS_KEY,
-                    ThreadLocalRandom.current().nextBoolean()
-                            ? ToolEnvironment.SYSTEM_STATUS_RUNNING
-                            : ToolEnvironment.SYSTEM_STATUS_SHUTDOWN
-            );
+            ToolEnvironment env = new ToolEnvironment(tool.stateVariables().keySet());
+            String initialStatus = random.nextBoolean()
+                    ? ToolEnvironment.SYSTEM_STATUS_RUNNING
+                    : ToolEnvironment.SYSTEM_STATUS_SHUTDOWN;
+            env.set(ToolEnvironment.SYSTEM_STATUS_KEY, initialStatus);
+            data.initialSystemStatus.put(tool.name(), initialStatus);
+            data.environments.put(tool.name(), env);
         }
     }
 
-    /**
-     * Writes one tool-local runtime value for the given session and tool.
-     */
+    // ---- Case metadata (formerly BenchmarkSessionRegistry) ----
+
+    /** Returns the benchmark case bound to a session. */
+    public BenchmarkCaseGenerator.BenchmarkCase getBenchmarkCase(String sessionId) {
+        SessionData data = sessions.get(sessionId);
+        return data == null ? null : data.benchmarkCase;
+    }
+
+    /** Appends one execution record to the session log. */
+    public void recordExecution(String sessionId, ExecutionRecord record) {
+        sessions.computeIfAbsent(sessionId, k -> new SessionData())
+                .executionLog.add(record);
+    }
+
+    /** Returns the execution log for a session. */
+    public List<ExecutionRecord> executionLog(String sessionId) {
+        SessionData data = sessions.get(sessionId);
+        return data == null ? List.of() : data.executionLog;
+    }
+
+    /** Marks that the LLM used MCP documentation/discovery tools in this session. */
+    public void recordDiscovery(String sessionId) {
+        sessions.computeIfAbsent(sessionId, k -> new SessionData())
+                .discoveryUsed = true;
+    }
+
+    /** Returns true if the LLM used MCP discovery tools. */
+    public boolean discoveryUsed(String sessionId) {
+        SessionData data = sessions.get(sessionId);
+        return data != null && data.discoveryUsed;
+    }
+
+    // ---- Tool state (ToolEnvironment access) ----
+
+    /** Returns the environment for a specific tool, or {@code null}. */
+    public ToolEnvironment getEnvironment(String sessionId, String toolName) {
+        SessionData data = sessions.get(sessionId);
+        if (data == null) return null;
+        return data.environments.get(toolName);
+    }
+
     public void updateToolState(String sessionId, String toolName, String variable, String value) {
-        getOrCreateToolEnvironment(sessionId, toolName).updateState(variable, value);
+        ToolEnvironment env = getOrCreateEnv(sessionId, toolName);
+        env.set(variable, value);
     }
 
-    /**
-     * Reads one tool-local runtime value for the given session and tool.
-     */
     public String getToolState(String sessionId, String toolName, String variable) {
-        ToolEnvironment toolEnvironment = getToolEnvironment(sessionId, toolName);
-        if (toolEnvironment == null) {
-            return null;
-        }
-        return toolEnvironment.getState(variable);
+        ToolEnvironment env = getEnvironment(sessionId, toolName);
+        return env == null ? null : env.get(variable);
     }
 
-    /**
-     * Returns the live state snapshot for one tool in one session.
-     *
-     * <p>The snapshot includes all declared variables, even if some of them are
-     * still uninitialized.</p>
-     */
     public Map<String, String> getToolStateSnapshot(String sessionId, String toolName) {
-        ToolEnvironment toolEnvironment = getToolEnvironment(sessionId, toolName);
-        if (toolEnvironment == null) {
-            return Map.of();
-        }
-        return toolEnvironment.snapshot();
+        ToolEnvironment env = getEnvironment(sessionId, toolName);
+        return env == null ? Map.of() : env.snapshot();
     }
 
-    /**
-     * Returns tool-state snapshots for every tool currently registered in a session.
-     */
     public Map<String, Map<String, String>> getAllToolStatesSnapshot(String sessionId) {
-        Map<String, ToolEnvironment> toolEnvironments = toolEnvironmentsBySession.get(sessionId);
-        if (toolEnvironments == null) {
-            return Map.of();
-        }
+        SessionData data = sessions.get(sessionId);
+        if (data == null) return Map.of();
 
         Map<String, Map<String, String>> snapshots = new LinkedHashMap<>();
-        toolEnvironments.entrySet().stream()
+        data.environments.entrySet().stream()
                 .sorted(Map.Entry.comparingByKey())
-                .forEach(entry -> snapshots.put(entry.getKey(), entry.getValue().snapshot()));
+                .forEach(e -> snapshots.put(e.getKey(), e.getValue().snapshot()));
         return snapshots;
     }
 
-    /**
-     * Returns a structured view of the full session state for prompts and logs.
-     */
     public Map<String, Object> getSessionStateSnapshot(String sessionId) {
-        Map<String, Object> snapshot = new LinkedHashMap<>();
-        snapshot.put("toolStates", getAllToolStatesSnapshot(sessionId));
-        return snapshot;
+        return Map.of("toolStates", getAllToolStatesSnapshot(sessionId));
+    }
+
+    public void clearSession(String sessionId) {
+        sessions.remove(sessionId);
+    }
+
+    public String getInitialSystemStatus(String sessionId, String toolName) {
+        SessionData data = sessions.get(sessionId);
+        if (data == null) return null;
+        return data.initialSystemStatus.get(toolName);
+    }
+
+    private ToolEnvironment getOrCreateEnv(String sessionId, String toolName) {
+        return sessions.computeIfAbsent(sessionId, k -> new SessionData())
+                .environments.computeIfAbsent(toolName, k -> new ToolEnvironment(null));
     }
 
     /**
-     * Removes all runtime tool environments associated with a completed session.
+     * All per-session data in one object: case, environments, execution log.
      */
-    public void clearSession(String sessionId) {
-        toolEnvironmentsBySession.remove(sessionId);
-    }
-
-    private ToolEnvironment getOrCreateToolEnvironment(String sessionId, String toolName) {
-        return toolEnvironmentsBySession
-                .computeIfAbsent(sessionId, key -> new ConcurrentHashMap<>())
-                .computeIfAbsent(toolName, unused -> new ToolEnvironment());
-    }
-
-    private ToolEnvironment getToolEnvironment(String sessionId, String toolName) {
-        Map<String, ToolEnvironment> toolEnvironments = toolEnvironmentsBySession.get(sessionId);
-        if (toolEnvironments == null) {
-            return null;
-        }
-        return toolEnvironments.get(toolName);
+    private static final class SessionData {
+        BenchmarkCaseGenerator.BenchmarkCase benchmarkCase;
+        final Map<String, ToolEnvironment> environments = new ConcurrentHashMap<>();
+        final Map<String, String> initialSystemStatus = new ConcurrentHashMap<>();
+        final List<ExecutionRecord> executionLog = new CopyOnWriteArrayList<>();
+        boolean discoveryUsed = false;
     }
 }

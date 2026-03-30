@@ -1,120 +1,81 @@
 package org.benchmark.exec;
 
 import org.benchmark.model.objects.EffectObject;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 /**
- * Utility for applying command effects to session state.
+ * Utility for applying command effects to tool state.
+ *
+ * <p>Both {@link SessionStateManager}-backed execution and plain {@link Map}-backed
+ * expected-state computation share a single code path.</p>
  */
+@Slf4j
 public final class CommandEffectApplier {
 
     private CommandEffectApplier() {}
 
     /**
      * Applies effects to a session state managed by {@link SessionStateManager}.
-     *
-     * @param effectObjects list of effects to apply
-     * @param option selected option used for {@link EffectObject#OPTION_REF} resolution
-     * @param stateManager mutable session state storage
-     * @param sessionId target session
-     * @param toolName tool whose local environment should be mutated
      */
     public static void applyEffects(List<EffectObject> effectObjects, String option,
                                     SessionStateManager stateManager, String sessionId, String toolName) {
-        if (effectObjects == null || effectObjects.isEmpty()) {
-            return;
-        }
-        for (EffectObject effectObject : effectObjects) {
-            applyEffect(effectObject, option, stateManager, sessionId, toolName);
-        }
+        applyAll(effectObjects, option,
+                var -> stateManager.getToolState(sessionId, toolName, var),
+                (var, val) -> stateManager.updateToolState(sessionId, toolName, var, val),
+                toolName);
     }
 
     /**
-     * Applies effects to a plain map representation of state.
-     *
-     * <p>This variant is used for expected-state computation during benchmark generation.</p>
-     *
-     * @param effectObjects list of effects to apply
-     * @param option selected option used for {@link EffectObject#OPTION_REF} resolution
-     * @param state mutable map to update
+     * Applies effects to a plain map (used for expected-state computation).
      */
     public static void applyEffectsToMap(List<EffectObject> effectObjects, String option,
                                          Map<String, String> state) {
+        applyAll(effectObjects, option,
+                state::get,
+                (var, val) -> {
+                    if (val == null) {
+                        state.remove(var);
+                    } else {
+                        state.put(var, val);
+                    }
+                },
+                null);
+    }
+
+    /**
+     * Unified effect application logic.
+     *
+     * @param effectObjects effects to apply
+     * @param option        selected option for $OPTION resolution
+     * @param getter        reads current value of a variable
+     * @param setter        writes a new value (null = delete)
+     * @param toolName      tool name for logging (null to suppress logging)
+     */
+    private static void applyAll(List<EffectObject> effectObjects, String option,
+                                  Function<String, String> getter,
+                                  BiConsumer<String, String> setter,
+                                  String toolName) {
         if (effectObjects == null || effectObjects.isEmpty()) {
             return;
         }
-        for (EffectObject effectObject : effectObjects) {
-            applyEffectToMap(effectObject, option, state);
-        }
-    }
-
-    private static void applyEffect(EffectObject effectObject, String option,
-                                    SessionStateManager stateManager, String sessionId, String toolName) {
-        String before = stateManager.getToolState(sessionId, toolName, effectObject.variable());
-        switch (effectObject.operation()) {
-            case ASSIGN:
-                stateManager.updateToolState(
-                        sessionId,
-                        toolName,
-                        effectObject.variable(),
-                        resolveValue(effectObject.valueRef(), option)
-                );
-                break;
-            case INCREMENT:
-                String currentVal = stateManager.getToolState(sessionId, toolName, effectObject.variable());
-                int current = parseIntOrZero(currentVal);
-                stateManager.updateToolState(sessionId, toolName, effectObject.variable(), String.valueOf(current + 1));
-                break;
-            case DECREMENT:
-                String currentDec = stateManager.getToolState(sessionId, toolName, effectObject.variable());
-                int currentDecVal = parseIntOrZero(currentDec);
-                stateManager.updateToolState(sessionId, toolName, effectObject.variable(), String.valueOf(currentDecVal - 1));
-                break;
-            case DELETE:
-                stateManager.updateToolState(sessionId, toolName, effectObject.variable(), null);
-                break;
-            default:
-                break;
-        }
-        String after = stateManager.getToolState(sessionId, toolName, effectObject.variable());
-        String resolvedValue = resolveValue(effectObject.valueRef(), option);
-        System.out.printf(
-                "[EFFECT] tool=%s var=%s op=%s valueRef=%s resolved=%s before=%s after=%s%n",
-                toolName,
-                effectObject.variable(),
-                effectObject.operation(),
-                effectObject.valueRef(),
-                resolvedValue,
-                before,
-                after
-        );
-    }
-
-    private static void applyEffectToMap(EffectObject effectObject, String option, Map<String, String> state) {
-        switch (effectObject.operation()) {
-            case ASSIGN:
-                String resolved = resolveValue(effectObject.valueRef(), option);
-                if (resolved == null) {
-                    state.remove(effectObject.variable());
-                } else {
-                    state.put(effectObject.variable(), resolved);
-                }
-                break;
-            case INCREMENT:
-                int current = parseIntOrZero(state.get(effectObject.variable()));
-                state.put(effectObject.variable(), String.valueOf(current + 1));
-                break;
-            case DECREMENT:
-                int currentDec = parseIntOrZero(state.get(effectObject.variable()));
-                state.put(effectObject.variable(), String.valueOf(currentDec - 1));
-                break;
-            case DELETE:
-                state.remove(effectObject.variable());
-                break;
-            default:
-                break;
+        for (EffectObject effect : effectObjects) {
+            String before = getter.apply(effect.variable());
+            switch (effect.operation()) {
+                case ASSIGN -> setter.accept(effect.variable(), resolveValue(effect.valueRef(), option));
+                case INCREMENT -> setter.accept(effect.variable(), String.valueOf(parseIntOrZero(getter.apply(effect.variable())) + 1));
+                case DECREMENT -> setter.accept(effect.variable(), String.valueOf(parseIntOrZero(getter.apply(effect.variable())) - 1));
+                case DELETE -> setter.accept(effect.variable(), null);
+            }
+            if (toolName != null) {
+                String after = getter.apply(effect.variable());
+                log.debug("[EFFECT] tool={} op={} var={} before={} after={}",
+                        toolName, effect.operation(), effect.variable(), before, after);
+            }
         }
     }
 
@@ -123,20 +84,11 @@ public final class CommandEffectApplier {
             return null;
         }
         if (EffectObject.OPTION_REF.equals(valueRef)) {
-            if (option == null || option.isBlank()) {
-                return null;
-            }
-            return option;
+            return (option == null || option.isBlank()) ? null : option;
         }
         return valueRef;
     }
 
-    /**
-     * Best-effort numeric parsing used by increment/decrement effects.
-     *
-     * <p>Non-numeric and missing values are treated as zero so effect application
-     * stays deterministic even when prior tool state is uninitialized.</p>
-     */
     private static int parseIntOrZero(String value) {
         if (value == null) {
             return 0;

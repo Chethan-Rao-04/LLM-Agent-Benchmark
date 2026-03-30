@@ -1,0 +1,24 @@
+llm:
+  type: "local"
+  model: "gpt-oss:20b-cloud"
+  baseUrl: "http://127.0.0.1:11434"
+
+
+benchmark:
+  iterations: 2
+  distractorCount: 3
+  domain: null
+  documentComplexity: "CLEAN"
+  maxRetries: 5
+  multiStep: true
+  eventsJsonl: "benchmark_run_events.jsonl"
+  temperature: 0.0
+  timeoutSeconds: 720
+  randomSeed: 42
+
+
+prompt:
+  baseSystemPrompt: |
+    You are an autonomous agent with access to CLI tools via MCP.
+    Solve the user's request. Use tool discovery and documentation to 
+    understand what's available. Respond with JSON: {"status":"SUCCESS|FAILURE","summary":"..."}

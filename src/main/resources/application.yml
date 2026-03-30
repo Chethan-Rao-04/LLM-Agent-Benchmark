@@ -22,3 +22,9 @@ spring:
         type: SYNC
         toolcallback:
           enabled: true
+
+logging:
+  level:
+    org.springframework.context.support.PostProcessorRegistrationDelegate$BeanPostProcessorChecker: ERROR
+    org.springframework.ai.mcp.server.common.autoconfigure.annotations: ERROR
+    org.springframework.ai.mcp.provider.tool.SyncMcpToolProvider: ERROR

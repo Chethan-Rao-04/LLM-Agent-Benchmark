@@ -25,6 +25,13 @@ public class BenchmarkCaseToolCallbackFactory {
         this.benchmarkMcpServer = benchmarkMcpServer;
     }
 
+    /**
+     * Creates one executable tool callback per tool in the active benchmark case.
+     *
+     * @param sessionId active benchmark session id
+     * @param benchmarkCase case containing target and distractor tools
+     * @return provider exposing generated tool callbacks
+     */
     public ToolCallbackProvider create(String sessionId, BenchmarkCaseGenerator.BenchmarkCase benchmarkCase) {
         List<ToolCallback> callbacks = new ArrayList<>();
         for (ToolObject tool : benchmarkCase.allTools()) {
@@ -33,6 +40,13 @@ public class BenchmarkCaseToolCallbackFactory {
         return new StaticToolCallbackProvider(callbacks);
     }
 
+    /**
+     * Creates one function callback bound to one generated benchmark tool.
+     *
+     * @param sessionId active benchmark session id
+     * @param tool tool whose commands are executed by this callback
+     * @return function-style tool callback
+     */
     private ToolCallback buildToolCallback(String sessionId, ToolObject tool) {
         return FunctionToolCallback
                 .builder(tool.name(), (BenchmarkToolExecutionRequest request) ->
@@ -47,6 +61,12 @@ public class BenchmarkCaseToolCallbackFactory {
                 .build();
     }
 
+    /**
+     * Builds tool description containing all command names and allowed options.
+     *
+     * @param tool generated benchmark tool
+     * @return callback description shown to the model
+     */
     private String buildDescription(ToolObject tool) {
         StringBuilder description = new StringBuilder();
         description.append("Benchmark tool ").append(tool.name())
@@ -73,5 +93,14 @@ public class BenchmarkCaseToolCallbackFactory {
             }
         }
         return description.toString();
+    }
+
+    /**
+     * Record to wrap the input for one generated benchmark tool callback.
+     *
+     * @param command command name to execute within the selected tool
+     * @param option single option flag, or empty string when no option is required
+     */
+    public record BenchmarkToolExecutionRequest(String command, String option) {
     }
 }

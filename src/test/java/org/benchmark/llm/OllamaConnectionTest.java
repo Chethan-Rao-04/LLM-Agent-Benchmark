@@ -1,7 +1,7 @@
 package org.benchmark.llm;
 
-import org.benchmark.config.Config;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Assumptions;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -14,15 +14,22 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class OllamaConnectionTest {
 
-
     @Test
     void shouldReachConfiguredOllamaGenerateEndpoint() throws Exception {
-        Config config = Config.load();
+        String user = System.getenv("LLM_USERNAME");
+        String password = System.getenv("LLM_PASSWORD");
+        String llmServerUrl = System.getenv("LLM_SERVER_URL");
+        String llmModelName = System.getenv("LLM_MODEL_NAME");
 
-        String user = "team2025-6"; //config.getLlm().getUsername();
-        String password = "8saNPufwZqavzuMc"; // config.getLlm().getPassword();
-        String llmServerUrl = "http://gpu6.fin.uni-magdeburg.de/api/generate";///api/generate".formatted(config.getLlm().getBaseUrl().replaceAll("/+$", ""));
-        String llmModelName = "gpt-oss:20b"; //config.getLlm().getModel();
+        Assumptions.assumeTrue(user != null && !user.isBlank(),
+                "Skipping: LLM_USERNAME environment variable not set");
+        Assumptions.assumeTrue(password != null && !password.isBlank(),
+                "Skipping: LLM_PASSWORD environment variable not set");
+        Assumptions.assumeTrue(llmServerUrl != null && !llmServerUrl.isBlank(),
+                "Skipping: LLM_SERVER_URL environment variable not set");
+        Assumptions.assumeTrue(llmModelName != null && !llmModelName.isBlank(),
+                "Skipping: LLM_MODEL_NAME environment variable not set");
+
         String llmTestPrompt = "What does LLM mean?";
 
         String credentials = Base64.getEncoder()
@@ -52,8 +59,7 @@ class OllamaConnectionTest {
         assertEquals(
                 200,
                 response.statusCode(),
-                "Expected HTTP 200 from /api/generate. If this fails with 401, update llm.username/llm.password "
-                        + "in src/main/java/org/benchmark/config.yaml or override them with LLM_USERNAME/LLM_PASSWORD."
+                "Expected HTTP 200 from generate endpoint. If this fails with 401, check LLM_USERNAME/LLM_PASSWORD environment variables."
         );
     }
 }

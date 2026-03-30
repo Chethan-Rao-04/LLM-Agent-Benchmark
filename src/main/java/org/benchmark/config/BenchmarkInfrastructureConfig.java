@@ -1,7 +1,5 @@
 package org.benchmark.config;
 
-import org.benchmark.exec.CliSimulator;
-import org.benchmark.exec.SessionStateManager;
 import org.benchmark.utils.RunEventLogger;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.model.NoopApiKey;
@@ -22,13 +20,25 @@ import java.util.Base64;
 @Configuration
 public class BenchmarkInfrastructureConfig {
 
+    /**
+     * Loads repository-local benchmark configuration.
+     *
+     * @return parsed benchmark configuration
+     */
     @Bean
     public Config benchmarkConfig() {
         return Config.load();
     }
 
+    /**
+     * Creates the shared chat model used by the benchmark runner.
+     *
+     * @param config loaded benchmark configuration
+     * @return configured chat model
+     */
     @Bean
     public ChatModel chatModel(Config config) {
+        // Add explicit HTTP Basic auth only when username/password are configured.
         MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
         if (hasBasicAuth(config)) {
             headers.add(HttpHeaders.AUTHORIZATION, basicAuthHeaderValue(config));
@@ -51,25 +61,29 @@ public class BenchmarkInfrastructureConfig {
                 .build();
     }
 
-    @Bean
-    public SessionStateManager sessionStateManager() {
-        return new SessionStateManager();
-    }
-
-    @Bean
-    public CliSimulator cliSimulator() {
-        return new CliSimulator();
-    }
-
-    @Bean
+    /**
+     * Creates structured run event logger (JSONL + optional CSV summary).
+     * The bean is configured with {@code destroyMethod = "close"} so writers
+     * are flushed and closed on application shutdown.
+     *
+     * @param config loaded benchmark configuration
+     * @return event logger instance
+     */
+    @Bean(destroyMethod = "close")
     public RunEventLogger runEventLogger(Config config) {
         String eventsFilename = config.getBenchmark().getEventsJsonl();
         if (eventsFilename == null || eventsFilename.isBlank()) {
             eventsFilename = "benchmark_run_events.jsonl";
         }
-        return new RunEventLogger(eventsFilename, config.getBenchmark().getResultsCsv());
+        return new RunEventLogger(eventsFilename);
     }
 
+    /**
+     * Returns whether HTTP Basic auth credentials are present.
+     *
+     * @param config loaded benchmark configuration
+     * @return {@code true} when both username and password are set
+     */
     private boolean hasBasicAuth(Config config) {
         return config.getLlm().getUsername() != null
                 && !config.getLlm().getUsername().isBlank()
@@ -77,6 +91,12 @@ public class BenchmarkInfrastructureConfig {
                 && !config.getLlm().getPassword().isBlank();
     }
 
+    /**
+     * Builds an RFC7617 Basic Authorization header value.
+     *
+     * @param config loaded benchmark configuration
+     * @return header value (for example {@code Basic abc123...})
+     */
     private String basicAuthHeaderValue(Config config) {
         String credentials = config.getLlm().getUsername() + ":" + config.getLlm().getPassword();
         return "Basic " + Base64.getEncoder().encodeToString(credentials.getBytes());

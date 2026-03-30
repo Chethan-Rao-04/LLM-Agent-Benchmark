@@ -10,6 +10,7 @@ import org.benchmark.model.objects.CommandObject;
 import org.benchmark.model.objects.OptionEntity;
 import org.benchmark.model.objects.ToolObject;
 import org.benchmark.gen.tool_generator.CommandDict;
+import org.benchmark.model.objects.WorkflowStep;
 
 import java.util.*;
 
@@ -23,9 +24,13 @@ public class BenchmarkCaseGenerator {
     private final Random random;
     private final UserQueryGenerator queryGenerator;
     private final DocumentComplexity documentationComplexity;
+    private final boolean multiStep;
 
+    /**
+     * Creates a generator with default complexity and no fixed seed.
+     */
     public BenchmarkCaseGenerator() {
-        this(DocumentComplexity.CLEAN);
+        this(DocumentComplexity.CLEAN, null, false);
     }
 
     /**
@@ -34,19 +39,34 @@ public class BenchmarkCaseGenerator {
      * @param documentationComplexity complexity profile applied to generated docs
      */
     public BenchmarkCaseGenerator(DocumentComplexity documentationComplexity) {
-        this.random = new Random();
-        this.toolSpecGenerator = new ToolSpecGenerator();
+        this(documentationComplexity, null, false);
+    }
+
+    /**
+     * Creates a generator with the given complexity and optional random seed.
+     */
+    public BenchmarkCaseGenerator(DocumentComplexity documentationComplexity, Long seed) {
+        this(documentationComplexity, seed, false);
+    }
+
+    /**
+     * Creates a generator with the given complexity, optional random seed, and multistep toggle.
+     */
+    public BenchmarkCaseGenerator(DocumentComplexity documentationComplexity, Long seed, boolean multiStep) {
+        this.random = (seed != null) ? new Random(seed) : new Random();
+        this.toolSpecGenerator = new ToolSpecGenerator(this.random);
         this.documentationGenerator = new DocumentationGenerator();
-        this.queryGenerator = new UserQueryGenerator();
+        this.queryGenerator = new UserQueryGenerator(this.random);
         this.documentationComplexity = documentationComplexity == null ? DocumentComplexity.CLEAN : documentationComplexity;
+        this.multiStep = multiStep;
     }
 
     /**
      * Generates a batch of benchmark cases.
      *
-     * @param count number of cases to create
+     * @param count           number of cases to create
      * @param distractorCount number of distractor tools per case
-     * @param specificDomain optional fixed domain; {@code null} samples all domains
+     * @param specificDomain  optional fixed domain; {@code null} samples all domains
      * @return generated benchmark cases
      */
     public List<BenchmarkCase> generateCases(int count, int distractorCount, Domain specificDomain) {
@@ -76,7 +96,15 @@ public class BenchmarkCaseGenerator {
 
             Map<String, String> expectedState = new HashMap<>();
             String optionForExpected = targetOptionName == null ? "" : targetOptionName;
-            CommandEffectApplier.applyEffectsToMap(targetCommand.commandEffectObjects(), optionForExpected, expectedState);
+            
+            List<org.benchmark.model.objects.WorkflowStep> workflowSteps = null;
+
+            if (multiStep) {
+                workflowSteps = buildWorkflowChain(targetTool, targetCommand, optionForExpected);
+                expectedState = computeChainedExpectedState(targetTool, workflowSteps);
+            } else {
+                CommandEffectApplier.applyEffectsToMap(targetCommand.commandEffectObjects(), optionForExpected, expectedState);
+            }
 
             List<ToolObject> distractors = new ArrayList<>();
             for (int d = 0; d < distractorCount; d++) {
@@ -101,24 +129,68 @@ public class BenchmarkCaseGenerator {
                     targetOptionName,
                     expectedState,
                     distractors,
-                    queryGenerator
-
+                    queryGenerator,
+                    workflowSteps
             ));
         }
         return cases;
+    }
+
+    // TODO - in the case of multipstep operations, can we just considerd target tool? becasue we have multiple commands and options run.
+    // TODO - In addititon we also consider the final state (or each intermediate state?)
+    private List<WorkflowStep> buildWorkflowChain(ToolObject tool, CommandObject targetCmd, String targetOption) {
+        List<WorkflowStep> steps = new ArrayList<>();
+        
+        boolean needsInit = targetCmd.commandPreConditions() != null 
+            && targetCmd.commandPreConditions().stream()
+                .anyMatch(p -> p.variable().equals("system_status") 
+                            && p.value().equals("RUNNING"));
+        if (needsInit) {
+            steps.add(new WorkflowStep("initialize_system", "", "Initialize the system to RUNNING state"));
+        }
+        
+        List<CommandObject> candidates = tool.commands().stream()
+            .filter(cmd -> !cmd.name().equals("initialize_system"))
+            .filter(cmd -> !cmd.name().equals(targetCmd.name()))
+            .filter(cmd -> cmd.commandEffectObjects() != null && !cmd.commandEffectObjects().isEmpty())
+            .toList();
+        
+        if (!candidates.isEmpty() && random.nextBoolean()) {
+            CommandObject intermediate = candidates.get(random.nextInt(candidates.size()));
+            String intOption = "";
+            if (intermediate.commandOptions() != null && !intermediate.commandOptions().isEmpty()) {
+                intOption = intermediate.commandOptions().get(random.nextInt(intermediate.commandOptions().size())).optionName();
+            }
+            steps.add(new WorkflowStep(intermediate.name(), intOption,
+                "Prepare state via " + intermediate.name()));
+        }
+        
+        steps.add(new org.benchmark.model.objects.WorkflowStep(targetCmd.name(), targetOption, "Execute the target command"));
+        return steps;
+    }
+
+    private Map<String, String> computeChainedExpectedState(ToolObject tool, List<org.benchmark.model.objects.WorkflowStep> steps) {
+        Map<String, String> state = new HashMap<>();
+        for (WorkflowStep step : steps) {
+            CommandObject cmd = tool.commands().stream()
+                .filter(c -> c.name().equals(step.commandName()))
+                .findFirst().orElseThrow();
+            CommandEffectApplier.applyEffectsToMap(cmd.commandEffectObjects(), step.optionName(), state);
+        }
+        return state;
     }
 
     /**
      * Immutable benchmark-case representation consumed by the runner and MCP server.
      *
      * @param targetToolObject tool that should satisfy the user request
-     * @param targetCommand target command to execute
+     * @param targetCommand    target command to execute
      * @param combinedToolDesc concatenated documentation across target and distractors
-     * @param docsByToolName per-tool documentation lookup map
+     * @param docsByToolName   per-tool documentation lookup map
      * @param targetOptionName expected option for the target command
-     * @param expectedState expected state delta after successful execution
-     * @param distractors distractor tools included in the case
-     * @param queryGenerator helper used to convert command metadata into user requests
+     * @param expectedState    expected state delta after successful execution
+     * @param distractors      distractor tools included in the case
+     * @param queryGenerator   helper used to convert command metadata into user requests
      */
     public record BenchmarkCase(
             ToolObject targetToolObject,
@@ -128,8 +200,12 @@ public class BenchmarkCaseGenerator {
             String targetOptionName,
             Map<String, String> expectedState,
             List<ToolObject> distractors,
-            UserQueryGenerator queryGenerator
+            UserQueryGenerator queryGenerator,
+            List<org.benchmark.model.objects.WorkflowStep> workflowSteps
     ) {
+        // Cached combined tools list (target + distractors)
+        private static final Map<BenchmarkCase, List<ToolObject>> ALL_TOOLS_CACHE = new WeakHashMap<>();
+
         /**
          * Generates the user-facing request corresponding to this benchmark case.
          *
@@ -146,10 +222,15 @@ public class BenchmarkCaseGenerator {
             String optionHint = null;
             if (targetOptionName != null && !targetOptionName.isEmpty() && targetCommand.commandOptions() != null) {
                 optionHint = targetCommand.commandOptions().stream()
-                        .filter(opt -> opt.optionName().equals(targetOptionName))
+                        .filter(opt -> opt.optionName() != null)
+                        .filter(opt -> opt.optionName().trim().equalsIgnoreCase(targetOptionName.trim()))
                         .findFirst()
                         .map(CommandDict::hintFromOptionSpec)
                         .orElse(null);
+            }
+
+            if (workflowSteps != null && workflowSteps.size() > 1) {
+                return queryGenerator.generateMultiStep(workflowSteps, target);
             }
 
             return queryGenerator.generate(action, target, optionHint);
@@ -157,14 +238,17 @@ public class BenchmarkCaseGenerator {
 
         /**
          * Returns the target tool followed by all distractor tools.
+         * The result is cached to avoid repeated list allocations.
          *
          * @return ordered list of all tools visible in this case
          */
         public List<ToolObject> allTools() {
-            List<ToolObject> tools = new ArrayList<>();
-            tools.add(targetToolObject);
-            tools.addAll(distractors);
-            return tools;
+            return ALL_TOOLS_CACHE.computeIfAbsent(this, key -> {
+                List<ToolObject> tools = new ArrayList<>();
+                tools.add(targetToolObject);
+                tools.addAll(distractors);
+                return Collections.unmodifiableList(tools);
+            });
         }
 
         /**
