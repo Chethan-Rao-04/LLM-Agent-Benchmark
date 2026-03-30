@@ -225,6 +225,23 @@ public class BenchmarkCaseExecutor {
 
         StringBuilder feedback = new StringBuilder();
         feedback.append("INCOMPLETE: Goal not yet achieved (state accuracy: ").append(stateAccuracyPercent).append("%). ");
+
+        // Show which workflow steps are missing (if multi-step)
+        if (benchmarkCase.workflowSteps() != null && benchmarkCase.workflowSteps().size() > 1) {
+            Set<String> executedSteps = newExecutions.stream()
+                .map(ExecutionRecord::commandName)
+                .collect(java.util.stream.Collectors.toSet());
+
+            List<String> missingSteps = benchmarkCase.workflowSteps().stream()
+                .map(org.benchmark.model.objects.WorkflowStep::commandName)
+                .filter(stepName -> !executedSteps.contains(stepName))
+                .toList();
+
+            if (!missingSteps.isEmpty()) {
+                feedback.append("Missing steps: ").append(String.join(", ", missingSteps)).append(". ");
+            }
+        }
+
         feedback.append("Review tool documentation for correct options and prerequisites.");
 
         for (ExecutionRecord record : newExecutions) {

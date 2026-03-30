@@ -5,8 +5,8 @@ llm:
 
 
 benchmark:
-  iterations: 2
-  distractorCount: 3
+  iterations: 5
+  distractorCount: 5
   domain: null
   documentComplexity: "CLEAN"
   maxRetries: 5

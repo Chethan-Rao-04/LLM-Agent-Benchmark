@@ -136,25 +136,20 @@ public class BenchmarkCaseGenerator {
         return cases;
     }
 
-    // TODO - in the case of multipstep operations, can we just considerd target tool? becasue we have multiple commands and options run.
-    // TODO - In addititon we also consider the final state (or each intermediate state?)
     private List<WorkflowStep> buildWorkflowChain(ToolObject tool, CommandObject targetCmd, String targetOption) {
         List<WorkflowStep> steps = new ArrayList<>();
-        
-        boolean needsInit = targetCmd.commandPreConditions() != null 
-            && targetCmd.commandPreConditions().stream()
-                .anyMatch(p -> p.variable().equals("system_status") 
-                            && p.value().equals("RUNNING"));
-        if (needsInit) {
-            steps.add(new WorkflowStep("initialize_system", "", "Initialize the system to RUNNING state"));
-        }
-        
+
+        // Always initialize system (it starts SHUTDOWN in multi-step mode)
+        steps.add(new WorkflowStep("initialize_system", "", "Initialize the system to RUNNING state"));
+
+        // Pick an intermediate command that has effects (makes state changes)
+        // This ensures the 2nd step is meaningful and explains why it's required
         List<CommandObject> candidates = tool.commands().stream()
             .filter(cmd -> !cmd.name().equals("initialize_system"))
             .filter(cmd -> !cmd.name().equals(targetCmd.name()))
             .filter(cmd -> cmd.commandEffectObjects() != null && !cmd.commandEffectObjects().isEmpty())
             .toList();
-        
+
         if (!candidates.isEmpty() && random.nextBoolean()) {
             CommandObject intermediate = candidates.get(random.nextInt(candidates.size()));
             String intOption = "";
@@ -164,8 +159,9 @@ public class BenchmarkCaseGenerator {
             steps.add(new WorkflowStep(intermediate.name(), intOption,
                 "Prepare state via " + intermediate.name()));
         }
-        
-        steps.add(new org.benchmark.model.objects.WorkflowStep(targetCmd.name(), targetOption, "Execute the target command"));
+
+        // Add target command as final step
+        steps.add(new WorkflowStep(targetCmd.name(), targetOption, "Execute the target command"));
         return steps;
     }
 

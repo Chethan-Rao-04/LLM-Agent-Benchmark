@@ -16,7 +16,7 @@ class OllamaConnectionTest {
 
     @Test
     void shouldReachConfiguredOllamaGenerateEndpoint() throws Exception {
-        String user = System.getenv("LLM_USERNAME");
+        String user = System.getenv("LLM_USERNAME");;
         String password = System.getenv("LLM_PASSWORD");
         String llmServerUrl = System.getenv("LLM_SERVER_URL");
         String llmModelName = System.getenv("LLM_MODEL_NAME");
