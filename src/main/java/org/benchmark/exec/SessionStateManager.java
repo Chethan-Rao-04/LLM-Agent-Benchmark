@@ -1,7 +1,7 @@
 package org.benchmark.exec;
 
 import org.benchmark.gen.BenchmarkCaseGenerator;
-
+import org.benchmark.model.objects.PreconditionObject;
 import org.benchmark.model.objects.ToolObject;
 
 import java.util.LinkedHashMap;
@@ -51,12 +51,33 @@ public class SessionStateManager {
         if (tools == null || tools.isEmpty()) {
             return;
         }
+        boolean isMultiStep = benchmarkCase.workflowSteps() != null
+                && benchmarkCase.workflowSteps().size() > 1;
+
         for (ToolObject tool : tools) {
             ToolEnvironment env = new ToolEnvironment(tool.stateVariables().keySet());
-            String initialStatus = random.nextBoolean()
-                    ? ToolEnvironment.SYSTEM_STATUS_RUNNING
-                    : ToolEnvironment.SYSTEM_STATUS_SHUTDOWN;
+
+            // Multi-step: target tool always starts SHUTDOWN so init step is required
+            String initialStatus;
+            if (isMultiStep && tool.name().equals(benchmarkCase.targetToolObject().name())) {
+                initialStatus = ToolEnvironment.SYSTEM_STATUS_SHUTDOWN;
+            } else {
+                initialStatus = random.nextBoolean()
+                        ? ToolEnvironment.SYSTEM_STATUS_RUNNING
+                        : ToolEnvironment.SYSTEM_STATUS_SHUTDOWN;
+            }
             env.set(ToolEnvironment.SYSTEM_STATUS_KEY, initialStatus);
+
+            // Multi-step: domain precondition vars on target tool start "disabled"
+            if (isMultiStep && tool.name().equals(benchmarkCase.targetToolObject().name())
+                    && benchmarkCase.targetCommand().commandPreConditions() != null) {
+                for (PreconditionObject precond : benchmarkCase.targetCommand().commandPreConditions()) {
+                    if (!precond.variable().equals(ToolEnvironment.SYSTEM_STATUS_KEY)) {
+                        env.set(precond.variable(), "disabled");
+                    }
+                }
+            }
+
             data.initialSystemStatus.put(tool.name(), initialStatus);
             data.environments.put(tool.name(), env);
         }

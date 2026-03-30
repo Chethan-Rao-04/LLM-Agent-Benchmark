@@ -64,12 +64,18 @@ public class ToolSpecGenerator {
 
     /**
      * Generates state variable schema for a tool.
+     * Includes numeric measurement vars plus 1-2 boolean capability vars.
      */
     private Map<String, String> generateState(Domain domain) {
         Map<String, String> variables = new HashMap<>();
         int varCount = 2 + random.nextInt(4);
         for (int i = 0; i < varCount; i++) {
             variables.put(commandDict.getRandomStateVariable(domain), "int");
+        }
+        // Add 1-2 capability flags (boolean-style: enabled/disabled)
+        int capCount = 1 + random.nextInt(2);
+        for (int i = 0; i < capCount; i++) {
+            variables.put(commandDict.getRandomCapabilityVariable(domain), "boolean");
         }
         variables.put(ToolEnvironment.SYSTEM_STATUS_KEY, "string");
         return variables;
@@ -82,8 +88,17 @@ public class ToolSpecGenerator {
         List<CommandObject> commands = new ArrayList<>();
         int cmdCount = 7 + random.nextInt(3);
 
-        List<String> mutableVars = new ArrayList<>(stateVars.keySet());
-        mutableVars.remove(ToolEnvironment.SYSTEM_STATUS_KEY);
+        // Separate numeric vars from boolean capability vars
+        List<String> numericVars = new ArrayList<>();
+        List<String> capabilityVars = new ArrayList<>();
+        for (Map.Entry<String, String> entry : stateVars.entrySet()) {
+            if (entry.getKey().equals(ToolEnvironment.SYSTEM_STATUS_KEY)) continue;
+            if ("boolean".equals(entry.getValue())) {
+                capabilityVars.add(entry.getKey());
+            } else {
+                numericVars.add(entry.getKey());
+            }
+        }
 
         Set<String> usedCommandNames = new HashSet<>();
         usedCommandNames.add(PREP_COMMAND_NAME);
@@ -113,17 +128,51 @@ public class ToolSpecGenerator {
                     ToolEnvironment.SYSTEM_STATUS_RUNNING
             ));
 
+            // ~30% of commands require a capability flag to be enabled first
+            // e.g. "encryption == enabled" or "safety_interlock == enabled"
+            if (!capabilityVars.isEmpty() && random.nextInt(10) < 3) {
+                String capVar = capabilityVars.get(random.nextInt(capabilityVars.size()));
+                preconditionObjects.add(new PreconditionObject(capVar, ConditionOp.EQ, "enabled"));
+            }
+
+            // Effects target numeric vars (INCREMENT or ASSIGN literal)
             List<EffectObject> commandEffectObjects = new ArrayList<>();
-            if (!mutableVars.isEmpty() && random.nextBoolean()) {
-                String targetVar = mutableVars.get(random.nextInt(mutableVars.size()));
-                if (!args.isEmpty()) {
-                    commandEffectObjects.add(new EffectObject(targetVar, EffectOp.ASSIGN, EffectObject.OPTION_REF));
+            if (!numericVars.isEmpty() && random.nextBoolean()) {
+                String targetVar = numericVars.get(random.nextInt(numericVars.size()));
+                if (random.nextBoolean()) {
+                    commandEffectObjects.add(new EffectObject(targetVar, EffectOp.INCREMENT, null));
                 } else {
-                    commandEffectObjects.add(new EffectObject(targetVar, EffectOp.ASSIGN, "RESET"));
+                    commandEffectObjects.add(new EffectObject(targetVar, EffectOp.ASSIGN, "0"));
                 }
             }
 
             commands.add(new CommandObject(cmdName, args, desc, preconditionObjects, commandEffectObjects));
+        }
+
+        // Generate configure_* commands for each capability var used as a precondition
+        Set<String> domainPrecondVars = new HashSet<>();
+        for (CommandObject cmd : commands) {
+            if (cmd.commandPreConditions() != null) {
+                for (PreconditionObject pre : cmd.commandPreConditions()) {
+                    if (!pre.variable().equals(ToolEnvironment.SYSTEM_STATUS_KEY)) {
+                        domainPrecondVars.add(pre.variable());
+                    }
+                }
+            }
+        }
+        for (String varName : domainPrecondVars) {
+            String configureCmdName = "configure_" + varName;
+            if (!usedCommandNames.contains(configureCmdName)) {
+                usedCommandNames.add(configureCmdName);
+                commands.add(new CommandObject(
+                    configureCmdName, List.of(),
+                    "Enables " + varName + ". Sets " + varName + " to enabled.",
+                    List.of(new PreconditionObject(
+                        ToolEnvironment.SYSTEM_STATUS_KEY, ConditionOp.EQ,
+                        ToolEnvironment.SYSTEM_STATUS_RUNNING)),
+                    List.of(new EffectObject(varName, EffectOp.ASSIGN, "enabled"))
+                ));
+            }
         }
 
         commands.add(new CommandObject(

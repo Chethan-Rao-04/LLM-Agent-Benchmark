@@ -94,6 +94,30 @@ public class CommandDict {
     );
 
     // --------------------------------------------------------------------------------------
+    // Capability flags — boolean-style state vars that make sense with enabled/disabled
+
+    public static final List<String> CAPABILITY_VARS_MAN = Arrays.asList(
+            "safety_interlock", "auto_lubrication", "thermal_protection",
+            "vibration_damping", "emergency_stop_override", "precision_mode"
+    );
+
+    public static final List<String> CAPABILITY_VARS_NET = Arrays.asList(
+            "encryption", "firewall", "load_balancing",
+            "redundancy", "traffic_shaping", "authentication"
+    );
+
+    /**
+     * Returns a random capability variable for the given domain.
+     * These are boolean-style flags suitable for enabled/disabled semantics.
+     */
+    public String getRandomCapabilityVariable(Domain domain) {
+        return switch (domain) {
+            case MANUFACTURING -> pickOne(CAPABILITY_VARS_MAN);
+            case NETWORK_INFRA -> pickOne(CAPABILITY_VARS_NET);
+        };
+    }
+
+    // --------------------------------------------------------------------------------------
     // Common Options
 
     public static final List<String> COMMON_OPTS = Arrays.asList(

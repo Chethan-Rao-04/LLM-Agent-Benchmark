@@ -6,8 +6,11 @@ import org.benchmark.gen.query_generator.UserQueryGenerator;
 import org.benchmark.gen.tool_generator.ToolSpecGenerator;
 import org.benchmark.model.enums.DocumentComplexity;
 import org.benchmark.model.enums.Domain;
+import org.benchmark.exec.ToolEnvironment;
+import org.benchmark.model.enums.EffectOp;
 import org.benchmark.model.objects.CommandObject;
 import org.benchmark.model.objects.OptionEntity;
+import org.benchmark.model.objects.PreconditionObject;
 import org.benchmark.model.objects.ToolObject;
 import org.benchmark.gen.tool_generator.CommandDict;
 import org.benchmark.model.objects.WorkflowStep;
@@ -80,6 +83,7 @@ public class BenchmarkCaseGenerator {
 
             List<CommandObject> eligibleTargetCommands = targetTool.commands().stream()
                     .filter(cmd -> !cmd.name().equalsIgnoreCase(ToolSpecGenerator.PREP_COMMAND_NAME))
+                    .filter(cmd -> !cmd.name().startsWith("configure_"))
                     .toList();
 
             List<CommandObject> commandPool = eligibleTargetCommands.isEmpty()
@@ -139,28 +143,31 @@ public class BenchmarkCaseGenerator {
     private List<WorkflowStep> buildWorkflowChain(ToolObject tool, CommandObject targetCmd, String targetOption) {
         List<WorkflowStep> steps = new ArrayList<>();
 
-        // Always initialize system (it starts SHUTDOWN in multi-step mode)
+        // Step 1: Always initialize system (starts SHUTDOWN in multi-step mode)
         steps.add(new WorkflowStep("initialize_system", "", "Initialize the system to RUNNING state"));
 
-        // Pick an intermediate command that has effects (makes state changes)
-        // This ensures the 2nd step is meaningful and explains why it's required
-        List<CommandObject> candidates = tool.commands().stream()
-            .filter(cmd -> !cmd.name().equals("initialize_system"))
-            .filter(cmd -> !cmd.name().equals(targetCmd.name()))
-            .filter(cmd -> cmd.commandEffectObjects() != null && !cmd.commandEffectObjects().isEmpty())
-            .toList();
+        // Step 2: Find configure_* commands that satisfy target's domain preconditions
+        if (targetCmd.commandPreConditions() != null) {
+            List<PreconditionObject> domainPreconds = targetCmd.commandPreConditions().stream()
+                .filter(p -> !p.variable().equals(ToolEnvironment.SYSTEM_STATUS_KEY))
+                .toList();
 
-        if (!candidates.isEmpty() && random.nextBoolean()) {
-            CommandObject intermediate = candidates.get(random.nextInt(candidates.size()));
-            String intOption = "";
-            if (intermediate.commandOptions() != null && !intermediate.commandOptions().isEmpty()) {
-                intOption = intermediate.commandOptions().get(random.nextInt(intermediate.commandOptions().size())).optionName();
+            for (PreconditionObject precond : domainPreconds) {
+                tool.commands().stream()
+                    .filter(cmd -> cmd.name().startsWith("configure_"))
+                    .filter(cmd -> cmd.commandEffectObjects() != null)
+                    .filter(cmd -> cmd.commandEffectObjects().stream().anyMatch(
+                        eff -> eff.variable().equals(precond.variable())
+                            && eff.operation() == EffectOp.ASSIGN
+                            && precond.value().equals(eff.valueRef())))
+                    .findFirst()
+                    .ifPresent(cmd -> steps.add(new WorkflowStep(
+                        cmd.name(), "",
+                        "Configure " + precond.variable() + " to " + precond.value())));
             }
-            steps.add(new WorkflowStep(intermediate.name(), intOption,
-                "Prepare state via " + intermediate.name()));
         }
 
-        // Add target command as final step
+        // Step 3: Target command as final step
         steps.add(new WorkflowStep(targetCmd.name(), targetOption, "Execute the target command"));
         return steps;
     }
