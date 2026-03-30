@@ -58,11 +58,17 @@ public class UserQueryGenerator {
         if (steps == null || steps.isEmpty()) {
             return generate("Execute", targetTool, null);
         }
-        
+
         WorkflowStep finalStep = steps.get(steps.size() - 1);
         String baseQuery = generate(finalStep.commandName().split("_")[0], targetTool, null);
-        
-        return baseQuery + " Please ensure all necessary prerequisites and configurations are correctly set up beforehand.";
+
+        // Include option hint for the final command if present
+        String optionHint = "";
+        if (finalStep.optionName() != null && !finalStep.optionName().isEmpty()) {
+            optionHint = " Consider using the " + finalStep.optionName() + " option.";
+        }
+
+        return baseQuery + optionHint + " Please ensure all necessary prerequisites and configurations are correctly set up beforehand.";
     }
 
     /**

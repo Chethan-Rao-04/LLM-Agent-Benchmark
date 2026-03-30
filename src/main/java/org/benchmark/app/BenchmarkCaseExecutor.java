@@ -57,7 +57,7 @@ public class BenchmarkCaseExecutor {
         logCaseStart(caseIndex, sessionId, userQuery, benchmarkCase);
 
         boolean goalAchieved = false;
-        boolean toolMatch = false;
+        boolean exactMatch = false;
         int attempt = 0;
         long totalTimeTaken = 0;
         int totalTokenUsage = 0;
@@ -82,21 +82,21 @@ public class BenchmarkCaseExecutor {
             List<ExecutionRecord> newExecutions =
                     stateManager.executionLog(sessionId).subList(logStartIndex, stateManager.executionLog(sessionId).size());
 
-            toolMatch = toolMatch || hasSuccessfulTargetExecution(stateManager.executionLog(sessionId), benchmarkCase);
-            goalAchieved = toolMatch
+            exactMatch = exactMatch || hasSuccessfulTargetExecution(stateManager.executionLog(sessionId), benchmarkCase);
+            goalAchieved = exactMatch
                     && scoreExpectedState(benchmarkCase.expectedState(), targetToolState(sessionId, benchmarkCase)) == 1.0;
 
             if (attempt == 1 && !goalAchieved) {
                 failedFirstAttempt = true;
             }
 
-            String attemptFeedback = buildAttemptFeedback(newExecutions, sessionId, goalAchieved);
+            String attemptFeedback = buildAttemptFeedback(newExecutions, sessionId, goalAchieved, benchmarkCase);
             conversationHistory += "\nAssistant: " + result.content();
             conversationHistory += "\nSystem: " + attemptFeedback;
-            logAttemptCompleted(sessionId, attempt, timeTaken, result, newExecutions, goalAchieved, toolMatch);
+            logAttemptCompleted(sessionId, attempt, timeTaken, result, newExecutions, goalAchieved, exactMatch);
 
-            log.info("  [ATTEMPT {}] latency={}ms tokens={} toolMatch={} goal={}",
-                    attempt, timeTaken, result.tokenUsage(), toolMatch, goalAchieved);
+            log.info("  [ATTEMPT {}] latency={}ms tokens={} exactMatch={} goal={}",
+                    attempt, timeTaken, result.tokenUsage(), exactMatch, goalAchieved);
             log.info("   executions: {}", summarizeExecutions(newExecutions));
             log.info("   response: {}", summarizeText(result.content(), 220));
             log.info("   feedback: {}", summarizeText(attemptFeedback, 260));
@@ -208,7 +208,8 @@ public class BenchmarkCaseExecutor {
 
     String buildAttemptFeedback(List<ExecutionRecord> newExecutions,
                                 String sessionId,
-                                boolean goalAchieved) {
+                                boolean goalAchieved,
+                                BenchmarkCaseGenerator.BenchmarkCase benchmarkCase) {
         if (goalAchieved) {
             return "SUCCESS: Goal achieved. Final state: " + stateManager.getSessionStateSnapshot(sessionId);
         }
@@ -217,7 +218,15 @@ public class BenchmarkCaseExecutor {
             return "ERROR: No benchmark tool execution occurred. Use MCP for documentation/state and the benchmark tool callbacks for execution.";
         }
 
+        // Compute state accuracy for incomplete attempts
+        double stateAccuracy = scoreExpectedState(benchmarkCase.expectedState(),
+                                                  targetToolState(sessionId, benchmarkCase));
+        int stateAccuracyPercent = (int) (stateAccuracy * 100);
+
         StringBuilder feedback = new StringBuilder();
+        feedback.append("INCOMPLETE: Goal not yet achieved (state accuracy: ").append(stateAccuracyPercent).append("%). ");
+        feedback.append("Review tool documentation for correct options and prerequisites.");
+
         for (ExecutionRecord record : newExecutions) {
             feedback.append("\n- ")
                     .append(record.success() ? "SUCCESS" : "ERROR")
@@ -310,7 +319,7 @@ public class BenchmarkCaseExecutor {
                                      LlmClient.LlmResult result,
                                      List<ExecutionRecord> newExecutions,
                                      boolean goalAchieved,
-                                     boolean toolMatch) {
+                                     boolean exactMatch) {
         eventLogger.log("attempt_completed", Map.of(
                 "sessionId", sessionId,
                 "attempt", attempt,
@@ -319,7 +328,7 @@ public class BenchmarkCaseExecutor {
                 "assistantResponse", result.content(),
                 "newExecutions", newExecutions,
                 "goalAchieved", goalAchieved,
-                "toolMatch", toolMatch,
+                "exactMatch", exactMatch,
                 "currentState", stateManager.getSessionStateSnapshot(sessionId)
         ));
     }
@@ -333,7 +342,7 @@ public class BenchmarkCaseExecutor {
         payload.put("model", config.getLlm().getModel());
         payload.put("sessionId", sessionId);
         payload.put("passed", score.passed());
-        payload.put("toolMatch", score.toolSelection() == 1.0);
+        payload.put("exactMatch", score.toolSelection() == 1.0);
         payload.put("score", score); // logs all dimensions
         payload.put("totalLatencyMs", totalTimeTaken);
         payload.put("totalTokenUsage", totalTokenUsage);
