@@ -1,6 +1,6 @@
 llm:
   type: "local"
-  model: "gpt-oss:20b-cloud"
+  model: "qwen2.5:3b"
   baseUrl: "http://127.0.0.1:11434"
 
 
