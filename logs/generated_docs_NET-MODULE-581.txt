@@ -1,0 +1,65 @@
+--- Documentation for NET-MODULE-581 (CLEAN) ---
+# Tool Documentation: NET-MODULE-581
+
+Domain: NETWORK_INFRA
+Description: Manages auth provision deploy operations.
+
+Supported Commands:
+
+## auth_cld
+Description: Executes the auth_cld operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+Effects:
+- updates `auth_token` with `ASSIGN` using `valid`
+
+## prov_inst
+Description: Executes the prov_inst operation.
+Preconditions:
+- requires `auth_token` to equal `valid`
+Options:
+- `--output`: Write output to a file.
+Effects:
+- updates `instance_status` with `ASSIGN` using `ready`
+
+## dpl_inst
+Description: Executes the dpl_inst operation.
+Preconditions:
+- requires `instance_status` to equal `ready`
+Options:
+- `--output`: Write output to a file.
+Effects:
+- no state change documented
+
+## upd_krn
+Description: Executes the upd_krn operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- no state change documented
+
+## per_spt
+Description: Executes the per_spt operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+## brc_chn
+Description: Executes the brc_chn operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- no state change documented
+
+--- End of documentation for NET-MODULE-581 ---
+

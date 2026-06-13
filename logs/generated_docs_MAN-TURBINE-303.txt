@@ -1,0 +1,90 @@
+--- Documentation for MAN-TURBINE-303 (CLEAN) ---
+# Tool Documentation: MAN-TURBINE-303
+
+Domain: MANUFACTURING
+Description: Manages diagnose repair verify operations for manufacturing domain.
+
+Supported Commands:
+
+## diag_cmp
+Description: Executes the diag_cmp operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--version`: Show version information and exit.
+Effects:
+- updates `fault_status` with `ASSIGN` using `identified`
+
+## rpr_cmp
+Description: Executes the rpr_cmp operation.
+Preconditions:
+- requires `fault_status` to equal `identified`
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `compressor_health` with `ASSIGN` using `restored`
+
+## vfy_cmp
+Description: Executes the vfy_cmp operation.
+Preconditions:
+- requires `compressor_health` to equal `restored`
+Options:
+- `--help`: Show help information and exit.
+Effects:
+- no state change documented
+
+## lub_inv
+Description: Executes the lub_inv operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `temperature` with `INCREMENT`
+
+## cal_opr_n
+Description: Executes the cal_opr_n operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--simulate`: Run in simulation mode.
+- `--output`: Write output to a file.
+Effects:
+- updates `psi_reading` with `INCREMENT`
+
+## wld_alm
+Description: Executes the wld_alm operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--output`: Write output to a file.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `psi_reading` with `INCREMENT`
+
+## wld_bld
+Description: Executes the wld_bld operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `temperature` with `INCREMENT`
+
+## ini_jig
+Description: Executes the ini_jig operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `psi_reading` with `INCREMENT`
+
+--- End of documentation for MAN-TURBINE-303 ---
+

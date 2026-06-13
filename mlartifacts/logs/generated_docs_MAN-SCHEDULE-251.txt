@@ -1,0 +1,103 @@
+--- Documentation for MAN-SCHEDULE-251 (CLEAN) ---
+# Tool Documentation: MAN-SCHEDULE-251
+
+Domain: MANUFACTURING
+Description: set the upstream schedule configuration.
+
+Supported Commands:
+
+## lub_wks
+Description: Executes the lub_wks operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--verbose`: Enable verbose logging/output.
+- `--version`: Show version information and exit.
+Effects:
+- updates `vibration` with `ASSIGN` using `1`
+
+## wring_cnv
+Description: Executes the wring_cnv operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--verbose`: Enable verbose logging/output.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `battery_level` with `ASSIGN` using `5`
+
+## clp_mtl
+Description: Executes the clp_mtl operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--version`: Show version information and exit.
+- `--quiet`: Suppress non-essential output.
+- `--interactive`: Prompt for confirmations interactively.
+- `--debug`: Enable debug output.
+Effects:
+- updates `air_flow` with `ASSIGN` using `paused`
+
+## run_kln
+Description: Executes the run_kln operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--force`: Force the operation even if warnings are present.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--debug`: Enable debug output.
+Effects:
+- updates `air_flow` with `ASSIGN` using `ready`
+
+## torque_hop
+Description: Executes the torque_hop operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `output_yield` with `ASSIGN` using `ready`
+
+## opr_fix
+Description: Executes the opr_fix operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--dry-run`: Simulate execution without making changes.
+- `--retry`: Retry the operation on failure.
+- `--output`: Write output to a file.
+- `--version`: Show version information and exit.
+Effects:
+- updates `battery_level` with `INCREMENT`
+
+## ovr_spd
+Description: Executes the ovr_spd operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--force`: Force the operation even if warnings are present.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `vibration` with `INCREMENT`
+
+## unset_eng
+Description: Executes the unset_eng operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--retry`: Retry the operation on failure.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `battery_level` with `INCREMENT`
+
+--- End of documentation for MAN-SCHEDULE-251 ---
+

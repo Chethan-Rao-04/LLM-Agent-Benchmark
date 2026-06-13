@@ -1,0 +1,84 @@
+--- Documentation for MAN-FIXTURE-379 (CLEAN) ---
+# Tool Documentation: MAN-FIXTURE-379
+
+Domain: MANUFACTURING
+Description: Manages auth provision deploy operations.
+
+Supported Commands:
+
+## auth_ctrl
+Description: Executes the auth_ctrl operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--output`: Write output to a file.
+Effects:
+- updates `auth_token` with `ASSIGN` using `valid`
+
+## prov_fw
+Description: Executes the prov_fw operation.
+Preconditions:
+- requires `auth_token` to equal `valid`
+Options:
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `firmware_status` with `ASSIGN` using `ready`
+
+## dpl_fw
+Description: Executes the dpl_fw operation.
+Preconditions:
+- requires `firmware_status` to equal `ready`
+Options:
+- none
+Effects:
+- no state change documented
+
+## shd_mld
+Description: Executes the shd_mld operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+Effects:
+- no state change documented
+
+## shd_ln
+Description: Executes the shd_ln operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--output`: Write output to a file.
+Effects:
+- no state change documented
+
+## srt_ctrl
+Description: Executes the srt_ctrl operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+## rsm_asm
+Description: Executes the rsm_asm operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+## aln_mld
+Description: Executes the aln_mld operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- no state change documented
+
+--- End of documentation for MAN-FIXTURE-379 ---
+

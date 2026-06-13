@@ -1,0 +1,100 @@
+--- Documentation for MAN-RAW-MATERIAL-796 (CLEAN) ---
+# Tool Documentation: MAN-RAW-MATERIAL-796
+
+Domain: MANUFACTURING
+Description: disable the upstream assembly configuration.
+
+Supported Commands:
+
+## msr_act
+Description: Executes the msr_act operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--verbose`: Enable verbose logging/output.
+- `--quiet`: Suppress non-essential output.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `vibration` with `ASSIGN` using `synced`
+
+## dsb_prc
+Description: Executes the dsb_prc operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `quality_score` with `INCREMENT`
+
+## torque_eng
+Description: Executes the torque_eng operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `vibration` with `ASSIGN` using `stable`
+
+## mld_mch
+Description: Executes the mld_mch operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--retry`: Retry the operation on failure.
+- `--simulate`: Run in simulation mode.
+- `--help`: Show help information and exit.
+Effects:
+- updates `rate` with `INCREMENT`
+
+## run_cmp
+Description: Executes the run_cmp operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--help`: Show help information and exit.
+Effects:
+- updates `quality_score` with `INCREMENT`
+
+## enb_chs
+Description: Executes the enb_chs operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+Effects:
+- updates `quality_score` with `ASSIGN` using `1`
+
+## pse_spd
+Description: Executes the pse_spd operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `efficiency` with `INCREMENT`
+
+## set_opr_n
+Description: Executes the set_opr_n operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `vibration` with `ASSIGN` using `completed`
+
+## shd_hop
+Description: Executes the shd_hop operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `rate` with `ASSIGN` using `0`
+
+--- End of documentation for MAN-RAW-MATERIAL-796 ---
+

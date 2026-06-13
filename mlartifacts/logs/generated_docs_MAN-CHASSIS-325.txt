@@ -1,0 +1,78 @@
+--- Documentation for MAN-CHASSIS-325 (CLEAN) ---
+# Tool Documentation: MAN-CHASSIS-325
+
+Domain: MANUFACTURING
+Description: Manages diagnose repair verify operations.
+
+Supported Commands:
+
+## diag_cmp
+Description: Executes the diag_cmp operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `fault_status` with `ASSIGN` using `identified`
+
+## rpr_cmp
+Description: Executes the rpr_cmp operation.
+Preconditions:
+- requires `fault_status` to equal `identified`
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--help`: Show help information and exit.
+Effects:
+- updates `compressor_health` with `ASSIGN` using `restored`
+
+## vfy_cmp
+Description: Executes the vfy_cmp operation.
+Preconditions:
+- requires `compressor_health` to equal `restored`
+Options:
+- `--simulate`: Run in simulation mode.
+Effects:
+- no state change documented
+
+## shd_mtl
+Description: Executes the shd_mtl operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- no state change documented
+
+## enb_kln
+Description: Executes the enb_kln operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- no state change documented
+
+## pse_bld
+Description: Executes the pse_bld operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--help`: Show help information and exit.
+Effects:
+- no state change documented
+
+## ini_cnv
+Description: Executes the ini_cnv operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+--- End of documentation for MAN-CHASSIS-325 ---
+

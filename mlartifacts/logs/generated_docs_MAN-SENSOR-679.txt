@@ -1,0 +1,66 @@
+--- Documentation for MAN-SENSOR-679 (CLEAN) ---
+# Tool Documentation: MAN-SENSOR-679
+
+Domain: MANUFACTURING
+Description: Manages init configure execute operations.
+
+Supported Commands:
+
+## ini_sys
+Description: Executes the ini_sys operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `system_status` with `ASSIGN` using `RUNNING`
+
+## enb_si
+Description: Executes the enb_si operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `safety_interlock` with `ASSIGN` using `active`
+
+## cal_cmp
+Description: Executes the cal_cmp operation.
+Preconditions:
+- requires `safety_interlock` to equal `active`
+- requires `system_status` to equal `RUNNING`
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- no state change documented
+
+## cal_trb
+Description: Executes the cal_trb operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+Effects:
+- no state change documented
+
+## dsb_spd
+Description: Executes the dsb_spd operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+Effects:
+- no state change documented
+
+## vfy_sch
+Description: Executes the vfy_sch operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- no state change documented
+
+--- End of documentation for MAN-SENSOR-679 ---
+

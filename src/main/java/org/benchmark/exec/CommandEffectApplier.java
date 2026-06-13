@@ -73,7 +73,7 @@ public final class CommandEffectApplier {
             }
             if (toolName != null) {
                 String after = getter.apply(effect.variable());
-                log.debug("[EFFECT] tool={} op={} var={} before={} after={}",
+                log.debug("Effect applied tool={} op={} var={} before={} after={}",
                         toolName, effect.operation(), effect.variable(), before, after);
             }
         }
@@ -96,6 +96,7 @@ public final class CommandEffectApplier {
         try {
             return Integer.parseInt(value);
         } catch (NumberFormatException e) {
+            log.warn("Invalid integer state value '{}'; defaulting to 0 before applying numeric effect", value);
             return 0;
         }
     }

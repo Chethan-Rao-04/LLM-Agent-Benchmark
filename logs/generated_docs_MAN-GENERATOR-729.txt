@@ -1,0 +1,66 @@
+--- Documentation for MAN-GENERATOR-729 (CLEAN) ---
+# Tool Documentation: MAN-GENERATOR-729
+
+Domain: MANUFACTURING
+Description: Manages init configure execute operations.
+
+Supported Commands:
+
+## ini_sys
+Description: Executes the ini_sys operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+Effects:
+- updates `system_status` with `ASSIGN` using `RUNNING`
+
+## enb_si
+Description: Executes the enb_si operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+Options:
+- `--version`: Show version information and exit.
+Effects:
+- updates `safety_interlock` with `ASSIGN` using `active`
+
+## msr_trb
+Description: Executes the msr_trb operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+- requires `safety_interlock` to equal `active`
+Options:
+- none
+Effects:
+- no state change documented
+
+## msr_cmp
+Description: Executes the msr_cmp operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+## uld_nzl
+Description: Executes the uld_nzl operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--output`: Write output to a file.
+Effects:
+- no state change documented
+
+## stp_plt
+Description: Executes the stp_plt operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- no state change documented
+
+--- End of documentation for MAN-GENERATOR-729 ---
+

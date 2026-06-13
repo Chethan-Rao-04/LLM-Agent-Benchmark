@@ -1,0 +1,97 @@
+--- Documentation for MAN-BATCH-221 (CLEAN) ---
+# Tool Documentation: MAN-BATCH-221
+
+Domain: MANUFACTURING
+Description: Manages init configure execute operations for manufacturing domain.
+
+Supported Commands:
+
+## ini_sys
+Description: Executes the ini_sys operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `system_status` with `ASSIGN` using `RUNNING`
+
+## enb_si
+Description: Executes the enb_si operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+Options:
+- none
+Effects:
+- updates `safety_interlock` with `ASSIGN` using `active`
+
+## opr_cmp
+Description: Executes the opr_cmp operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+- requires `safety_interlock` to equal `active`
+Options:
+- none
+Effects:
+- no state change documented
+
+## rbt_bld
+Description: Executes the rbt_bld operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--output`: Write output to a file.
+Effects:
+- updates `load_cell` with `INCREMENT`
+
+## ini_prc
+Description: Executes the ini_prc operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `quality_score` with `INCREMENT`
+
+## ld_nzl
+Description: Executes the ld_nzl operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `quality_score` with `INCREMENT`
+
+## wld_nzl
+Description: Executes the wld_nzl operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `quality_score` with `INCREMENT`
+
+## prg_ln
+Description: Executes the prg_ln operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `load_cell` with `INCREMENT`
+
+## tgl_inv
+Description: Executes the tgl_inv operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--help`: Show help information and exit.
+Effects:
+- updates `quality_score` with `INCREMENT`
+
+--- End of documentation for MAN-BATCH-221 ---
+

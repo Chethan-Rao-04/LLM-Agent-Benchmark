@@ -1,0 +1,76 @@
+--- Documentation for NET-LOCATION-199 (CLEAN) ---
+# Tool Documentation: NET-LOCATION-199
+
+Domain: NETWORK_INFRA
+Description: Manages init configure execute operations.
+
+Supported Commands:
+
+## ini_sys
+Description: Executes the ini_sys operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `system_status` with `ASSIGN` using `RUNNING`
+
+## enb_fwl
+Description: Executes the enb_fwl operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+Options:
+- none
+Effects:
+- updates `firewall` with `ASSIGN` using `active`
+
+## opt_lb
+Description: Executes the opt_lb operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+- requires `firewall` to equal `active`
+Options:
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- no state change documented
+
+## adv_ifr
+Description: Executes the adv_ifr operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- no state change documented
+
+## trc_brg
+Description: Executes the trc_brg operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- no state change documented
+
+## dny_nat
+Description: Executes the dny_nat operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+Effects:
+- no state change documented
+
+## rte_ifr
+Description: Executes the rte_ifr operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--output`: Write output to a file.
+Effects:
+- no state change documented
+
+--- End of documentation for NET-LOCATION-199 ---
+

@@ -1,0 +1,114 @@
+--- Documentation for MAN-UNIT-464 (GIBBERISH_NOISE) ---
+NOISY DOC 77a
+# Tool Documentation: MAN-UNIT-464
+
+Domain: MANUFACTURING
+Description: reboot the virtualized unit configuration. xad12 noise qqq 441
+
+Supported Commands:
+ xad12 noise qqq 441
+## ovr_plt
+Description: Executes the ovr_plt operation.
+Preconditions: xad12 noise qqq 441
+- none
+Options:
+- `--quiet`: Suppress non-essential output. xad12 noise qqq 441
+- `--simulate`: Run in simulation mode.
+- `--retry`: Retry the operation on failure.
+- `--timeout`: Set a timeout for the operation. xad12 noise qqq 441
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `vibration` with `ASSIGN` using `synced` xad12 noise qqq 441
+
+## quality-check_inv
+Description: Executes the quality-check_inv operation. xad12 noise qqq 441
+Preconditions:
+- none
+Options: xad12 noise qqq 441
+- `--verbose`: Enable verbose logging/output.
+- `--timeout`: Set a timeout for the operation.
+- `--retry`: Retry the operation on failure. xad12 noise qqq 441
+- `--version`: Show version information and exit.
+Effects:
+- updates `vibration` with `ASSIGN` using `ready` xad12 noise qqq 441
+
+## run_sch
+Description: Executes the run_sch operation. xad12 noise qqq 441
+Preconditions:
+- none
+Options: xad12 noise qqq 441
+- `--timeout`: Set a timeout for the operation.
+- `--simulate`: Run in simulation mode.
+Effects: xad12 noise qqq 441
+- updates `status` with `ASSIGN` using `8`
+
+## ovr_sch xad12 noise qqq 441
+Description: Executes the ovr_sch operation.
+Preconditions:
+- none xad12 noise qqq 441
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--version`: Show version information and exit. xad12 noise qqq 441
+- `--output`: Write output to a file.
+Effects:
+- updates `status` with `INCREMENT` xad12 noise qqq 441
+
+## exe_vlv
+Description: Executes the exe_vlv operation. xad12 noise qqq 441
+Preconditions:
+- none
+Options: xad12 noise qqq 441
+- `--simulate`: Run in simulation mode.
+- `--version`: Show version information and exit.
+- `--retry`: Retry the operation on failure. xad12 noise qqq 441
+Effects:
+- updates `rate` with `ASSIGN` using `6`
+ xad12 noise qqq 441
+## mld_sns
+Description: Executes the mld_sns operation.
+Preconditions: xad12 noise qqq 441
+- none
+Options:
+- `--output`: Write output to a file. xad12 noise qqq 441
+- `--version`: Show version information and exit.
+- `--help`: Show help information and exit.
+Effects: xad12 noise qqq 441
+- updates `rate` with `INCREMENT`
+
+## uld_fix xad12 noise qqq 441
+Description: Executes the uld_fix operation.
+Preconditions:
+- none xad12 noise qqq 441
+Options:
+- `--output`: Write output to a file.
+- `--retry`: Retry the operation on failure. xad12 noise qqq 441
+- `--interactive`: Prompt for confirmations interactively.
+- `--timeout`: Set a timeout for the operation.
+- `--debug`: Enable debug output. xad12 noise qqq 441
+Effects:
+- updates `count` with `ASSIGN` using `1`
+ xad12 noise qqq 441
+## opr_btc
+Description: Executes the opr_btc operation.
+Preconditions: xad12 noise qqq 441
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes. xad12 noise qqq 441
+- `--version`: Show version information and exit.
+- `--help`: Show help information and exit.
+- `--force`: Force the operation even if warnings are present. xad12 noise qqq 441
+Effects:
+- updates `vibration` with `ASSIGN` using `stable`
+ xad12 noise qqq 441
+## set_unt
+Description: Executes the set_unt operation.
+Preconditions: xad12 noise qqq 441
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively. xad12 noise qqq 441
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `vibration` with `ASSIGN` using `ready` xad12 noise qqq 441
+
+--- End of documentation for MAN-UNIT-464 ---
+

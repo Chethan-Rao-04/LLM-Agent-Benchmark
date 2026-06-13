@@ -1,0 +1,28 @@
+--- Documentation for MAN-PALLET-205 (INCOMPLETE) ---
+# Tool Documentation: MAN-PALLET-205
+Description: Manages auth provision deploy operations for manufacturing domain.
+
+Command: prov_fw
+Description: Executes the prov_fw operation.
+Warning: this command may change internal state.
+
+Command: dpl_fw
+Description: Executes the dpl_fw operation.
+
+Command: exe_alm
+Description: Executes the exe_alm operation.
+Warning: this command may change internal state.
+
+Command: package_alm
+Description: Executes the package_alm operation.
+Warning: this command may change internal state.
+
+Command: shd_tsp
+Description: Executes the shd_tsp operation.
+
+Command: package_chs
+Description: Executes the package_chs operation.
+Warning: this command may change internal state.
+
+
+

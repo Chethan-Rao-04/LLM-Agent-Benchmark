@@ -1,0 +1,21 @@
+--- Documentation for MAN-PROCESS-942 (INCOMPLETE) ---
+# Tool Documentation: MAN-PROCESS-942
+Description: Manages diagnose repair verify operations.
+
+Command: rpr_cnv
+Description: Executes the rpr_cnv operation.
+Warning: this command may change internal state.
+
+Command: vfy_cnv
+Description: Executes the vfy_cnv operation.
+
+Command: abt_trb
+Description: Executes the abt_trb operation.
+Warning: this command may change internal state.
+
+Command: bps_nzl
+Description: Executes the bps_nzl operation.
+Warning: this command may change internal state.
+
+
+

@@ -1,0 +1,109 @@
+--- Documentation for MAN-KILN-704 (CLEAN) ---
+# Tool Documentation: MAN-KILN-704
+
+Domain: MANUFACTURING
+Description: toggle the upstream line configuration.
+
+Supported Commands:
+
+## shd_unt
+Description: Executes the shd_unt operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--quiet`: Suppress non-essential output.
+- `--simulate`: Run in simulation mode.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `torque` with `ASSIGN` using `paused`
+
+## isp_hop
+Description: Executes the isp_hop operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `torque` with `ASSIGN` using `stable`
+
+## stp_inv
+Description: Executes the stp_inv operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--dry-run`: Simulate execution without making changes.
+- `--help`: Show help information and exit.
+- `--version`: Show version information and exit.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `torque` with `ASSIGN` using `synced`
+
+## prg_inv
+Description: Executes the prg_inv operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `rotation_speed` with `ASSIGN` using `4`
+
+## msr_dye
+Description: Executes the msr_dye operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `position` with `ASSIGN` using `6`
+
+## enb_mch
+Description: Executes the enb_mch operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `torque` with `ASSIGN` using `paused`
+
+## quality-check_prc
+Description: Executes the quality-check_prc operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--debug`: Enable debug output.
+- `--help`: Show help information and exit.
+- `--retry`: Retry the operation on failure.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `rotation_speed` with `INCREMENT`
+
+## zero-out_fix
+Description: Executes the zero-out_fix operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--timeout`: Set a timeout for the operation.
+- `--debug`: Enable debug output.
+- `--simulate`: Run in simulation mode.
+- `--help`: Show help information and exit.
+Effects:
+- updates `wear_level` with `INCREMENT`
+
+## enb_spd
+Description: Executes the enb_spd operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `wear_level` with `ASSIGN` using `4`
+
+--- End of documentation for MAN-KILN-704 ---
+

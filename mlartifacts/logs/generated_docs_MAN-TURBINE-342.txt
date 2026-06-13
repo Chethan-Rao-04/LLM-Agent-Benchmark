@@ -1,0 +1,79 @@
+--- Documentation for MAN-TURBINE-342 (CLEAN) ---
+# Tool Documentation: MAN-TURBINE-342
+
+Domain: MANUFACTURING
+Description: Manages diagnose repair verify operations for manufacturing domain.
+
+Supported Commands:
+
+## diag_cmp
+Description: Executes the diag_cmp operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `fault_status` with `ASSIGN` using `identified`
+
+## rpr_cmp
+Description: Executes the rpr_cmp operation.
+Preconditions:
+- requires `fault_status` to equal `identified`
+Options:
+- `--version`: Show version information and exit.
+- `--debug`: Enable debug output.
+Effects:
+- updates `compressor_health` with `ASSIGN` using `restored`
+
+## vfy_cmp
+Description: Executes the vfy_cmp operation.
+Preconditions:
+- requires `compressor_health` to equal `restored`
+Options:
+- `--simulate`: Run in simulation mode.
+- `--output`: Write output to a file.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- no state change documented
+
+## torque_mld
+Description: Executes the torque_mld operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `humidity` with `INCREMENT`
+
+## ext_sch
+Description: Executes the ext_sch operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `humidity` with `INCREMENT`
+
+## stp_plt
+Description: Executes the stp_plt operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--debug`: Enable debug output.
+Effects:
+- updates `humidity` with `INCREMENT`
+
+## set_vlv
+Description: Executes the set_vlv operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `humidity` with `INCREMENT`
+
+--- End of documentation for MAN-TURBINE-342 ---
+

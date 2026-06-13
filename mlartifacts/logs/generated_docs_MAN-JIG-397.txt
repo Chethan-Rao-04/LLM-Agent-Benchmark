@@ -1,0 +1,105 @@
+--- Documentation for MAN-JIG-397 (CLEAN) ---
+# Tool Documentation: MAN-JIG-397
+
+Domain: MANUFACTURING
+Description: disable the redundant spindle configuration.
+
+Supported Commands:
+
+## quality-check_unt
+Description: Executes the quality-check_unt operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--interactive`: Prompt for confirmations interactively.
+- `--force`: Force the operation even if warnings are present.
+- `--debug`: Enable debug output.
+- `--output`: Write output to a file.
+Effects:
+- updates `temperature` with `ASSIGN` using `6`
+
+## ext_inv
+Description: Executes the ext_inv operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+Effects:
+- updates `lubrication_index` with `INCREMENT`
+
+## dsb_sns
+Description: Executes the dsb_sns operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--force`: Force the operation even if warnings are present.
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `lubrication_index` with `ASSIGN` using `0`
+
+## ld_prc
+Description: Executes the ld_prc operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--output`: Write output to a file.
+Effects:
+- updates `rate` with `ASSIGN` using `synced`
+
+## aln_asm
+Description: Executes the aln_asm operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--verbose`: Enable verbose logging/output.
+- `--force`: Force the operation even if warnings are present.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `rate` with `ASSIGN` using `synced`
+
+## cal_gnt
+Description: Executes the cal_gnt operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `rate` with `ASSIGN` using `completed`
+
+## rsm_asm
+Description: Executes the rsm_asm operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--version`: Show version information and exit.
+Effects:
+- updates `temperature` with `ASSIGN` using `6`
+
+## shd_spd
+Description: Executes the shd_spd operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `temperature` with `ASSIGN` using `8`
+
+## aln_rm
+Description: Executes the aln_rm operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `temperature` with `ASSIGN` using `4`
+
+--- End of documentation for MAN-JIG-397 ---
+

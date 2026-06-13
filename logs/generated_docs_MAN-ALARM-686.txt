@@ -1,0 +1,24 @@
+--- Documentation for MAN-ALARM-686 (INCOMPLETE) ---
+# Tool Documentation: MAN-ALARM-686
+Description: record the primary spindle configuration.
+
+Command: pse_chs
+Description: Executes the pse_chs operation.
+Warning: this command may change internal state.
+
+Command: rbt_asm
+Description: Executes the rbt_asm operation.
+
+Command: aln_alm
+Description: Executes the aln_alm operation.
+Warning: this command may change internal state.
+
+Command: stp_mld
+Description: Executes the stp_mld operation.
+Warning: this command may change internal state.
+
+Command: vfy_gen
+Description: Executes the vfy_gen operation.
+
+
+

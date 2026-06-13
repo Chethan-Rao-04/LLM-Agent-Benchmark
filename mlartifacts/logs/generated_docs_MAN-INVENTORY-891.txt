@@ -1,0 +1,86 @@
+--- Documentation for MAN-INVENTORY-891 (CLEAN) ---
+# Tool Documentation: MAN-INVENTORY-891
+
+Domain: MANUFACTURING
+Description: verify the legacy alarm configuration.
+
+Supported Commands:
+
+## bps_tsp
+Description: Executes the bps_tsp operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--output`: Write output to a file.
+- `--debug`: Enable debug output.
+Effects:
+- updates `noise_level` with `ASSIGN` using `paused`
+
+## dsb_chs
+Description: Executes the dsb_chs operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--quiet`: Suppress non-essential output.
+- `--dry-run`: Simulate execution without making changes.
+- `--retry`: Retry the operation on failure.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `noise_level` with `ASSIGN` using `ready`
+
+## ext_gnt
+Description: Executes the ext_gnt operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--quiet`: Suppress non-essential output.
+- `--debug`: Enable debug output.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `load_cell` with `ASSIGN` using `3`
+
+## ini_cmp
+Description: Executes the ini_cmp operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `noise_level` with `ASSIGN` using `queued`
+
+## run_vlv
+Description: Executes the run_vlv operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--retry`: Retry the operation on failure.
+- `--simulate`: Run in simulation mode.
+- `--help`: Show help information and exit.
+Effects:
+- updates `noise_level` with `ASSIGN` using `stable`
+
+## pse_chs
+Description: Executes the pse_chs operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `noise_level` with `ASSIGN` using `queued`
+
+## rbt_hop
+Description: Executes the rbt_hop operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `voltage` with `ASSIGN` using `8`
+
+--- End of documentation for MAN-INVENTORY-891 ---
+

@@ -1,0 +1,93 @@
+--- Documentation for MAN-SCHEDULE-953 (CLEAN) ---
+# Tool Documentation: MAN-SCHEDULE-953
+
+Domain: MANUFACTURING
+Description: clamp the upstream gantry configuration.
+
+Supported Commands:
+
+## wld_jig
+Description: Executes the wld_jig operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `inert_gas_level` with `ASSIGN` using `paused`
+
+## dsb_jig
+Description: Executes the dsb_jig operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--help`: Show help information and exit.
+- `--verbose`: Enable verbose logging/output.
+- `--output`: Write output to a file.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `battery_level` with `INCREMENT`
+
+## set_gnt
+Description: Executes the set_gnt operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+Effects:
+- updates `component_id` with `ASSIGN` using `0`
+
+## ini_vlv
+Description: Executes the ini_vlv operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--retry`: Retry the operation on failure.
+- `--force`: Force the operation even if warnings are present.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `density` with `ASSIGN` using `6`
+
+## vfy_nzl
+Description: Executes the vfy_nzl operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `efficiency` with `ASSIGN` using `queued`
+
+## clp_unt
+Description: Executes the clp_unt operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--interactive`: Prompt for confirmations interactively.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `density` with `ASSIGN` using `9`
+
+## isp_sns
+Description: Executes the isp_sns operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--version`: Show version information and exit.
+Effects:
+- updates `efficiency` with `ASSIGN` using `completed`
+
+## rsm_asm
+Description: Executes the rsm_asm operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `component_id` with `INCREMENT`
+
+--- End of documentation for MAN-SCHEDULE-953 ---
+

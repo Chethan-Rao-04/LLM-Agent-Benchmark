@@ -1,0 +1,111 @@
+--- Documentation for MAN-HOPPER-940 (CLEAN) ---
+# Tool Documentation: MAN-HOPPER-940
+
+Domain: MANUFACTURING
+Description: clamp the redundant dye configuration.
+
+Supported Commands:
+
+## ini_plt
+Description: Executes the ini_plt operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `power` with `ASSIGN` using `paused`
+
+## pse_spd
+Description: Executes the pse_spd operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--output`: Write output to a file.
+- `--timeout`: Set a timeout for the operation.
+- `--verbose`: Enable verbose logging/output.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `error_count` with `ASSIGN` using `6`
+
+## wld_kln
+Description: Executes the wld_kln operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--timeout`: Set a timeout for the operation.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `air_flow` with `ASSIGN` using `8`
+
+## dsb_spd
+Description: Executes the dsb_spd operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--debug`: Enable debug output.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--version`: Show version information and exit.
+Effects:
+- updates `power` with `ASSIGN` using `ready`
+
+## enb_gnt
+Description: Executes the enb_gnt operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--simulate`: Run in simulation mode.
+- `--quiet`: Suppress non-essential output.
+- `--timeout`: Set a timeout for the operation.
+- `--help`: Show help information and exit.
+Effects:
+- updates `power` with `ASSIGN` using `ready`
+
+## rbt_jig
+Description: Executes the rbt_jig operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `duration` with `ASSIGN` using `6`
+
+## zero-out_sch
+Description: Executes the zero-out_sch operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--dry-run`: Simulate execution without making changes.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `air_flow` with `ASSIGN` using `6`
+
+## ovr_gen
+Description: Executes the ovr_gen operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `air_flow` with `INCREMENT`
+
+## srt_inv
+Description: Executes the srt_inv operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--force`: Force the operation even if warnings are present.
+- `--dry-run`: Simulate execution without making changes.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--debug`: Enable debug output.
+Effects:
+- updates `duration` with `INCREMENT`
+
+--- End of documentation for MAN-HOPPER-940 ---
+

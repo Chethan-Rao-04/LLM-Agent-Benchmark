@@ -1,0 +1,85 @@
+--- Documentation for MAN-ENGINE-504 (CLEAN) ---
+# Tool Documentation: MAN-ENGINE-504
+
+Domain: MANUFACTURING
+Description: purge the upstream material configuration.
+
+Supported Commands:
+
+## ld_spd
+Description: Executes the ld_spd operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--quiet`: Suppress non-essential output.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `efficiency` with `ASSIGN` using `synced`
+
+## sel_mch
+Description: Executes the sel_mch operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `level` with `INCREMENT`
+
+## vfy_mld
+Description: Executes the vfy_mld operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `air_flow` with `INCREMENT`
+
+## unset_btc
+Description: Executes the unset_btc operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--debug`: Enable debug output.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `air_flow` with `INCREMENT`
+
+## wld_prc
+Description: Executes the wld_prc operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--quiet`: Suppress non-essential output.
+- `--help`: Show help information and exit.
+Effects:
+- updates `level` with `ASSIGN` using `5`
+
+## rec_dye
+Description: Executes the rec_dye operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--version`: Show version information and exit.
+- `--help`: Show help information and exit.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `efficiency` with `ASSIGN` using `stable`
+
+## abt_mtl
+Description: Executes the abt_mtl operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--timeout`: Set a timeout for the operation.
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `efficiency` with `ASSIGN` using `completed`
+
+--- End of documentation for MAN-ENGINE-504 ---
+

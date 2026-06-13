@@ -1,0 +1,90 @@
+--- Documentation for MAN-QUEUE-447 (CLEAN) ---
+# Tool Documentation: MAN-QUEUE-447
+
+Domain: MANUFACTURING
+Description: operate the legacy batch configuration.
+
+Supported Commands:
+
+## ld_inv
+Description: Executes the ld_inv operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `speed` with `ASSIGN` using `queued`
+
+## uld_eng
+Description: Executes the uld_eng operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--interactive`: Prompt for confirmations interactively.
+- `--retry`: Retry the operation on failure.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `speed` with `ASSIGN` using `synced`
+
+## vfy_hop
+Description: Executes the vfy_hop operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--help`: Show help information and exit.
+- `--version`: Show version information and exit.
+Effects:
+- updates `status` with `INCREMENT`
+
+## dsb_sns
+Description: Executes the dsb_sns operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `battery_level` with `ASSIGN` using `0`
+
+## opr_que
+Description: Executes the opr_que operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--help`: Show help information and exit.
+- `--quiet`: Suppress non-essential output.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `status` with `ASSIGN` using `2`
+
+## shd_inv
+Description: Executes the shd_inv operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--timeout`: Set a timeout for the operation.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `speed` with `ASSIGN` using `queued`
+
+## uld_kln
+Description: Executes the uld_kln operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--timeout`: Set a timeout for the operation.
+- `--help`: Show help information and exit.
+- `--version`: Show version information and exit.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `friction` with `INCREMENT`
+
+--- End of documentation for MAN-QUEUE-447 ---
+

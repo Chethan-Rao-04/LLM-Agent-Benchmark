@@ -1,0 +1,98 @@
+--- Documentation for MAN-DYE-802 (CLEAN) ---
+# Tool Documentation: MAN-DYE-802
+
+Domain: MANUFACTURING
+Description: Manages diagnose repair verify operations for manufacturing domain.
+
+Supported Commands:
+
+## diag_cmp
+Description: Executes the diag_cmp operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `fault_status` with `ASSIGN` using `identified`
+
+## rpr_cmp
+Description: Executes the rpr_cmp operation.
+Preconditions:
+- requires `fault_status` to equal `identified`
+Options:
+- `--output`: Write output to a file.
+- `--simulate`: Run in simulation mode.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `compressor_health` with `ASSIGN` using `restored`
+
+## vfy_cmp
+Description: Executes the vfy_cmp operation.
+Preconditions:
+- requires `compressor_health` to equal `restored`
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--help`: Show help information and exit.
+Effects:
+- no state change documented
+
+## quality-check_fix
+Description: Executes the quality-check_fix operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--version`: Show version information and exit.
+Effects:
+- updates `cycle_time` with `INCREMENT`
+
+## rec_fix
+Description: Executes the rec_fix operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `coolant_temp` with `INCREMENT`
+
+## dsb_fix
+Description: Executes the dsb_fix operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `cycle_time` with `INCREMENT`
+
+## bps_mch
+Description: Executes the bps_mch operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `coolant_temp` with `INCREMENT`
+
+## vfy_ln
+Description: Executes the vfy_ln operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `cycle_time` with `INCREMENT`
+
+## srt_nzl
+Description: Executes the srt_nzl operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `coolant_temp` with `INCREMENT`
+
+--- End of documentation for MAN-DYE-802 ---
+

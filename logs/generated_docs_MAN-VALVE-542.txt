@@ -1,0 +1,28 @@
+--- Documentation for MAN-VALVE-542 (INCOMPLETE) ---
+# Tool Documentation: MAN-VALVE-542
+Description: load the upstream queue configuration.
+
+Command: srt_pts
+Description: Executes the srt_pts operation.
+Warning: this command may change internal state.
+
+Command: opr_bld
+Description: Executes the opr_bld operation.
+
+Command: run_ln
+Description: Executes the run_ln operation.
+Warning: this command may change internal state.
+
+Command: cal_rm
+Description: Executes the cal_rm operation.
+Warning: this command may change internal state.
+
+Command: pse_sns
+Description: Executes the pse_sns operation.
+
+Command: ini_jig
+Description: Executes the ini_jig operation.
+Warning: this command may change internal state.
+
+
+

@@ -1,0 +1,86 @@
+--- Documentation for MAN-WORKSTATION-532 (CLEAN) ---
+# Tool Documentation: MAN-WORKSTATION-532
+
+Domain: MANUFACTURING
+Description: torque the virtualized nozzle configuration.
+
+Supported Commands:
+
+## tgl_fix
+Description: Executes the tgl_fix operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `count` with `ASSIGN` using `ready`
+
+## set_spd
+Description: Executes the set_spd operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--timeout`: Set a timeout for the operation.
+- `--debug`: Enable debug output.
+Effects:
+- updates `pressure` with `ASSIGN` using `1`
+
+## set_que
+Description: Executes the set_que operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `rotation_speed` with `ASSIGN` using `4`
+
+## msr_opr_n
+Description: Executes the msr_opr_n operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--verbose`: Enable verbose logging/output.
+- `--help`: Show help information and exit.
+- `--retry`: Retry the operation on failure.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `pressure` with `INCREMENT`
+
+## zero-out_dye
+Description: Executes the zero-out_dye operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--retry`: Retry the operation on failure.
+- `--debug`: Enable debug output.
+Effects:
+- updates `pressure` with `ASSIGN` using `3`
+
+## wld_bld
+Description: Executes the wld_bld operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `psi_reading` with `ASSIGN` using `9`
+
+## wring_cmp
+Description: Executes the wring_cmp operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `noise_level` with `ASSIGN` using `stable`
+
+--- End of documentation for MAN-WORKSTATION-532 ---
+

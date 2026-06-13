@@ -1,0 +1,66 @@
+--- Documentation for NET-ACCESS-POINT-584 (CLEAN) ---
+# Tool Documentation: NET-ACCESS-POINT-584
+
+Domain: NETWORK_INFRA
+Description: Manages auth provision deploy operations.
+
+Supported Commands:
+
+## auth_dc
+Description: Executes the auth_dc operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `auth_token` with `ASSIGN` using `valid`
+
+## prov_ctr
+Description: Executes the prov_ctr operation.
+Preconditions:
+- requires `auth_token` to equal `valid`
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `container_status` with `ASSIGN` using `ready`
+
+## dpl_ctr
+Description: Executes the dpl_ctr operation.
+Preconditions:
+- requires `container_status` to equal `ready`
+Options:
+- `--help`: Show help information and exit.
+- `--output`: Write output to a file.
+Effects:
+- no state change documented
+
+## brc_ap
+Description: Executes the brc_ap operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- no state change documented
+
+## dsc_spt
+Description: Executes the dsc_spt operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- no state change documented
+
+## isp_rtr
+Description: Executes the isp_rtr operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+Effects:
+- no state change documented
+
+--- End of documentation for NET-ACCESS-POINT-584 ---
+

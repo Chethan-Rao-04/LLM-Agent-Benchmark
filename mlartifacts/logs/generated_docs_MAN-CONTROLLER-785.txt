@@ -1,0 +1,98 @@
+--- Documentation for MAN-CONTROLLER-785 (CLEAN) ---
+# Tool Documentation: MAN-CONTROLLER-785
+
+Domain: MANUFACTURING
+Description: purge the primary parts configuration.
+
+Supported Commands:
+
+## bps_ctrl
+Description: Executes the bps_ctrl operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--dry-run`: Simulate execution without making changes.
+- `--version`: Show version information and exit.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `wear_level` with `ASSIGN` using `completed`
+
+## quality-check_mld
+Description: Executes the quality-check_mld operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--force`: Force the operation even if warnings are present.
+- `--simulate`: Run in simulation mode.
+- `--output`: Write output to a file.
+- `--debug`: Enable debug output.
+Effects:
+- updates `count` with `INCREMENT`
+
+## pse_que
+Description: Executes the pse_que operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `wear_level` with `ASSIGN` using `ready`
+
+## aln_alm
+Description: Executes the aln_alm operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `wear_level` with `ASSIGN` using `completed`
+
+## run_fix
+Description: Executes the run_fix operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--verbose`: Enable verbose logging/output.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `threshold` with `ASSIGN` using `8`
+
+## zero-out_que
+Description: Executes the zero-out_que operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--version`: Show version information and exit.
+- `--debug`: Enable debug output.
+Effects:
+- updates `wear_level` with `ASSIGN` using `synced`
+
+## vfy_wks
+Description: Executes the vfy_wks operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--timeout`: Set a timeout for the operation.
+- `--version`: Show version information and exit.
+Effects:
+- updates `wear_level` with `ASSIGN` using `ready`
+
+## prg_prc
+Description: Executes the prg_prc operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--output`: Write output to a file.
+- `--timeout`: Set a timeout for the operation.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `count` with `INCREMENT`
+
+--- End of documentation for MAN-CONTROLLER-785 ---
+

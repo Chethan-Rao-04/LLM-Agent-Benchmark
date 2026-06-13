@@ -1,33 +1,36 @@
 package org.benchmark.gen.tool_generator;
 
-import org.benchmark.exec.ToolEnvironment;
-import org.benchmark.model.enums.ConditionOp;
 import org.benchmark.model.enums.Domain;
 import org.benchmark.model.enums.EffectOp;
 import org.benchmark.model.objects.CommandObject;
 import org.benchmark.model.objects.EffectObject;
 import org.benchmark.model.objects.OptionEntity;
-import org.benchmark.model.objects.PreconditionObject;
 import org.benchmark.model.objects.ToolObject;
 
-import java.util.*;
-
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
 
 /**
- * Generates synthetic {@link ToolObject} instances including commands, options,
- * preconditions, effects, and initial state schema.
+ * Generates one synthetic tool specification for the benchmark.
+ *
+ * <p>The single-step version keeps tools simple: each tool has a small state
+ * schema, a set of commands, optional flags, and direct state effects.</p>
  */
 public class ToolSpecGenerator {
-    /** Command name used to move control state from SHUTDOWN to RUNNING. */
-    public static final String PREP_COMMAND_NAME = "initialize_system";
 
     private static final String[] DESC_ADJECTIVES = {"primary", "redundant", "legacy", "upstream", "virtualized"};
+    private static final String[] STRING_EFFECT_VALUES = {"ready", "paused", "completed", "queued", "stable", "synced"};
 
     private final Random random;
     private final CommandDict commandDict;
 
     /**
-     * Creates a tool spec generator that delegates to shared sub-generators.
+     * Creates a tool generator that uses the shared random source.
      *
      * @param random shared random source for reproducibility
      */
@@ -39,190 +42,137 @@ public class ToolSpecGenerator {
     /**
      * Generates one synthetic tool for the given domain.
      *
-     * @param domain domain to sample vocabulary/state from
+     * @param domain source domain
      * @return generated tool specification
      */
     public ToolObject generateTool(Domain domain) {
+        Map<String, String> stateVariables = generateStateVariables(domain);
+        List<CommandObject> commands = generateCommands(stateVariables, domain);
         String toolName = commandDict.generateToolName(domain);
-        Map<String, String> stateVars = generateState(domain);
-        List<CommandObject> commands = generateCommands(stateVars, domain);
-
-        String mainAction = commandDict.getRandomVerb(domain);
-        String mainNoun = commandDict.getRandomNoun(domain);
-        String description = generateDescription(mainAction, mainNoun);
-
-        return new ToolObject(toolName, description, domain, commands, stateVars);
+        String description = generateDescription(commandDict.getRandomVerb(domain), commandDict.getRandomNoun(domain));
+        return new ToolObject(toolName, description, domain, commands, stateVariables);
     }
 
-    /**
-     * Generates a brief tool description sentence.
-     */
     private String generateDescription(String action, String target) {
-        String adj = DESC_ADJECTIVES[random.nextInt(DESC_ADJECTIVES.length)];
-        return String.format("%s the %s %s configuration.", action, adj, target);
+        String adjective = DESC_ADJECTIVES[random.nextInt(DESC_ADJECTIVES.length)];
+        return String.format("%s the %s %s configuration.", action, adjective, target);
     }
 
     /**
-     * Generates state variable schema for a tool.
-     * Includes numeric measurement vars plus 1-2 boolean capability vars.
+     * Builds a small schema of domain-specific state variables.
+     *
+     * <p>The generator keeps both numeric and text fields so command effects can
+     * update different kinds of state while still staying easy to reason about.</p>
      */
-    private Map<String, String> generateState(Domain domain) {
-        Map<String, String> variables = new HashMap<>();
-        int varCount = 2 + random.nextInt(4);
-        for (int i = 0; i < varCount; i++) {
-            variables.put(commandDict.getRandomStateVariable(domain), "int");
-        }
-        // Add 1-2 capability flags (boolean-style: enabled/disabled)
-        int capCount = 1 + random.nextInt(2);
-        for (int i = 0; i < capCount; i++) {
-            variables.put(commandDict.getRandomCapabilityVariable(domain), "boolean");
-        }
-        variables.put(ToolEnvironment.SYSTEM_STATUS_KEY, "string");
+    private Map<String, String> generateStateVariables(Domain domain) {
+        Map<String, String> variables = new LinkedHashMap<>();
+        Set<String> usedNames = new HashSet<>();
+
+        addUniqueVariables(variables, usedNames, domain, 2 + random.nextInt(3), "int");
+        addUniqueVariables(variables, usedNames, domain, 1 + random.nextInt(2), "string");
         return variables;
+    }
+
+    private void addUniqueVariables(Map<String, String> variables,
+                                    Set<String> usedNames,
+                                    Domain domain,
+                                    int count,
+                                    String type) {
+        int attempts = 0;
+        while (count > 0 && attempts < 50) {
+            attempts++;
+            String candidate = commandDict.getRandomStateVariable(domain);
+            if (usedNames.add(candidate)) {
+                variables.put(candidate, type);
+                count--;
+            }
+        }
     }
 
     /**
      * Generates executable commands for a tool.
+     *
+     * <p>Each command gets a unique name, optional flags, and a direct effect on
+     * the tool state. No command depends on a setup step in the single-step benchmark.</p>
      */
-    private List<CommandObject> generateCommands(Map<String, String> stateVars, Domain domain) {
+    private List<CommandObject> generateCommands(Map<String, String> stateVariables, Domain domain) {
         List<CommandObject> commands = new ArrayList<>();
-        int cmdCount = 7 + random.nextInt(3);
-
-        // Separate numeric vars from boolean capability vars
-        List<String> numericVars = new ArrayList<>();
-        List<String> capabilityVars = new ArrayList<>();
-        for (Map.Entry<String, String> entry : stateVars.entrySet()) {
-            if (entry.getKey().equals(ToolEnvironment.SYSTEM_STATUS_KEY)) continue;
-            if ("boolean".equals(entry.getValue())) {
-                capabilityVars.add(entry.getKey());
-            } else {
-                numericVars.add(entry.getKey());
-            }
-        }
-
+        List<String> numericVariables = filterVariablesByType(stateVariables, "int");
+        List<String> stringVariables = filterVariablesByType(stateVariables, "string");
         Set<String> usedCommandNames = new HashSet<>();
-        usedCommandNames.add(PREP_COMMAND_NAME);
 
-        int maxAttempts = cmdCount * 10;
+        int targetCommandCount = 7 + random.nextInt(3);
         int attempts = 0;
-
-        while (commands.size() < cmdCount && attempts < maxAttempts) {
+        while (commands.size() < targetCommandCount && attempts < targetCommandCount * 10) {
             attempts++;
+
             String verb = commandDict.getRandomVerb(domain);
             String noun = commandDict.getRandomNoun(domain);
-            String cmdName = verb + "_" + noun;
-
-            if (usedCommandNames.contains(cmdName)) {
+            String commandName = CommandAbbreviator.commandName(verb, noun);
+            if (!usedCommandNames.add(commandName)) {
                 continue;
             }
 
-            usedCommandNames.add(cmdName);
-            String desc = "Executes " + verb + " operation on " + noun + ".";
-
-            List<OptionEntity> args = generateOptionSpecs();
-
-            List<PreconditionObject> preconditionObjects = new ArrayList<>();
-            preconditionObjects.add(new PreconditionObject(
-                    ToolEnvironment.SYSTEM_STATUS_KEY,
-                    ConditionOp.EQ,
-                    ToolEnvironment.SYSTEM_STATUS_RUNNING
-            ));
-
-            // ~30% of commands require a capability flag to be enabled first
-            // e.g. "encryption == enabled" or "safety_interlock == enabled"
-            if (!capabilityVars.isEmpty() && random.nextInt(10) < 3) {
-                String capVar = capabilityVars.get(random.nextInt(capabilityVars.size()));
-                preconditionObjects.add(new PreconditionObject(capVar, ConditionOp.EQ, "enabled"));
-            }
-
-            // Effects target numeric vars (INCREMENT or ASSIGN literal)
-            List<EffectObject> commandEffectObjects = new ArrayList<>();
-            if (!numericVars.isEmpty() && random.nextBoolean()) {
-                String targetVar = numericVars.get(random.nextInt(numericVars.size()));
-                if (random.nextBoolean()) {
-                    commandEffectObjects.add(new EffectObject(targetVar, EffectOp.INCREMENT, null));
-                } else {
-                    commandEffectObjects.add(new EffectObject(targetVar, EffectOp.ASSIGN, "0"));
-                }
-            }
-
-            commands.add(new CommandObject(cmdName, args, desc, preconditionObjects, commandEffectObjects));
+            List<OptionEntity> commandOptions = generateOptionSpecs();
+            List<EffectObject> effects = generateEffects(commandOptions, numericVariables, stringVariables);
+            String description = "Executes the " + commandName + " operation.";
+            commands.add(new CommandObject(commandName, commandOptions, description, effects, Map.of()));
         }
-
-        // Guarantee at least one command has a domain precondition (for multi-step viability)
-        boolean hasDomainPrecond = commands.stream().anyMatch(cmd ->
-            cmd.commandPreConditions() != null && cmd.commandPreConditions().stream()
-                .anyMatch(p -> !p.variable().equals(ToolEnvironment.SYSTEM_STATUS_KEY)));
-
-        if (!hasDomainPrecond && !capabilityVars.isEmpty() && !commands.isEmpty()) {
-            // Pick a random command and rebuild it with an added capability precondition
-            int idx = random.nextInt(commands.size());
-            CommandObject original = commands.get(idx);
-            List<PreconditionObject> newPreconds = new ArrayList<>(original.commandPreConditions());
-            newPreconds.add(new PreconditionObject(
-                capabilityVars.get(random.nextInt(capabilityVars.size())),
-                ConditionOp.EQ, "enabled"));
-            commands.set(idx, new CommandObject(
-                original.name(), original.commandOptions(), original.description(),
-                newPreconds, original.commandEffectObjects()));
-        }
-
-        // Generate configure_* commands for each capability var used as a precondition
-        Set<String> domainPrecondVars = new HashSet<>();
-        for (CommandObject cmd : commands) {
-            if (cmd.commandPreConditions() != null) {
-                for (PreconditionObject pre : cmd.commandPreConditions()) {
-                    if (!pre.variable().equals(ToolEnvironment.SYSTEM_STATUS_KEY)) {
-                        domainPrecondVars.add(pre.variable());
-                    }
-                }
-            }
-        }
-        for (String varName : domainPrecondVars) {
-            String configureCmdName = "configure_" + varName;
-            if (!usedCommandNames.contains(configureCmdName)) {
-                usedCommandNames.add(configureCmdName);
-                commands.add(new CommandObject(
-                    configureCmdName, List.of(),
-                    "Enables " + varName + ". Sets " + varName + " to enabled.",
-                    List.of(new PreconditionObject(
-                        ToolEnvironment.SYSTEM_STATUS_KEY, ConditionOp.EQ,
-                        ToolEnvironment.SYSTEM_STATUS_RUNNING)),
-                    List.of(new EffectObject(varName, EffectOp.ASSIGN, "enabled"))
-                ));
-            }
-        }
-
-        commands.add(new CommandObject(
-                PREP_COMMAND_NAME,
-                List.of(),
-                "Initializes the tool and sets system_status to RUNNING.",
-                List.of(),
-                List.of(new EffectObject(
-                        ToolEnvironment.SYSTEM_STATUS_KEY,
-                        EffectOp.ASSIGN,
-                        ToolEnvironment.SYSTEM_STATUS_RUNNING
-                ))
-        ));
 
         return commands;
     }
 
+    private List<String> filterVariablesByType(Map<String, String> stateVariables, String type) {
+        return stateVariables.entrySet().stream()
+                .filter(entry -> type.equals(entry.getValue()))
+                .map(Map.Entry::getKey)
+                .toList();
+    }
+
     /**
-     * Generates a de-duplicated list of random option specs for a command.
+     * Builds one small effect list for a command.
+     *
+     * <p>The generator prefers to give each command one direct effect so state-based
+     * scoring remains meaningful without introducing planning logic.</p>
+     */
+    private List<EffectObject> generateEffects(List<OptionEntity> commandOptions,
+                                               List<String> numericVariables,
+                                               List<String> stringVariables) {
+        if (numericVariables.isEmpty() && stringVariables.isEmpty()) {
+            return List.of();
+        }
+
+        List<EffectObject> effects = new ArrayList<>();
+        boolean useNumericEffect = !numericVariables.isEmpty() && (stringVariables.isEmpty() || random.nextBoolean());
+
+        if (useNumericEffect) {
+            String variable = numericVariables.get(random.nextInt(numericVariables.size()));
+            EffectOp operation = random.nextBoolean() ? EffectOp.INCREMENT : EffectOp.ASSIGN;
+            String valueRef = operation == EffectOp.ASSIGN ? String.valueOf(random.nextInt(10)) : null;
+            effects.add(new EffectObject(variable, operation, valueRef));
+            return effects;
+        }
+
+        String variable = stringVariables.get(random.nextInt(stringVariables.size()));
+        String valueRef = STRING_EFFECT_VALUES[random.nextInt(STRING_EFFECT_VALUES.length)];
+        effects.add(new EffectObject(variable, EffectOp.ASSIGN, valueRef));
+        return effects;
+    }
+
+    /**
+     * Generates a de-duplicated list of common option specs for one command.
      */
     private List<OptionEntity> generateOptionSpecs() {
-        int numFlags = Math.min(random.nextInt(6), CommandDict.COMMON_OPTS.size());
+        int optionCount = Math.min(random.nextInt(6), CommandDict.COMMON_OPTS.size());
         List<OptionEntity> options = new ArrayList<>();
-        int maxAttempts = numFlags * 10;
         int attempts = 0;
 
-        while (options.size() < numFlags && attempts < maxAttempts) {
+        while (options.size() < optionCount && attempts < optionCount * 10) {
             attempts++;
             OptionEntity candidate = commandDict.getRandomCommonOptionSpec();
-            boolean alreadyExists = options.stream()
-                    .anyMatch(opt -> opt.optionName().equals(candidate.optionName()));
-            if (!alreadyExists) {
+            boolean alreadyPresent = options.stream()
+                    .anyMatch(option -> option.optionName().equals(candidate.optionName()));
+            if (!alreadyPresent) {
                 options.add(candidate);
             }
         }

@@ -1,0 +1,24 @@
+--- Documentation for MAN-BATCH-171 (INCOMPLETE) ---
+# Tool Documentation: MAN-BATCH-171
+Description: Manages init configure execute operations.
+
+Command: enb_tp
+Description: Executes the enb_tp operation.
+Warning: this command may change internal state.
+
+Command: opr_cmp
+Description: Executes the opr_cmp operation.
+
+Command: run_vlv
+Description: Executes the run_vlv operation.
+Warning: this command may change internal state.
+
+Command: srt_asm
+Description: Executes the srt_asm operation.
+Warning: this command may change internal state.
+
+Command: uld_sns
+Description: Executes the uld_sns operation.
+
+
+

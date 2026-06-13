@@ -1,0 +1,93 @@
+--- Documentation for MAN-JIG-420 (CLEAN) ---
+# Tool Documentation: MAN-JIG-420
+
+Domain: MANUFACTURING
+Description: torque the upstream conveyor configuration.
+
+Supported Commands:
+
+## clp_jig
+Description: Executes the clp_jig operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--verbose`: Enable verbose logging/output.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `friction` with `ASSIGN` using `6`
+
+## wld_rm
+Description: Executes the wld_rm operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `pressure` with `ASSIGN` using `queued`
+
+## vfy_mtl
+Description: Executes the vfy_mtl operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--retry`: Retry the operation on failure.
+- `--force`: Force the operation even if warnings are present.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `pressure` with `ASSIGN` using `ready`
+
+## ovr_tsp
+Description: Executes the ovr_tsp operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--force`: Force the operation even if warnings are present.
+- `--version`: Show version information and exit.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `pressure` with `ASSIGN` using `ready`
+
+## srt_tsp
+Description: Executes the srt_tsp operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--help`: Show help information and exit.
+- `--verbose`: Enable verbose logging/output.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `density` with `INCREMENT`
+
+## opr_mch
+Description: Executes the opr_mch operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--force`: Force the operation even if warnings are present.
+- `--simulate`: Run in simulation mode.
+- `--dry-run`: Simulate execution without making changes.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `friction` with `INCREMENT`
+
+## rec_hop
+Description: Executes the rec_hop operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--dry-run`: Simulate execution without making changes.
+- `--version`: Show version information and exit.
+- `--quiet`: Suppress non-essential output.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `friction` with `INCREMENT`
+
+--- End of documentation for MAN-JIG-420 ---
+

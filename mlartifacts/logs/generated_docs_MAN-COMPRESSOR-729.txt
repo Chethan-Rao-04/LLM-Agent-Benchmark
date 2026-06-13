@@ -1,0 +1,86 @@
+--- Documentation for MAN-COMPRESSOR-729 (CLEAN) ---
+# Tool Documentation: MAN-COMPRESSOR-729
+
+Domain: MANUFACTURING
+Description: unset the redundant workstation configuration.
+
+Supported Commands:
+
+## rec_inv
+Description: Executes the rec_inv operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--debug`: Enable debug output.
+- `--timeout`: Set a timeout for the operation.
+- `--version`: Show version information and exit.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `temperature` with `ASSIGN` using `6`
+
+## sel_trb
+Description: Executes the sel_trb operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `density` with `ASSIGN` using `queued`
+
+## rst_spd
+Description: Executes the rst_spd operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+Effects:
+- updates `noise_level` with `INCREMENT`
+
+## abt_fix
+Description: Executes the abt_fix operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--version`: Show version information and exit.
+- `--timeout`: Set a timeout for the operation.
+- `--simulate`: Run in simulation mode.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `moisture` with `ASSIGN` using `synced`
+
+## rst_sns
+Description: Executes the rst_sns operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--dry-run`: Simulate execution without making changes.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `status` with `ASSIGN` using `6`
+
+## tgl_hop
+Description: Executes the tgl_hop operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `density` with `ASSIGN` using `ready`
+
+## prg_dye
+Description: Executes the prg_dye operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `density` with `ASSIGN` using `queued`
+
+--- End of documentation for MAN-COMPRESSOR-729 ---
+

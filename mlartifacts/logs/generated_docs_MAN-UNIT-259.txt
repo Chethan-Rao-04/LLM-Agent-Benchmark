@@ -1,0 +1,79 @@
+--- Documentation for MAN-UNIT-259 (CLEAN) ---
+# Tool Documentation: MAN-UNIT-259
+
+Domain: MANUFACTURING
+Description: Manages auth provision deploy operations for manufacturing domain.
+
+Supported Commands:
+
+## auth_hmi
+Description: Executes the auth_hmi operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `auth_token` with `ASSIGN` using `valid`
+
+## prov_prg_n
+Description: Executes the prov_prg_n operation.
+Preconditions:
+- requires `auth_token` to equal `valid`
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--debug`: Enable debug output.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `program_status` with `ASSIGN` using `ready`
+
+## dpl_prg_n
+Description: Executes the dpl_prg_n operation.
+Preconditions:
+- requires `program_status` to equal `ready`
+Options:
+- `--output`: Write output to a file.
+Effects:
+- no state change documented
+
+## ini_unt
+Description: Executes the ini_unt operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `voltage` with `INCREMENT`
+
+## ld_sch
+Description: Executes the ld_sch operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `pressure` with `INCREMENT`
+
+## unset_trb
+Description: Executes the unset_trb operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--help`: Show help information and exit.
+Effects:
+- updates `voltage` with `INCREMENT`
+
+## rbt_pts
+Description: Executes the rbt_pts operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--version`: Show version information and exit.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `voltage` with `INCREMENT`
+
+--- End of documentation for MAN-UNIT-259 ---
+

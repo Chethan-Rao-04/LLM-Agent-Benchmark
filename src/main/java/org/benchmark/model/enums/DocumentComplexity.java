@@ -6,14 +6,10 @@ package org.benchmark.model.enums;
 public enum DocumentComplexity {
     /** Fully structured, consistent documentation. */
     CLEAN,
-    /** Adds random gibberish/noise tokens. */
-    GIBBERISH_NOISE,
-    /** Adds irrelevant but coherent contextual noise. */
-    CONTEXTUAL_NOISE,
     /** Omits subsets of commands/options/details. */
     INCOMPLETE,
     /** Removes helpful structure such as headings/formatting. */
     UNSTRUCTURED,
-    /** Injects contradictory guidance in the text. */
+    /** Injects contradictory option values and effects within the documentation. */
     LOGICAL_CONFLICT
 }

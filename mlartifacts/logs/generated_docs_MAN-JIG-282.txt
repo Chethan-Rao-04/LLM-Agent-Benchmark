@@ -1,0 +1,76 @@
+--- Documentation for MAN-JIG-282 (GIBBERISH_NOISE) ---
+NOISY DOC 77a
+# Tool Documentation: MAN-JIG-282
+
+Domain: MANUFACTURING
+Description: Manages init configure execute operations. xad12 noise qqq 441
+
+Supported Commands:
+ xad12 noise qqq 441
+## ini_sys
+Description: Executes the ini_sys operation.
+Preconditions: xad12 noise qqq 441
+- none
+Options:
+- `--help`: Show help information and exit. xad12 noise qqq 441
+Effects:
+- updates `system_status` with `ASSIGN` using `RUNNING`
+ xad12 noise qqq 441
+## enb_si
+Description: Executes the enb_si operation.
+Preconditions: xad12 noise qqq 441
+- requires `system_status` to equal `RUNNING`
+Options:
+- none xad12 noise qqq 441
+Effects:
+- updates `safety_interlock` with `ASSIGN` using `active`
+ xad12 noise qqq 441
+## isp_cnv
+Description: Executes the isp_cnv operation.
+Preconditions: xad12 noise qqq 441
+- requires `system_status` to equal `RUNNING`
+- requires `safety_interlock` to equal `active`
+Options: xad12 noise qqq 441
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- no state change documented xad12 noise qqq 441
+
+## enb_pts
+Description: Executes the enb_pts operation. xad12 noise qqq 441
+Preconditions:
+- none
+Options: xad12 noise qqq 441
+- `--timeout`: Set a timeout for the operation.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects: xad12 noise qqq 441
+- no state change documented
+
+## sel_que xad12 noise qqq 441
+Description: Executes the sel_que operation.
+Preconditions:
+- none xad12 noise qqq 441
+Options:
+- none
+Effects: xad12 noise qqq 441
+- no state change documented
+
+## torque_act xad12 noise qqq 441
+Description: Executes the torque_act operation.
+Preconditions:
+- none xad12 noise qqq 441
+Options:
+- none
+Effects: xad12 noise qqq 441
+- no state change documented
+
+## stp_que xad12 noise qqq 441
+Description: Executes the stp_que operation.
+Preconditions:
+- none xad12 noise qqq 441
+Options:
+- none
+Effects: xad12 noise qqq 441
+- no state change documented
+
+--- End of documentation for MAN-JIG-282 --- xad12 noise qqq 441
+

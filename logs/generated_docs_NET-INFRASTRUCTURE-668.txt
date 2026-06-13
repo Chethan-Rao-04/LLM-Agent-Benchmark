@@ -1,0 +1,98 @@
+--- Documentation for NET-INFRASTRUCTURE-668 (CLEAN) ---
+# Tool Documentation: NET-INFRASTRUCTURE-668
+
+Domain: NETWORK_INFRA
+Description: Manages auth provision deploy operations for network infra domain.
+
+Supported Commands:
+
+## auth_cld
+Description: Executes the auth_cld operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+Effects:
+- updates `auth_token` with `ASSIGN` using `valid`
+
+## prov_inst
+Description: Executes the prov_inst operation.
+Preconditions:
+- requires `auth_token` to equal `valid`
+Options:
+- none
+Effects:
+- updates `instance_status` with `ASSIGN` using `ready`
+
+## dpl_inst
+Description: Executes the dpl_inst operation.
+Preconditions:
+- requires `instance_status` to equal `ready`
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--retry`: Retry the operation on failure.
+Effects:
+- no state change documented
+
+## isp_cfg_n
+Description: Executes the isp_cfg_n operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `protocol_type` with `INCREMENT`
+
+## sav_eth
+Description: Executes the sav_eth operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `protocol_type` with `INCREMENT`
+
+## whl_mod
+Description: Executes the whl_mod operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `subnet_mask` with `INCREMENT`
+
+## sav_bbn
+Description: Executes the sav_bbn operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `subnet_mask` with `INCREMENT`
+
+## brg_rpt
+Description: Executes the brg_rpt operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `protocol_type` with `INCREMENT`
+
+## rls_dgm
+Description: Executes the rls_dgm operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--timeout`: Set a timeout for the operation.
+- `--debug`: Enable debug output.
+Effects:
+- updates `subnet_mask` with `INCREMENT`
+
+--- End of documentation for NET-INFRASTRUCTURE-668 ---
+

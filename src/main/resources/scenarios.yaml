@@ -1,0 +1,110 @@
+scenarios:
+  - pattern: init_configure_execute
+    description: "Start system, enable a safety feature, then perform operation"
+    steps:
+      - verb: initialize
+        noun: system
+        effect: { system_status: RUNNING }
+      - verb: enable
+        noun: "{capability}"
+        precondition: { system_status: RUNNING }
+        effect: { "{capability}": active }
+      - verb: "{action}"
+        noun: "{target}"
+        precondition: { system_status: RUNNING, "{capability}": active }
+    pools:
+      capability:
+        MANUFACTURING: [safety_interlock, thermal_protection, precision_mode]
+        NETWORK_INFRA: [encryption, firewall, authentication]
+      action:
+        MANUFACTURING: [calibrate, inspect, operate, measure]
+        NETWORK_INFRA: [configure, optimize, route, monitor]
+      target:
+        MANUFACTURING: [conveyor, valve, compressor, turbine]
+        NETWORK_INFRA: [router, switch, gateway, load_balancer]
+
+  - pattern: diagnose_repair_verify
+    description: "Diagnose a fault, repair the component, then verify the fix"
+    steps:
+      - verb: diagnose
+        noun: "{component}"
+        effect: { fault_status: identified }
+      - verb: repair
+        noun: "{component}"
+        precondition: { fault_status: identified }
+        effect: { "{component}_health": restored }
+      - verb: verify
+        noun: "{component}"
+        precondition: { "{component}_health": restored }
+    pools:
+      component:
+        MANUFACTURING: [conveyor, valve, compressor, turbine]
+        NETWORK_INFRA: [router, firewall, switch, load_balancer]
+
+  - pattern: auth_provision_deploy
+    description: "Authenticate to a system, provision a resource, then deploy it"
+    steps:
+      - verb: authenticate
+        noun: "{system}"
+        effect: { auth_token: valid }
+      - verb: provision
+        noun: "{resource}"
+        precondition: { auth_token: valid }
+        effect: { "{resource}_status": ready }
+      - verb: deploy
+        noun: "{resource}"
+        precondition: { "{resource}_status": ready }
+    pools:
+      system:
+        MANUFACTURING: [controller, plc, scada, hmi]
+        NETWORK_INFRA: [server, cluster, cloud, datacenter]
+      resource:
+        MANUFACTURING: [firmware, configuration, recipe, program]
+        NETWORK_INFRA: [service, container, instance, function]
+
+  - pattern: auth_inspect_configure_verify
+    description: "Authenticate, inspect the target, configure it, then verify readiness"
+    steps:
+      - verb: authenticate
+        noun: "{system}"
+        effect: { auth_token: valid }
+      - verb: inspect
+        noun: "{target}"
+        precondition: { auth_token: valid }
+        effect: { "{target}_status": inspected }
+      - verb: configure
+        noun: "{target}"
+        precondition: { "{target}_status": inspected }
+        effect: { "{target}_status": configured }
+      - verb: verify
+        noun: "{target}"
+        precondition: { "{target}_status": configured }
+    pools:
+      system:
+        MANUFACTURING: [controller, plc, scada, hmi]
+        NETWORK_INFRA: [server, cluster, cloud, datacenter]
+      target:
+        MANUFACTURING: [conveyor, valve, compressor, turbine]
+        NETWORK_INFRA: [router, firewall, switch, load_balancer]
+
+  - pattern: diagnose_isolate_repair_verify
+    description: "Diagnose a fault, isolate the component, repair it, then verify service"
+    steps:
+      - verb: diagnose
+        noun: "{component}"
+        effect: { fault_status: identified }
+      - verb: isolate
+        noun: "{component}"
+        precondition: { fault_status: identified }
+        effect: { "{component}_status": isolated }
+      - verb: repair
+        noun: "{component}"
+        precondition: { "{component}_status": isolated }
+        effect: { "{component}_health": restored }
+      - verb: verify
+        noun: "{component}"
+        precondition: { "{component}_health": restored }
+    pools:
+      component:
+        MANUFACTURING: [conveyor, valve, compressor, turbine]
+        NETWORK_INFRA: [router, firewall, switch, load_balancer]

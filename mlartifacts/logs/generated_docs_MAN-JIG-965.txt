@@ -1,0 +1,96 @@
+--- Documentation for MAN-JIG-965 (CLEAN) ---
+# Tool Documentation: MAN-JIG-965
+
+Domain: MANUFACTURING
+Description: reboot the virtualized turbine configuration.
+
+Supported Commands:
+
+## bps_opr_n
+Description: Executes the bps_opr_n operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--debug`: Enable debug output.
+Effects:
+- updates `rotation_speed` with `ASSIGN` using `ready`
+
+## run_pts
+Description: Executes the run_pts operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--quiet`: Suppress non-essential output.
+- `--retry`: Retry the operation on failure.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `torque` with `ASSIGN` using `1`
+
+## shd_bld
+Description: Executes the shd_bld operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--output`: Write output to a file.
+- `--force`: Force the operation even if warnings are present.
+- `--help`: Show help information and exit.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `torque` with `ASSIGN` using `0`
+
+## tgl_inv
+Description: Executes the tgl_inv operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `noise_level` with `ASSIGN` using `7`
+
+## unset_nzl
+Description: Executes the unset_nzl operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `rotation_speed` with `ASSIGN` using `ready`
+
+## abt_cnv
+Description: Executes the abt_cnv operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--debug`: Enable debug output.
+Effects:
+- updates `noise_level` with `ASSIGN` using `1`
+
+## quality-check_mch
+Description: Executes the quality-check_mch operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `noise_level` with `INCREMENT`
+
+## isp_opr_n
+Description: Executes the isp_opr_n operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--help`: Show help information and exit.
+Effects:
+- updates `rotation_speed` with `ASSIGN` using `synced`
+
+--- End of documentation for MAN-JIG-965 ---
+

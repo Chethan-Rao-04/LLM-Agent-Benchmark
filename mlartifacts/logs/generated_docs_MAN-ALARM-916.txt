@@ -1,0 +1,87 @@
+--- Documentation for MAN-ALARM-916 (CLEAN) ---
+# Tool Documentation: MAN-ALARM-916
+
+Domain: MANUFACTURING
+Description: initialize the upstream controller configuration.
+
+Supported Commands:
+
+## vfy_unt
+Description: Executes the vfy_unt operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `rotation_speed` with `ASSIGN` using `synced`
+
+## unset_bld
+Description: Executes the unset_bld operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--interactive`: Prompt for confirmations interactively.
+- `--verbose`: Enable verbose logging/output.
+- `--version`: Show version information and exit.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `wear_level` with `ASSIGN` using `queued`
+
+## pse_sch
+Description: Executes the pse_sch operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--timeout`: Set a timeout for the operation.
+- `--simulate`: Run in simulation mode.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `speed` with `INCREMENT`
+
+## enb_tsp
+Description: Executes the enb_tsp operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `speed` with `ASSIGN` using `5`
+
+## isp_plt
+Description: Executes the isp_plt operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--debug`: Enable debug output.
+- `--output`: Write output to a file.
+Effects:
+- updates `friction` with `INCREMENT`
+
+## zero-out_mtl
+Description: Executes the zero-out_mtl operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--interactive`: Prompt for confirmations interactively.
+- `--verbose`: Enable verbose logging/output.
+- `--help`: Show help information and exit.
+Effects:
+- updates `wear_level` with `ASSIGN` using `paused`
+
+## rst_pts
+Description: Executes the rst_pts operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `wear_level` with `ASSIGN` using `synced`
+
+--- End of documentation for MAN-ALARM-916 ---
+

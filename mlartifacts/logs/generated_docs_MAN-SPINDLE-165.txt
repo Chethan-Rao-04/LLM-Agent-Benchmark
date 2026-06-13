@@ -1,0 +1,115 @@
+--- Documentation for MAN-SPINDLE-165 (CLEAN) ---
+# Tool Documentation: MAN-SPINDLE-165
+
+Domain: MANUFACTURING
+Description: resume the redundant compressor configuration.
+
+Supported Commands:
+
+## run_gnt
+Description: Executes the run_gnt operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--timeout`: Set a timeout for the operation.
+- `--verbose`: Enable verbose logging/output.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `quality_score` with `ASSIGN` using `paused`
+
+## run_fix
+Description: Executes the run_fix operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--output`: Write output to a file.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--timeout`: Set a timeout for the operation.
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `coolant_temp` with `ASSIGN` using `5`
+
+## rec_fix
+Description: Executes the rec_fix operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--force`: Force the operation even if warnings are present.
+- `--verbose`: Enable verbose logging/output.
+- `--quiet`: Suppress non-essential output.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `quality_score` with `ASSIGN` using `paused`
+
+## package_kln
+Description: Executes the package_kln operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--verbose`: Enable verbose logging/output.
+- `--retry`: Retry the operation on failure.
+- `--quiet`: Suppress non-essential output.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `quality_score` with `ASSIGN` using `completed`
+
+## lub_act
+Description: Executes the lub_act operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--retry`: Retry the operation on failure.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--force`: Force the operation even if warnings are present.
+- `--output`: Write output to a file.
+Effects:
+- updates `quality_score` with `ASSIGN` using `synced`
+
+## rec_alm
+Description: Executes the rec_alm operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `quality_score` with `ASSIGN` using `stable`
+
+## opr_chs
+Description: Executes the opr_chs operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `quality_score` with `ASSIGN` using `synced`
+
+## rsm_que
+Description: Executes the rsm_que operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--simulate`: Run in simulation mode.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `quality_score` with `ASSIGN` using `stable`
+
+## enb_jig
+Description: Executes the enb_jig operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--verbose`: Enable verbose logging/output.
+- `--version`: Show version information and exit.
+Effects:
+- updates `quality_score` with `ASSIGN` using `stable`
+
+--- End of documentation for MAN-SPINDLE-165 ---
+

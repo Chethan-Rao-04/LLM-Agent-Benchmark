@@ -1,0 +1,98 @@
+--- Documentation for MAN-KILN-517 (CLEAN) ---
+# Tool Documentation: MAN-KILN-517
+
+Domain: MANUFACTURING
+Description: Manages diagnose repair verify operations for manufacturing domain.
+
+Supported Commands:
+
+## diag_trb
+Description: Executes the diag_trb operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--dry-run`: Simulate execution without making changes.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `fault_status` with `ASSIGN` using `identified`
+
+## rpr_trb
+Description: Executes the rpr_trb operation.
+Preconditions:
+- requires `fault_status` to equal `identified`
+Options:
+- `--output`: Write output to a file.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--version`: Show version information and exit.
+Effects:
+- updates `turbine_health` with `ASSIGN` using `restored`
+
+## vfy_trb
+Description: Executes the vfy_trb operation.
+Preconditions:
+- requires `turbine_health` to equal `restored`
+Options:
+- none
+Effects:
+- no state change documented
+
+## cal_fix
+Description: Executes the cal_fix operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `cycle_time` with `INCREMENT`
+
+## unset_eng
+Description: Executes the unset_eng operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--dry-run`: Simulate execution without making changes.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `cycle_time` with `INCREMENT`
+
+## exe_unt
+Description: Executes the exe_unt operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+Effects:
+- updates `cycle_time` with `INCREMENT`
+
+## mld_rm
+Description: Executes the mld_rm operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `cycle_time` with `INCREMENT`
+
+## ovr_cnv
+Description: Executes the ovr_cnv operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `cycle_time` with `INCREMENT`
+
+## package_jig
+Description: Executes the package_jig operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+Effects:
+- updates `cycle_time` with `INCREMENT`
+
+--- End of documentation for MAN-KILN-517 ---
+

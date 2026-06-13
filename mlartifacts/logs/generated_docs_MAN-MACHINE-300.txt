@@ -1,0 +1,90 @@
+--- Documentation for MAN-MACHINE-300 (GIBBERISH_NOISE) ---
+NOISY DOC 77a
+# Tool Documentation: MAN-MACHINE-300
+
+Domain: MANUFACTURING
+Description: calibrate the legacy material configuration. xad12 noise qqq 441
+
+Supported Commands:
+ xad12 noise qqq 441
+## clp_vlv
+Description: Executes the clp_vlv operation.
+Preconditions: xad12 noise qqq 441
+- none
+Options:
+- `--help`: Show help information and exit. xad12 noise qqq 441
+Effects:
+- updates `moisture` with `ASSIGN` using `queued`
+ xad12 noise qqq 441
+## clp_cnv
+Description: Executes the clp_cnv operation.
+Preconditions: xad12 noise qqq 441
+- none
+Options:
+- none xad12 noise qqq 441
+Effects:
+- updates `moisture` with `ASSIGN` using `paused`
+ xad12 noise qqq 441
+## ld_ctrl
+Description: Executes the ld_ctrl operation.
+Preconditions: xad12 noise qqq 441
+- none
+Options:
+- none xad12 noise qqq 441
+Effects:
+- updates `error_count` with `ASSIGN` using `0`
+ xad12 noise qqq 441
+## cal_act
+Description: Executes the cal_act operation.
+Preconditions: xad12 noise qqq 441
+- none
+Options:
+- `--quiet`: Suppress non-essential output. xad12 noise qqq 441
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `moisture` with `ASSIGN` using `completed` xad12 noise qqq 441
+
+## opr_pts
+Description: Executes the opr_pts operation. xad12 noise qqq 441
+Preconditions:
+- none
+Options: xad12 noise qqq 441
+- none
+Effects:
+- updates `humidity` with `INCREMENT` xad12 noise qqq 441
+
+## rst_tsp
+Description: Executes the rst_tsp operation. xad12 noise qqq 441
+Preconditions:
+- none
+Options: xad12 noise qqq 441
+- `--force`: Force the operation even if warnings are present.
+- `--interactive`: Prompt for confirmations interactively.
+- `--confirm`: Require explicit confirmation before proceeding. xad12 noise qqq 441
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `moisture` with `ASSIGN` using `ready` xad12 noise qqq 441
+
+## cal_ctrl
+Description: Executes the cal_ctrl operation. xad12 noise qqq 441
+Preconditions:
+- none
+Options: xad12 noise qqq 441
+- `--retry`: Retry the operation on failure.
+- `--dry-run`: Simulate execution without making changes.
+- `--interactive`: Prompt for confirmations interactively. xad12 noise qqq 441
+Effects:
+- updates `battery_level` with `INCREMENT`
+ xad12 noise qqq 441
+## zero-out_eng
+Description: Executes the zero-out_eng operation.
+Preconditions: xad12 noise qqq 441
+- none
+Options:
+- `--verbose`: Enable verbose logging/output. xad12 noise qqq 441
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `moisture` with `ASSIGN` using `ready` xad12 noise qqq 441
+
+--- End of documentation for MAN-MACHINE-300 ---
+

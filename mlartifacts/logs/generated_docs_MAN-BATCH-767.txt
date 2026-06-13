@@ -1,0 +1,114 @@
+--- Documentation for MAN-BATCH-767 (CLEAN) ---
+# Tool Documentation: MAN-BATCH-767
+
+Domain: MANUFACTURING
+Description: purge the redundant spindle configuration.
+
+Supported Commands:
+
+## enb_fix
+Description: Executes the enb_fix operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--output`: Write output to a file.
+- `--quiet`: Suppress non-essential output.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `position` with `ASSIGN` using `synced`
+
+## bps_wks
+Description: Executes the bps_wks operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--dry-run`: Simulate execution without making changes.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--debug`: Enable debug output.
+- `--help`: Show help information and exit.
+Effects:
+- updates `vibration` with `ASSIGN` using `ready`
+
+## wring_sns
+Description: Executes the wring_sns operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `vibration` with `ASSIGN` using `stable`
+
+## abt_hop
+Description: Executes the abt_hop operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--interactive`: Prompt for confirmations interactively.
+- `--help`: Show help information and exit.
+- `--debug`: Enable debug output.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `position` with `ASSIGN` using `synced`
+
+## run_chs
+Description: Executes the run_chs operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--interactive`: Prompt for confirmations interactively.
+- `--help`: Show help information and exit.
+Effects:
+- updates `vibration` with `ASSIGN` using `stable`
+
+## rec_prc
+Description: Executes the rec_prc operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--debug`: Enable debug output.
+Effects:
+- updates `coolant_temp` with `ASSIGN` using `9`
+
+## unset_ctrl
+Description: Executes the unset_ctrl operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--interactive`: Prompt for confirmations interactively.
+- `--quiet`: Suppress non-essential output.
+- `--version`: Show version information and exit.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `threshold` with `ASSIGN` using `4`
+
+## rbt_mld
+Description: Executes the rbt_mld operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--help`: Show help information and exit.
+- `--debug`: Enable debug output.
+- `--simulate`: Run in simulation mode.
+- `--output`: Write output to a file.
+Effects:
+- updates `vibration` with `ASSIGN` using `stable`
+
+## rbt_opr_n
+Description: Executes the rbt_opr_n operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `vibration` with `ASSIGN` using `synced`
+
+--- End of documentation for MAN-BATCH-767 ---
+

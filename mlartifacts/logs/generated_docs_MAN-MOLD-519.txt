@@ -1,0 +1,80 @@
+--- Documentation for MAN-MOLD-519 (CLEAN) ---
+# Tool Documentation: MAN-MOLD-519
+
+Domain: MANUFACTURING
+Description: Manages diagnose repair verify operations for manufacturing domain.
+
+Supported Commands:
+
+## diag_vlv
+Description: Executes the diag_vlv operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `fault_status` with `ASSIGN` using `identified`
+
+## rpr_vlv
+Description: Executes the rpr_vlv operation.
+Preconditions:
+- requires `fault_status` to equal `identified`
+Options:
+- `--help`: Show help information and exit.
+Effects:
+- updates `valve_health` with `ASSIGN` using `restored`
+
+## vfy_vlv
+Description: Executes the vfy_vlv operation.
+Preconditions:
+- requires `valve_health` to equal `restored`
+Options:
+- `--output`: Write output to a file.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- no state change documented
+
+## rec_vlv
+Description: Executes the rec_vlv operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `output_yield` with `INCREMENT`
+
+## ld_mch
+Description: Executes the ld_mch operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `output_yield` with `INCREMENT`
+
+## bps_ctrl
+Description: Executes the bps_ctrl operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `cycle_time` with `INCREMENT`
+
+## zero-out_tsp
+Description: Executes the zero-out_tsp operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--verbose`: Enable verbose logging/output.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `cycle_time` with `INCREMENT`
+
+--- End of documentation for MAN-MOLD-519 ---
+

@@ -1,0 +1,67 @@
+--- Documentation for NET-BACKBONE-827 (CLEAN) ---
+# Tool Documentation: NET-BACKBONE-827
+
+Domain: NETWORK_INFRA
+Description: Manages init configure execute operations.
+
+Supported Commands:
+
+## ini_sys
+Description: Executes the ini_sys operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `system_status` with `ASSIGN` using `RUNNING`
+
+## enb_enc_n
+Description: Executes the enb_enc_n operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+Options:
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `encryption` with `ASSIGN` using `active`
+
+## mon_rtr
+Description: Executes the mon_rtr operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+- requires `encryption` to equal `active`
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- no state change documented
+
+## brg_trk
+Description: Executes the brg_trk operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--retry`: Retry the operation on failure.
+Effects:
+- no state change documented
+
+## fwd_hst
+Description: Executes the fwd_hst operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+## bkl_net
+Description: Executes the bkl_net operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+--- End of documentation for NET-BACKBONE-827 ---
+

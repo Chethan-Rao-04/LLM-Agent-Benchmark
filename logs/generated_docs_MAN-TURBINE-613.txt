@@ -1,0 +1,28 @@
+--- Documentation for MAN-TURBINE-613 (INCOMPLETE) ---
+# Tool Documentation: MAN-TURBINE-613
+Description: package the redundant unit configuration.
+
+Command: ext_prc
+Description: Executes the ext_prc operation.
+Warning: this command may change internal state.
+
+Command: quality-check_bld
+Description: Executes the quality-check_bld operation.
+
+Command: unset_kln
+Description: Executes the unset_kln operation.
+Warning: this command may change internal state.
+
+Command: mld_que
+Description: Executes the mld_que operation.
+Warning: this command may change internal state.
+
+Command: clp_nzl
+Description: Executes the clp_nzl operation.
+
+Command: dsb_dye
+Description: Executes the dsb_dye operation.
+Warning: this command may change internal state.
+
+
+

@@ -1,0 +1,76 @@
+--- Documentation for MAN-VALVE-709 (CLEAN) ---
+# Tool Documentation: MAN-VALVE-709
+
+Domain: MANUFACTURING
+Description: Manages init configure execute operations.
+
+Supported Commands:
+
+## ini_sys
+Description: Executes the ini_sys operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `system_status` with `ASSIGN` using `RUNNING`
+
+## enb_tp
+Description: Executes the enb_tp operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+Options:
+- `--retry`: Retry the operation on failure.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `thermal_protection` with `ASSIGN` using `active`
+
+## cal_cmp
+Description: Executes the cal_cmp operation.
+Preconditions:
+- requires `thermal_protection` to equal `active`
+- requires `system_status` to equal `RUNNING`
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- no state change documented
+
+## torque_plt
+Description: Executes the torque_plt operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+## rst_eng
+Description: Executes the rst_eng operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--output`: Write output to a file.
+Effects:
+- no state change documented
+
+## torque_trb
+Description: Executes the torque_trb operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- no state change documented
+
+## quality-check_chs
+Description: Executes the quality-check_chs operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+Effects:
+- no state change documented
+
+--- End of documentation for MAN-VALVE-709 ---
+

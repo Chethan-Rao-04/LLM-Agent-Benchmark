@@ -1,0 +1,87 @@
+--- Documentation for MAN-ACTUATOR-293 (CLEAN) ---
+# Tool Documentation: MAN-ACTUATOR-293
+
+Domain: MANUFACTURING
+Description: stop the redundant hopper configuration.
+
+Supported Commands:
+
+## clp_plt
+Description: Executes the clp_plt operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `air_flow` with `ASSIGN` using `7`
+
+## msr_unt
+Description: Executes the msr_unt operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--output`: Write output to a file.
+Effects:
+- updates `level` with `ASSIGN` using `ready`
+
+## stp_wks
+Description: Executes the stp_wks operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--verbose`: Enable verbose logging/output.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `output_yield` with `ASSIGN` using `2`
+
+## dsb_bld
+Description: Executes the dsb_bld operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `output_yield` with `ASSIGN` using `8`
+
+## bps_nzl
+Description: Executes the bps_nzl operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--help`: Show help information and exit.
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `level` with `ASSIGN` using `queued`
+
+## sel_ln
+Description: Executes the sel_ln operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+Effects:
+- updates `air_flow` with `ASSIGN` using `3`
+
+## aln_mtl
+Description: Executes the aln_mtl operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `air_flow` with `INCREMENT`
+
+## wring_dye
+Description: Executes the wring_dye operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `level` with `ASSIGN` using `queued`
+
+--- End of documentation for MAN-ACTUATOR-293 ---
+

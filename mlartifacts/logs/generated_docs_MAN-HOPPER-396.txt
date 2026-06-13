@@ -1,0 +1,97 @@
+--- Documentation for MAN-HOPPER-396 (CLEAN) ---
+# Tool Documentation: MAN-HOPPER-396
+
+Domain: MANUFACTURING
+Description: Manages diagnose repair verify operations for manufacturing domain.
+
+Supported Commands:
+
+## diag_cmp
+Description: Executes the diag_cmp operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `fault_status` with `ASSIGN` using `identified`
+
+## rpr_cmp
+Description: Executes the rpr_cmp operation.
+Preconditions:
+- requires `fault_status` to equal `identified`
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--simulate`: Run in simulation mode.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `compressor_health` with `ASSIGN` using `restored`
+
+## vfy_cmp
+Description: Executes the vfy_cmp operation.
+Preconditions:
+- requires `compressor_health` to equal `restored`
+Options:
+- none
+Effects:
+- no state change documented
+
+## clp_prc
+Description: Executes the clp_prc operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `threshold` with `INCREMENT`
+
+## package_rm
+Description: Executes the package_rm operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--simulate`: Run in simulation mode.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `threshold` with `INCREMENT`
+
+## ini_prc
+Description: Executes the ini_prc operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `threshold` with `INCREMENT`
+
+## isp_mch
+Description: Executes the isp_mch operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `rate` with `INCREMENT`
+
+## set_vlv
+Description: Executes the set_vlv operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `threshold` with `INCREMENT`
+
+## opr_sns
+Description: Executes the opr_sns operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `rate` with `INCREMENT`
+
+--- End of documentation for MAN-HOPPER-396 ---
+

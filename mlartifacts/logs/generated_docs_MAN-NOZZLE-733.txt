@@ -1,0 +1,83 @@
+--- Documentation for MAN-NOZZLE-733 (CLEAN) ---
+# Tool Documentation: MAN-NOZZLE-733
+
+Domain: MANUFACTURING
+Description: toggle the redundant operator configuration.
+
+Supported Commands:
+
+## unset_ln
+Description: Executes the unset_ln operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `coolant_temp` with `INCREMENT`
+
+## wring_cmp
+Description: Executes the wring_cmp operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--version`: Show version information and exit.
+- `--dry-run`: Simulate execution without making changes.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `humidity` with `ASSIGN` using `stable`
+
+## cal_wks
+Description: Executes the cal_wks operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `humidity` with `ASSIGN` using `synced`
+
+## uld_pts
+Description: Executes the uld_pts operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `level` with `INCREMENT`
+
+## zero-out_ln
+Description: Executes the zero-out_ln operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--quiet`: Suppress non-essential output.
+- `--help`: Show help information and exit.
+- `--force`: Force the operation even if warnings are present.
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `duration` with `ASSIGN` using `7`
+
+## rsm_alm
+Description: Executes the rsm_alm operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--output`: Write output to a file.
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `level` with `ASSIGN` using `2`
+
+## quality-check_spd
+Description: Executes the quality-check_spd operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--version`: Show version information and exit.
+Effects:
+- updates `coolant_temp` with `ASSIGN` using `6`
+
+--- End of documentation for MAN-NOZZLE-733 ---
+

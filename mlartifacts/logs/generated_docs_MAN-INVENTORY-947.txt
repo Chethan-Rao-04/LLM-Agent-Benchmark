@@ -1,0 +1,77 @@
+--- Documentation for MAN-INVENTORY-947 (CLEAN) ---
+# Tool Documentation: MAN-INVENTORY-947
+
+Domain: MANUFACTURING
+Description: Manages auth provision deploy operations.
+
+Supported Commands:
+
+## auth_scd
+Description: Executes the auth_scd operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `auth_token` with `ASSIGN` using `valid`
+
+## prov_rcp
+Description: Executes the prov_rcp operation.
+Preconditions:
+- requires `auth_token` to equal `valid`
+Options:
+- `--debug`: Enable debug output.
+- `--output`: Write output to a file.
+Effects:
+- updates `recipe_status` with `ASSIGN` using `ready`
+
+## dpl_rcp
+Description: Executes the dpl_rcp operation.
+Preconditions:
+- requires `recipe_status` to equal `ready`
+Options:
+- `--output`: Write output to a file.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- no state change documented
+
+## msr_wks
+Description: Executes the msr_wks operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+## ld_ln
+Description: Executes the ld_ln operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--debug`: Enable debug output.
+Effects:
+- no state change documented
+
+## bps_tsp
+Description: Executes the bps_tsp operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+## run_eng
+Description: Executes the run_eng operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--simulate`: Run in simulation mode.
+Effects:
+- no state change documented
+
+--- End of documentation for MAN-INVENTORY-947 ---
+

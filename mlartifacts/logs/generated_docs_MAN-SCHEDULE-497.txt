@@ -1,0 +1,98 @@
+--- Documentation for MAN-SCHEDULE-497 (CLEAN) ---
+# Tool Documentation: MAN-SCHEDULE-497
+
+Domain: MANUFACTURING
+Description: record the virtualized parts configuration.
+
+Supported Commands:
+
+## unset_nzl
+Description: Executes the unset_nzl operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--quiet`: Suppress non-essential output.
+- `--output`: Write output to a file.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `position` with `ASSIGN` using `ready`
+
+## rst_act
+Description: Executes the rst_act operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--output`: Write output to a file.
+- `--interactive`: Prompt for confirmations interactively.
+- `--help`: Show help information and exit.
+Effects:
+- updates `position` with `ASSIGN` using `ready`
+
+## torque_opr_n
+Description: Executes the torque_opr_n operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `position` with `ASSIGN` using `paused`
+
+## set_que
+Description: Executes the set_que operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--simulate`: Run in simulation mode.
+- `--output`: Write output to a file.
+Effects:
+- updates `psi_reading` with `INCREMENT`
+
+## stp_plt
+Description: Executes the stp_plt operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `psi_reading` with `INCREMENT`
+
+## cal_hop
+Description: Executes the cal_hop operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--retry`: Retry the operation on failure.
+- `--simulate`: Run in simulation mode.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `pressure` with `INCREMENT`
+
+## exe_chs
+Description: Executes the exe_chs operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--simulate`: Run in simulation mode.
+- `--output`: Write output to a file.
+- `--version`: Show version information and exit.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `position` with `ASSIGN` using `stable`
+
+## srt_jig
+Description: Executes the srt_jig operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `position` with `ASSIGN` using `paused`
+
+--- End of documentation for MAN-SCHEDULE-497 ---
+

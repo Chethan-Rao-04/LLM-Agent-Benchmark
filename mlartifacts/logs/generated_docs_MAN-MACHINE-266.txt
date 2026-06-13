@@ -1,0 +1,101 @@
+--- Documentation for MAN-MACHINE-266 (CLEAN) ---
+# Tool Documentation: MAN-MACHINE-266
+
+Domain: MANUFACTURING
+Description: mold the redundant compressor configuration.
+
+Supported Commands:
+
+## unset_chs
+Description: Executes the unset_chs operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `noise_level` with `ASSIGN` using `8`
+
+## cal_gen
+Description: Executes the cal_gen operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `duration` with `INCREMENT`
+
+## pse_mtl
+Description: Executes the pse_mtl operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `rate` with `ASSIGN` using `stable`
+
+## lub_vlv
+Description: Executes the lub_vlv operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `rate` with `ASSIGN` using `ready`
+
+## ext_mld
+Description: Executes the ext_mld operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--force`: Force the operation even if warnings are present.
+- `--simulate`: Run in simulation mode.
+- `--help`: Show help information and exit.
+Effects:
+- updates `duration` with `ASSIGN` using `3`
+
+## isp_mtl
+Description: Executes the isp_mtl operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `noise_level` with `INCREMENT`
+
+## exe_bld
+Description: Executes the exe_bld operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `duration` with `ASSIGN` using `7`
+
+## ovr_opr_n
+Description: Executes the ovr_opr_n operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--output`: Write output to a file.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `rate` with `ASSIGN` using `stable`
+
+## stp_gnt
+Description: Executes the stp_gnt operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `noise_level` with `INCREMENT`
+
+--- End of documentation for MAN-MACHINE-266 ---
+

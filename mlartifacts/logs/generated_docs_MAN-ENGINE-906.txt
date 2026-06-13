@@ -1,0 +1,89 @@
+--- Documentation for MAN-ENGINE-906 (CLEAN) ---
+# Tool Documentation: MAN-ENGINE-906
+
+Domain: MANUFACTURING
+Description: bypass the legacy parts configuration.
+
+Supported Commands:
+
+## run_sch
+Description: Executes the run_sch operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `cycle_time` with `ASSIGN` using `0`
+
+## enb_spd
+Description: Executes the enb_spd operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--verbose`: Enable verbose logging/output.
+- `--version`: Show version information and exit.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `wear_level` with `ASSIGN` using `0`
+
+## lub_eng
+Description: Executes the lub_eng operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `power` with `ASSIGN` using `completed`
+
+## torque_plt
+Description: Executes the torque_plt operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `power` with `ASSIGN` using `synced`
+
+## aln_chs
+Description: Executes the aln_chs operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `cycle_time` with `ASSIGN` using `1`
+
+## rsm_ctrl
+Description: Executes the rsm_ctrl operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `wear_level` with `ASSIGN` using `1`
+
+## package_act
+Description: Executes the package_act operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+Effects:
+- updates `power` with `ASSIGN` using `synced`
+
+## srt_cnv
+Description: Executes the srt_cnv operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--output`: Write output to a file.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `power` with `ASSIGN` using `completed`
+
+--- End of documentation for MAN-ENGINE-906 ---
+

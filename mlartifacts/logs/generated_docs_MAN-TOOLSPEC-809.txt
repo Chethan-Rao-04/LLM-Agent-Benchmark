@@ -1,0 +1,100 @@
+--- Documentation for MAN-TOOLSPEC-809 (GIBBERISH_NOISE) ---
+NOISY DOC 77a
+# Tool Documentation: MAN-TOOLSPEC-809
+
+Domain: MANUFACTURING
+Description: extrude the redundant process configuration. xad12 noise qqq 441
+
+Supported Commands:
+ xad12 noise qqq 441
+## ovr_inv
+Description: Executes the ovr_inv operation.
+Preconditions: xad12 noise qqq 441
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding. xad12 noise qqq 441
+- `--version`: Show version information and exit.
+- `--output`: Write output to a file.
+- `--force`: Force the operation even if warnings are present. xad12 noise qqq 441
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `psi_reading` with `ASSIGN` using `ready` xad12 noise qqq 441
+
+## shd_ctrl
+Description: Executes the shd_ctrl operation. xad12 noise qqq 441
+Preconditions:
+- none
+Options: xad12 noise qqq 441
+- none
+Effects:
+- updates `level` with `ASSIGN` using `9` xad12 noise qqq 441
+
+## rsm_cnv
+Description: Executes the rsm_cnv operation. xad12 noise qqq 441
+Preconditions:
+- none
+Options: xad12 noise qqq 441
+- `--debug`: Enable debug output.
+- `--interactive`: Prompt for confirmations interactively.
+Effects: xad12 noise qqq 441
+- updates `level` with `INCREMENT`
+
+## ini_sns xad12 noise qqq 441
+Description: Executes the ini_sns operation.
+Preconditions:
+- none xad12 noise qqq 441
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--version`: Show version information and exit. xad12 noise qqq 441
+- `--debug`: Enable debug output.
+Effects:
+- updates `status` with `ASSIGN` using `completed` xad12 noise qqq 441
+
+## run_sns
+Description: Executes the run_sns operation. xad12 noise qqq 441
+Preconditions:
+- none
+Options: xad12 noise qqq 441
+- `--version`: Show version information and exit.
+- `--output`: Write output to a file.
+- `--simulate`: Run in simulation mode. xad12 noise qqq 441
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `psi_reading` with `ASSIGN` using `queued` xad12 noise qqq 441
+
+## clp_wks
+Description: Executes the clp_wks operation. xad12 noise qqq 441
+Preconditions:
+- none
+Options: xad12 noise qqq 441
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--retry`: Retry the operation on failure.
+Effects: xad12 noise qqq 441
+- updates `level` with `ASSIGN` using `2`
+
+## stp_inv xad12 noise qqq 441
+Description: Executes the stp_inv operation.
+Preconditions:
+- none xad12 noise qqq 441
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--output`: Write output to a file. xad12 noise qqq 441
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `psi_reading` with `ASSIGN` using `ready` xad12 noise qqq 441
+
+## ld_ln
+Description: Executes the ld_ln operation. xad12 noise qqq 441
+Preconditions:
+- none
+Options: xad12 noise qqq 441
+- `--interactive`: Prompt for confirmations interactively.
+- `--output`: Write output to a file.
+- `--dry-run`: Simulate execution without making changes. xad12 noise qqq 441
+- `--debug`: Enable debug output.
+- `--force`: Force the operation even if warnings are present.
+Effects: xad12 noise qqq 441
+- updates `lubrication_index` with `ASSIGN` using `8`
+
+--- End of documentation for MAN-TOOLSPEC-809 --- xad12 noise qqq 441
+

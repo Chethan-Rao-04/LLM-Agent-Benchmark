@@ -1,0 +1,95 @@
+--- Documentation for NET-VLAN-520 (CLEAN) ---
+# Tool Documentation: NET-VLAN-520
+
+Domain: NETWORK_INFRA
+Description: Manages init configure execute operations for network infra domain.
+
+Supported Commands:
+
+## ini_sys
+Description: Executes the ini_sys operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `system_status` with `ASSIGN` using `RUNNING`
+
+## enb_authn
+Description: Executes the enb_authn operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `authentication` with `ASSIGN` using `active`
+
+## opt_lb
+Description: Executes the opt_lb operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+- requires `authentication` to equal `active`
+Options:
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- no state change documented
+
+## dny_trk
+Description: Executes the dny_trk operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `rx_bytes` with `INCREMENT`
+
+## trc_trk
+Description: Executes the trc_trk operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+Effects:
+- updates `rx_bytes` with `INCREMENT`
+
+## upd_gtw
+Description: Executes the upd_gtw operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `rx_bytes` with `INCREMENT`
+
+## cap_brg
+Description: Executes the cap_brg operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `rx_bytes` with `INCREMENT`
+
+## dec_chn
+Description: Executes the dec_chn operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--help`: Show help information and exit.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `rx_bytes` with `INCREMENT`
+
+## adv_snt
+Description: Executes the adv_snt operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `dns_server` with `INCREMENT`
+
+--- End of documentation for NET-VLAN-520 ---
+

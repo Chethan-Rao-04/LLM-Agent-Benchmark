@@ -1,0 +1,86 @@
+--- Documentation for MAN-BUILD-982 (CLEAN) ---
+# Tool Documentation: MAN-BUILD-982
+
+Domain: MANUFACTURING
+Description: Manages auth provision deploy operations for manufacturing domain.
+
+Supported Commands:
+
+## auth_plc
+Description: Executes the auth_plc operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `auth_token` with `ASSIGN` using `valid`
+
+## prov_fw
+Description: Executes the prov_fw operation.
+Preconditions:
+- requires `auth_token` to equal `valid`
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `firmware_status` with `ASSIGN` using `ready`
+
+## dpl_fw
+Description: Executes the dpl_fw operation.
+Preconditions:
+- requires `firmware_status` to equal `ready`
+Options:
+- `--retry`: Retry the operation on failure.
+- `--debug`: Enable debug output.
+Effects:
+- no state change documented
+
+## abt_rm
+Description: Executes the abt_rm operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `duration` with `INCREMENT`
+
+## tgl_plt
+Description: Executes the tgl_plt operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--interactive`: Prompt for confirmations interactively.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `moisture` with `INCREMENT`
+
+## recalibrate_plc
+Description: Runs auxiliary plc routine.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `auth_token` with `ASSIGN` using `valid`
+
+## package_spd
+Description: Executes the package_spd operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `moisture` with `INCREMENT`
+
+## bps_act
+Description: Executes the bps_act operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `moisture` with `INCREMENT`
+
+--- End of documentation for MAN-BUILD-982 ---
+

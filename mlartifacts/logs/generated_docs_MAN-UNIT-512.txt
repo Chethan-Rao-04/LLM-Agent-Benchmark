@@ -1,0 +1,100 @@
+--- Documentation for MAN-UNIT-512 (CLEAN) ---
+# Tool Documentation: MAN-UNIT-512
+
+Domain: MANUFACTURING
+Description: inspect the primary unit configuration.
+
+Supported Commands:
+
+## rbt_cnv
+Description: Executes the rbt_cnv operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--force`: Force the operation even if warnings are present.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `vibration` with `ASSIGN` using `stable`
+
+## dsb_sch
+Description: Executes the dsb_sch operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--timeout`: Set a timeout for the operation.
+- `--interactive`: Prompt for confirmations interactively.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `power` with `ASSIGN` using `queued`
+
+## isp_act
+Description: Executes the isp_act operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `moisture` with `ASSIGN` using `9`
+
+## ovr_cmp
+Description: Executes the ovr_cmp operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--verbose`: Enable verbose logging/output.
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `vibration` with `ASSIGN` using `stable`
+
+## zero-out_bld
+Description: Executes the zero-out_bld operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--output`: Write output to a file.
+- `--interactive`: Prompt for confirmations interactively.
+- `--force`: Force the operation even if warnings are present.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `power` with `ASSIGN` using `queued`
+
+## aln_btc
+Description: Executes the aln_btc operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+Effects:
+- updates `power` with `ASSIGN` using `ready`
+
+## rsm_gnt
+Description: Executes the rsm_gnt operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--verbose`: Enable verbose logging/output.
+- `--timeout`: Set a timeout for the operation.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `power` with `ASSIGN` using `queued`
+
+## tgl_vlv
+Description: Executes the tgl_vlv operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--output`: Write output to a file.
+- `--quiet`: Suppress non-essential output.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `moisture` with `INCREMENT`
+
+--- End of documentation for MAN-UNIT-512 ---
+

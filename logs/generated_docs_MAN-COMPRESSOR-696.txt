@@ -1,0 +1,28 @@
+--- Documentation for MAN-COMPRESSOR-696 (INCOMPLETE) ---
+# Tool Documentation: MAN-COMPRESSOR-696
+Description: Manages init configure execute operations.
+
+Command: enb_si
+Description: Executes the enb_si operation.
+Warning: this command may change internal state.
+
+Command: msr_vlv
+Description: Executes the msr_vlv operation.
+
+Command: dsb_mtl
+Description: Executes the dsb_mtl operation.
+Warning: this command may change internal state.
+
+Command: torque_mld
+Description: Executes the torque_mld operation.
+Warning: this command may change internal state.
+
+Command: uld_sns
+Description: Executes the uld_sns operation.
+
+Command: ovr_prc
+Description: Executes the ovr_prc operation.
+Warning: this command may change internal state.
+
+
+

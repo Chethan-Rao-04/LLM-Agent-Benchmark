@@ -1,0 +1,107 @@
+--- Documentation for MAN-CHASSIS-247 (CLEAN) ---
+# Tool Documentation: MAN-CHASSIS-247
+
+Domain: MANUFACTURING
+Description: bypass the upstream conveyor configuration.
+
+Supported Commands:
+
+## sel_mtl
+Description: Executes the sel_mtl operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--verbose`: Enable verbose logging/output.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `output_yield` with `ASSIGN` using `paused`
+
+## rbt_kln
+Description: Executes the rbt_kln operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+Effects:
+- updates `power` with `INCREMENT`
+
+## rst_pts
+Description: Executes the rst_pts operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--output`: Write output to a file.
+Effects:
+- updates `power` with `INCREMENT`
+
+## stp_eng
+Description: Executes the stp_eng operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--version`: Show version information and exit.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `power` with `INCREMENT`
+
+## ext_gnt
+Description: Executes the ext_gnt operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--simulate`: Run in simulation mode.
+- `--debug`: Enable debug output.
+- `--help`: Show help information and exit.
+- `--output`: Write output to a file.
+Effects:
+- updates `power` with `ASSIGN` using `6`
+
+## shd_act
+Description: Executes the shd_act operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--help`: Show help information and exit.
+- `--interactive`: Prompt for confirmations interactively.
+- `--simulate`: Run in simulation mode.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `output_yield` with `ASSIGN` using `paused`
+
+## ini_nzl
+Description: Executes the ini_nzl operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--verbose`: Enable verbose logging/output.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `power` with `ASSIGN` using `7`
+
+## mld_chs
+Description: Executes the mld_chs operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `power` with `ASSIGN` using `6`
+
+## ini_cmp
+Description: Executes the ini_cmp operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `output_yield` with `ASSIGN` using `synced`
+
+--- End of documentation for MAN-CHASSIS-247 ---
+

@@ -1,0 +1,28 @@
+--- Documentation for MAN-VALVE-566 (INCOMPLETE) ---
+# Tool Documentation: MAN-VALVE-566
+Description: reboot the redundant chassis configuration.
+
+Command: exe_wks
+Description: Executes the exe_wks operation.
+Warning: this command may change internal state.
+
+Command: ld_gen
+Description: Executes the ld_gen operation.
+
+Command: enb_vlv
+Description: Executes the enb_vlv operation.
+Warning: this command may change internal state.
+
+Command: set_gnt
+Description: Executes the set_gnt operation.
+Warning: this command may change internal state.
+
+Command: enb_gen
+Description: Executes the enb_gen operation.
+
+Command: unset_opr_n
+Description: Executes the unset_opr_n operation.
+Warning: this command may change internal state.
+
+
+

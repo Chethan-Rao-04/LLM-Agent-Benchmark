@@ -1,0 +1,104 @@
+--- Documentation for MAN-INVENTORY-304 (CLEAN) ---
+# Tool Documentation: MAN-INVENTORY-304
+
+Domain: MANUFACTURING
+Description: verify the upstream build configuration.
+
+Supported Commands:
+
+## vfy_ln
+Description: Executes the vfy_ln operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `output_yield` with `INCREMENT`
+
+## unset_ln
+Description: Executes the unset_ln operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `level` with `INCREMENT`
+
+## package_pts
+Description: Executes the package_pts operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--quiet`: Suppress non-essential output.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `output_yield` with `ASSIGN` using `2`
+
+## ovr_bld
+Description: Executes the ovr_bld operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--version`: Show version information and exit.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `power` with `ASSIGN` using `stable`
+
+## shd_prc
+Description: Executes the shd_prc operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--timeout`: Set a timeout for the operation.
+- `--quiet`: Suppress non-essential output.
+- `--retry`: Retry the operation on failure.
+- `--version`: Show version information and exit.
+Effects:
+- updates `power` with `ASSIGN` using `queued`
+
+## bps_opr_n
+Description: Executes the bps_opr_n operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--version`: Show version information and exit.
+- `--help`: Show help information and exit.
+- `--quiet`: Suppress non-essential output.
+- `--debug`: Enable debug output.
+Effects:
+- updates `power` with `ASSIGN` using `ready`
+
+## sel_eng
+Description: Executes the sel_eng operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `power` with `ASSIGN` using `ready`
+
+## vfy_prc
+Description: Executes the vfy_prc operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+Effects:
+- updates `output_yield` with `ASSIGN` using `6`
+
+## pse_gen
+Description: Executes the pse_gen operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `output_yield` with `INCREMENT`
+
+--- End of documentation for MAN-INVENTORY-304 ---
+

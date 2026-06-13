@@ -1,0 +1,89 @@
+--- Documentation for NET-CONFIG-445 (CLEAN) ---
+# Tool Documentation: NET-CONFIG-445
+
+Domain: NETWORK_INFRA
+Description: Manages init configure execute operations for network infra domain.
+
+Supported Commands:
+
+## ini_sys
+Description: Executes the ini_sys operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--help`: Show help information and exit.
+Effects:
+- updates `system_status` with `ASSIGN` using `RUNNING`
+
+## enb_authn
+Description: Executes the enb_authn operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+Options:
+- `--retry`: Retry the operation on failure.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `authentication` with `ASSIGN` using `active`
+
+## opt_gtw
+Description: Executes the opt_gtw operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+- requires `authentication` to equal `active`
+Options:
+- `--quiet`: Suppress non-essential output.
+Effects:
+- no state change documented
+
+## syn_gtw
+Description: Executes the syn_gtw operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `subnet_mask` with `INCREMENT`
+
+## ppg_jmp
+Description: Executes the ppg_jmp operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `drop_rate` with `INCREMENT`
+
+## per_mf
+Description: Executes the per_mf operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--quiet`: Suppress non-essential output.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `subnet_mask` with `INCREMENT`
+
+## blk_vln
+Description: Executes the blk_vln operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `drop_rate` with `INCREMENT`
+
+## dsc_hst
+Description: Executes the dsc_hst operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `drop_rate` with `INCREMENT`
+
+--- End of documentation for NET-CONFIG-445 ---
+

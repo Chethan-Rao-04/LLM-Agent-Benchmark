@@ -1,0 +1,28 @@
+--- Documentation for MAN-MOLD-368 (INCOMPLETE) ---
+# Tool Documentation: MAN-MOLD-368
+Description: seal the upstream build configuration.
+
+Command: prg_gnt
+Description: Executes the prg_gnt operation.
+Warning: this command may change internal state.
+
+Command: srt_unt
+Description: Executes the srt_unt operation.
+
+Command: ld_que
+Description: Executes the ld_que operation.
+Warning: this command may change internal state.
+
+Command: unset_fix
+Description: Executes the unset_fix operation.
+Warning: this command may change internal state.
+
+Command: cal_ctrl
+Description: Executes the cal_ctrl operation.
+
+Command: uld_cnv
+Description: Executes the uld_cnv operation.
+Warning: this command may change internal state.
+
+
+

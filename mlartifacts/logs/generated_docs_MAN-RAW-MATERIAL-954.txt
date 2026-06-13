@@ -1,0 +1,85 @@
+--- Documentation for MAN-RAW-MATERIAL-954 (GIBBERISH_NOISE) ---
+NOISY DOC 77a
+# Tool Documentation: MAN-RAW-MATERIAL-954
+
+Domain: MANUFACTURING
+Description: Manages diagnose repair verify operations. xad12 noise qqq 441
+
+Supported Commands:
+ xad12 noise qqq 441
+## diag_trb
+Description: Executes the diag_trb operation.
+Preconditions: xad12 noise qqq 441
+- none
+Options:
+- `--force`: Force the operation even if warnings are present. xad12 noise qqq 441
+Effects:
+- updates `fault_status` with `ASSIGN` using `identified`
+ xad12 noise qqq 441
+## rpr_trb
+Description: Executes the rpr_trb operation.
+Preconditions: xad12 noise qqq 441
+- requires `fault_status` to equal `identified`
+Options:
+- `--verbose`: Enable verbose logging/output. xad12 noise qqq 441
+- `--output`: Write output to a file.
+Effects:
+- updates `turbine_health` with `ASSIGN` using `restored` xad12 noise qqq 441
+
+## vfy_trb
+Description: Executes the vfy_trb operation. xad12 noise qqq 441
+Preconditions:
+- requires `turbine_health` to equal `restored`
+Options: xad12 noise qqq 441
+- `--version`: Show version information and exit.
+Effects:
+- no state change documented xad12 noise qqq 441
+
+## torque_inv
+Description: Executes the torque_inv operation. xad12 noise qqq 441
+Preconditions:
+- none
+Options: xad12 noise qqq 441
+- `--output`: Write output to a file.
+Effects:
+- no state change documented xad12 noise qqq 441
+
+## abt_act
+Description: Executes the abt_act operation. xad12 noise qqq 441
+Preconditions:
+- none
+Options: xad12 noise qqq 441
+- `--debug`: Enable debug output.
+- `--verbose`: Enable verbose logging/output.
+Effects: xad12 noise qqq 441
+- no state change documented
+
+## rbt_cmp xad12 noise qqq 441
+Description: Executes the rbt_cmp operation.
+Preconditions:
+- none xad12 noise qqq 441
+Options:
+- `--dry-run`: Simulate execution without making changes.
+Effects: xad12 noise qqq 441
+- no state change documented
+
+## dsb_nzl xad12 noise qqq 441
+Description: Executes the dsb_nzl operation.
+Preconditions:
+- none xad12 noise qqq 441
+Options:
+- none
+Effects: xad12 noise qqq 441
+- no state change documented
+
+## cal_trb xad12 noise qqq 441
+Description: Executes the cal_trb operation.
+Preconditions:
+- none xad12 noise qqq 441
+Options:
+- none
+Effects: xad12 noise qqq 441
+- no state change documented
+
+--- End of documentation for MAN-RAW-MATERIAL-954 --- xad12 noise qqq 441
+

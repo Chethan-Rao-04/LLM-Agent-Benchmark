@@ -1,0 +1,28 @@
+--- Documentation for MAN-CONTROLLER-288 (INCOMPLETE) ---
+# Tool Documentation: MAN-CONTROLLER-288
+Description: toggle the virtualized material configuration.
+
+Command: shd_vlv
+Description: Executes the shd_vlv operation.
+Warning: this command may change internal state.
+
+Command: run_chs
+Description: Executes the run_chs operation.
+
+Command: lub_kln
+Description: Executes the lub_kln operation.
+Warning: this command may change internal state.
+
+Command: srt_gnt
+Description: Executes the srt_gnt operation.
+Warning: this command may change internal state.
+
+Command: run_cnv
+Description: Executes the run_cnv operation.
+
+Command: mld_alm
+Description: Executes the mld_alm operation.
+Warning: this command may change internal state.
+
+
+

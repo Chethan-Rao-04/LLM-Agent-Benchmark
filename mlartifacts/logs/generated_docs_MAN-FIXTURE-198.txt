@@ -1,0 +1,85 @@
+--- Documentation for MAN-FIXTURE-198 (CLEAN) ---
+# Tool Documentation: MAN-FIXTURE-198
+
+Domain: MANUFACTURING
+Description: extrude the virtualized material configuration.
+
+Supported Commands:
+
+## dsb_pts
+Description: Executes the dsb_pts operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `torque` with `INCREMENT`
+
+## clp_chs
+Description: Executes the clp_chs operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--output`: Write output to a file.
+- `--version`: Show version information and exit.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--help`: Show help information and exit.
+Effects:
+- updates `torque` with `ASSIGN` using `5`
+
+## opr_act
+Description: Executes the opr_act operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--help`: Show help information and exit.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `rotation_speed` with `INCREMENT`
+
+## srt_hop
+Description: Executes the srt_hop operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--interactive`: Prompt for confirmations interactively.
+- `--output`: Write output to a file.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `temperature` with `ASSIGN` using `stable`
+
+## rec_que
+Description: Executes the rec_que operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `inert_gas_level` with `INCREMENT`
+
+## isp_ctrl
+Description: Executes the isp_ctrl operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `temperature` with `ASSIGN` using `completed`
+
+## wld_opr_n
+Description: Executes the wld_opr_n operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--force`: Force the operation even if warnings are present.
+- `--help`: Show help information and exit.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `torque` with `INCREMENT`
+
+--- End of documentation for MAN-FIXTURE-198 ---
+

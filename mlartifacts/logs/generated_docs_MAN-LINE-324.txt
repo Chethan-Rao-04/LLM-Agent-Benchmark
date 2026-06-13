@@ -1,0 +1,98 @@
+--- Documentation for MAN-LINE-324 (CLEAN) ---
+# Tool Documentation: MAN-LINE-324
+
+Domain: MANUFACTURING
+Description: inspect the redundant hopper configuration.
+
+Supported Commands:
+
+## isp_gnt
+Description: Executes the isp_gnt operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--retry`: Retry the operation on failure.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `power` with `ASSIGN` using `completed`
+
+## ext_mtl
+Description: Executes the ext_mtl operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--force`: Force the operation even if warnings are present.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--debug`: Enable debug output.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `voltage` with `ASSIGN` using `7`
+
+## ext_cnv
+Description: Executes the ext_cnv operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--simulate`: Run in simulation mode.
+- `--retry`: Retry the operation on failure.
+- `--interactive`: Prompt for confirmations interactively.
+- `--version`: Show version information and exit.
+Effects:
+- updates `voltage` with `INCREMENT`
+
+## quality-check_jig
+Description: Executes the quality-check_jig operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `temperature` with `ASSIGN` using `1`
+
+## ld_cnv
+Description: Executes the ld_cnv operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--version`: Show version information and exit.
+Effects:
+- updates `power` with `ASSIGN` using `ready`
+
+## stp_rm
+Description: Executes the stp_rm operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `voltage` with `INCREMENT`
+
+## rsm_sns
+Description: Executes the rsm_sns operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--version`: Show version information and exit.
+- `--help`: Show help information and exit.
+- `--debug`: Enable debug output.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `power` with `ASSIGN` using `paused`
+
+## shd_que
+Description: Executes the shd_que operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `temperature` with `ASSIGN` using `0`
+
+--- End of documentation for MAN-LINE-324 ---
+

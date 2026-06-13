@@ -1,0 +1,92 @@
+--- Documentation for MAN-MACHINE-574 (CLEAN) ---
+# Tool Documentation: MAN-MACHINE-574
+
+Domain: MANUFACTURING
+Description: Manages init configure execute operations for manufacturing domain.
+
+Supported Commands:
+
+## ini_sys
+Description: Executes the ini_sys operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `system_status` with `ASSIGN` using `RUNNING`
+
+## enb_tp
+Description: Executes the enb_tp operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--verbose`: Enable verbose logging/output.
+- `--version`: Show version information and exit.
+Effects:
+- updates `thermal_protection` with `ASSIGN` using `active`
+
+## cal_cmp
+Description: Executes the cal_cmp operation.
+Preconditions:
+- requires `thermal_protection` to equal `active`
+- requires `system_status` to equal `RUNNING`
+Options:
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- no state change documented
+
+## isp_nzl
+Description: Executes the isp_nzl operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--force`: Force the operation even if warnings are present.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `joint_angle` with `INCREMENT`
+
+## clp_cmp
+Description: Executes the clp_cmp operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--help`: Show help information and exit.
+Effects:
+- updates `noise_level` with `INCREMENT`
+
+## wring_cnv
+Description: Executes the wring_cnv operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+Effects:
+- updates `joint_angle` with `INCREMENT`
+
+## stp_btc
+Description: Executes the stp_btc operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--help`: Show help information and exit.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `noise_level` with `INCREMENT`
+
+## rsm_pts
+Description: Executes the rsm_pts operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `noise_level` with `INCREMENT`
+
+--- End of documentation for MAN-MACHINE-574 ---
+

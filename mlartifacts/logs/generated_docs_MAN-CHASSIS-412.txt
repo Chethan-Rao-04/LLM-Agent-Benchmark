@@ -1,0 +1,77 @@
+--- Documentation for MAN-CHASSIS-412 (CLEAN) ---
+# Tool Documentation: MAN-CHASSIS-412
+
+Domain: MANUFACTURING
+Description: Manages diagnose repair verify operations.
+
+Supported Commands:
+
+## diag_cmp
+Description: Executes the diag_cmp operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `fault_status` with `ASSIGN` using `identified`
+
+## rpr_cmp
+Description: Executes the rpr_cmp operation.
+Preconditions:
+- requires `fault_status` to equal `identified`
+Options:
+- none
+Effects:
+- updates `compressor_health` with `ASSIGN` using `restored`
+
+## vfy_cmp
+Description: Executes the vfy_cmp operation.
+Preconditions:
+- requires `compressor_health` to equal `restored`
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--simulate`: Run in simulation mode.
+Effects:
+- no state change documented
+
+## rec_hop
+Description: Executes the rec_hop operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- no state change documented
+
+## srt_ln
+Description: Executes the srt_ln operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- no state change documented
+
+## dsb_fix
+Description: Executes the dsb_fix operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- no state change documented
+
+## prg_plt
+Description: Executes the prg_plt operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+--- End of documentation for MAN-CHASSIS-412 ---
+

@@ -1,0 +1,108 @@
+--- Documentation for MAN-KILN-236 (CLEAN) ---
+# Tool Documentation: MAN-KILN-236
+
+Domain: MANUFACTURING
+Description: unset the upstream compressor configuration.
+
+Supported Commands:
+
+## srt_jig
+Description: Executes the srt_jig operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `position` with `ASSIGN` using `synced`
+
+## ovr_mld
+Description: Executes the ovr_mld operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--debug`: Enable debug output.
+- `--timeout`: Set a timeout for the operation.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `threshold` with `ASSIGN` using `2`
+
+## isp_pts
+Description: Executes the isp_pts operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--dry-run`: Simulate execution without making changes.
+- `--output`: Write output to a file.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `error_count` with `ASSIGN` using `6`
+
+## lub_rm
+Description: Executes the lub_rm operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--version`: Show version information and exit.
+- `--output`: Write output to a file.
+Effects:
+- updates `error_count` with `ASSIGN` using `9`
+
+## aln_gnt
+Description: Executes the aln_gnt operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--debug`: Enable debug output.
+Effects:
+- updates `count` with `INCREMENT`
+
+## srt_que
+Description: Executes the srt_que operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--timeout`: Set a timeout for the operation.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `position` with `ASSIGN` using `paused`
+
+## stp_ctrl
+Description: Executes the stp_ctrl operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--output`: Write output to a file.
+- `--help`: Show help information and exit.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `position` with `ASSIGN` using `ready`
+
+## tgl_gen
+Description: Executes the tgl_gen operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--output`: Write output to a file.
+Effects:
+- updates `error_count` with `INCREMENT`
+
+## ovr_trb
+Description: Executes the ovr_trb operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--interactive`: Prompt for confirmations interactively.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `position` with `ASSIGN` using `completed`
+
+--- End of documentation for MAN-KILN-236 ---
+

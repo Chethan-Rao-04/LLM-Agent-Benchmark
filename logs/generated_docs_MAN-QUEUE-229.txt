@@ -1,0 +1,24 @@
+--- Documentation for MAN-QUEUE-229 (INCOMPLETE) ---
+# Tool Documentation: MAN-QUEUE-229
+Description: unload the virtualized pallet configuration.
+
+Command: wld_trb
+Description: Executes the wld_trb operation.
+Warning: this command may change internal state.
+
+Command: bps_bld
+Description: Executes the bps_bld operation.
+
+Command: ini_prc
+Description: Executes the ini_prc operation.
+Warning: this command may change internal state.
+
+Command: run_alm
+Description: Executes the run_alm operation.
+Warning: this command may change internal state.
+
+Command: dsb_gnt
+Description: Executes the dsb_gnt operation.
+
+
+

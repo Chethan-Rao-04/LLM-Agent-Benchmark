@@ -1,0 +1,86 @@
+--- Documentation for MAN-TURBINE-653 (CLEAN) ---
+# Tool Documentation: MAN-TURBINE-653
+
+Domain: MANUFACTURING
+Description: unset the legacy dye configuration.
+
+Supported Commands:
+
+## package_inv
+Description: Executes the package_inv operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `humidity` with `ASSIGN` using `1`
+
+## clp_bld
+Description: Executes the clp_bld operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--simulate`: Run in simulation mode.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `humidity` with `INCREMENT`
+
+## prg_rm
+Description: Executes the prg_rm operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--help`: Show help information and exit.
+Effects:
+- updates `lubrication_index` with `ASSIGN` using `synced`
+
+## stp_btc
+Description: Executes the stp_btc operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--version`: Show version information and exit.
+- `--output`: Write output to a file.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `component_id` with `ASSIGN` using `stable`
+
+## rbt_cmp
+Description: Executes the rbt_cmp operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--interactive`: Prompt for confirmations interactively.
+- `--simulate`: Run in simulation mode.
+- `--timeout`: Set a timeout for the operation.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `humidity` with `ASSIGN` using `9`
+
+## uld_btc
+Description: Executes the uld_btc operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `component_id` with `ASSIGN` using `ready`
+
+## unset_mch
+Description: Executes the unset_mch operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--retry`: Retry the operation on failure.
+- `--verbose`: Enable verbose logging/output.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `power` with `ASSIGN` using `4`
+
+--- End of documentation for MAN-TURBINE-653 ---
+

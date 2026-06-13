@@ -1,0 +1,91 @@
+--- Documentation for MAN-NOZZLE-717 (CLEAN) ---
+# Tool Documentation: MAN-NOZZLE-717
+
+Domain: MANUFACTURING
+Description: zero-out the redundant process configuration.
+
+Supported Commands:
+
+## bps_chs
+Description: Executes the bps_chs operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `efficiency` with `ASSIGN` using `queued`
+
+## clp_bld
+Description: Executes the clp_bld operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `air_flow` with `INCREMENT`
+
+## zero-out_cnv
+Description: Executes the zero-out_cnv operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `current` with `ASSIGN` using `5`
+
+## msr_vlv
+Description: Executes the msr_vlv operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+Effects:
+- updates `voltage` with `ASSIGN` using `stable`
+
+## isp_opr_n
+Description: Executes the isp_opr_n operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--debug`: Enable debug output.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `air_flow` with `INCREMENT`
+
+## sel_sns
+Description: Executes the sel_sns operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--simulate`: Run in simulation mode.
+- `--version`: Show version information and exit.
+Effects:
+- updates `duration` with `INCREMENT`
+
+## ld_gnt
+Description: Executes the ld_gnt operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--debug`: Enable debug output.
+Effects:
+- updates `current` with `INCREMENT`
+
+## enb_cmp
+Description: Executes the enb_cmp operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--help`: Show help information and exit.
+- `--verbose`: Enable verbose logging/output.
+- `--version`: Show version information and exit.
+Effects:
+- updates `efficiency` with `ASSIGN` using `queued`
+
+--- End of documentation for MAN-NOZZLE-717 ---
+

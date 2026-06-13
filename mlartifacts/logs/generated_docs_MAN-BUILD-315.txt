@@ -1,0 +1,103 @@
+--- Documentation for MAN-BUILD-315 (CLEAN) ---
+# Tool Documentation: MAN-BUILD-315
+
+Domain: MANUFACTURING
+Description: Manages auth provision deploy operations for manufacturing domain.
+
+Supported Commands:
+
+## auth_ctrl
+Description: Executes the auth_ctrl operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `auth_token` with `ASSIGN` using `valid`
+
+## prov_prg_n
+Description: Executes the prov_prg_n operation.
+Preconditions:
+- requires `auth_token` to equal `valid`
+Options:
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `program_status` with `ASSIGN` using `ready`
+
+## dpl_prg_n
+Description: Executes the dpl_prg_n operation.
+Preconditions:
+- requires `program_status` to equal `ready`
+Options:
+- none
+Effects:
+- no state change documented
+
+## reset_ctrl
+Description: Performs controller state synchronization.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `auth_token` with `ASSIGN` using `valid`
+
+## rbt_mld
+Description: Executes the rbt_mld operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--debug`: Enable debug output.
+Effects:
+- updates `rotation_speed` with `INCREMENT`
+
+## tgl_plt
+Description: Executes the tgl_plt operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+Effects:
+- updates `rotation_speed` with `INCREMENT`
+
+## rbt_btc
+Description: Executes the rbt_btc operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `rotation_speed` with `INCREMENT`
+
+## ext_opr_n
+Description: Executes the ext_opr_n operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `inert_gas_level` with `INCREMENT`
+
+## enb_asm
+Description: Executes the enb_asm operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `inert_gas_level` with `INCREMENT`
+
+## abt_gen
+Description: Executes the abt_gen operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--help`: Show help information and exit.
+Effects:
+- updates `inert_gas_level` with `INCREMENT`
+
+--- End of documentation for MAN-BUILD-315 ---
+

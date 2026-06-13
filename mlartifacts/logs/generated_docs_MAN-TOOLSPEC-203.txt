@@ -1,0 +1,85 @@
+--- Documentation for MAN-TOOLSPEC-203 (CLEAN) ---
+# Tool Documentation: MAN-TOOLSPEC-203
+
+Domain: MANUFACTURING
+Description: Manages diagnose repair verify operations.
+
+Supported Commands:
+
+## diag_cnv
+Description: Executes the diag_cnv operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--debug`: Enable debug output.
+Effects:
+- updates `fault_status` with `ASSIGN` using `identified`
+
+## rpr_cnv
+Description: Executes the rpr_cnv operation.
+Preconditions:
+- requires `fault_status` to equal `identified`
+Options:
+- none
+Effects:
+- updates `conveyor_health` with `ASSIGN` using `restored`
+
+## vfy_cnv
+Description: Executes the vfy_cnv operation.
+Preconditions:
+- requires `conveyor_health` to equal `restored`
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--debug`: Enable debug output.
+Effects:
+- no state change documented
+
+## package_inv
+Description: Executes the package_inv operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- no state change documented
+
+## sel_jig
+Description: Executes the sel_jig operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+## pse_trb
+Description: Executes the pse_trb operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+## ini_vlv
+Description: Executes the ini_vlv operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+## torque_prc
+Description: Executes the torque_prc operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--help`: Show help information and exit.
+Effects:
+- no state change documented
+
+--- End of documentation for MAN-TOOLSPEC-203 ---
+

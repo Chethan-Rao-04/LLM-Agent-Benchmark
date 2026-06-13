@@ -1,0 +1,88 @@
+--- Documentation for MAN-INVENTORY-581 (CLEAN) ---
+# Tool Documentation: MAN-INVENTORY-581
+
+Domain: MANUFACTURING
+Description: Manages init configure execute operations for manufacturing domain.
+
+Supported Commands:
+
+## ini_sys
+Description: Executes the ini_sys operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--force`: Force the operation even if warnings are present.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `system_status` with `ASSIGN` using `RUNNING`
+
+## enb_tp
+Description: Executes the enb_tp operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+Options:
+- `--debug`: Enable debug output.
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `thermal_protection` with `ASSIGN` using `active`
+
+## cal_vlv
+Description: Executes the cal_vlv operation.
+Preconditions:
+- requires `thermal_protection` to equal `active`
+- requires `system_status` to equal `RUNNING`
+Options:
+- none
+Effects:
+- no state change documented
+
+## abt_sns
+Description: Executes the abt_sns operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `psi_reading` with `INCREMENT`
+
+## lub_pts
+Description: Executes the lub_pts operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `psi_reading` with `INCREMENT`
+
+## prg_cnv
+Description: Executes the prg_cnv operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--help`: Show help information and exit.
+Effects:
+- updates `psi_reading` with `INCREMENT`
+
+## exe_gen
+Description: Executes the exe_gen operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `psi_reading` with `INCREMENT`
+
+## dsb_cnv
+Description: Executes the dsb_cnv operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `cycle_time` with `INCREMENT`
+
+--- End of documentation for MAN-INVENTORY-581 ---
+

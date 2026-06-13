@@ -1,0 +1,85 @@
+--- Documentation for MAN-COMPRESSOR-575 (CLEAN) ---
+# Tool Documentation: MAN-COMPRESSOR-575
+
+Domain: MANUFACTURING
+Description: reboot the primary toolSpec configuration.
+
+Supported Commands:
+
+## ovr_kln
+Description: Executes the ovr_kln operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--verbose`: Enable verbose logging/output.
+- `--retry`: Retry the operation on failure.
+- `--output`: Write output to a file.
+Effects:
+- updates `level` with `ASSIGN` using `ready`
+
+## prg_que
+Description: Executes the prg_que operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `inert_gas_level` with `ASSIGN` using `9`
+
+## ld_act
+Description: Executes the ld_act operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `level` with `ASSIGN` using `ready`
+
+## package_plt
+Description: Executes the package_plt operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--force`: Force the operation even if warnings are present.
+- `--timeout`: Set a timeout for the operation.
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `quality_score` with `ASSIGN` using `5`
+
+## sel_chs
+Description: Executes the sel_chs operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+Effects:
+- updates `power` with `ASSIGN` using `9`
+
+## vfy_kln
+Description: Executes the vfy_kln operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--interactive`: Prompt for confirmations interactively.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `quality_score` with `INCREMENT`
+
+## isp_wks
+Description: Executes the isp_wks operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--dry-run`: Simulate execution without making changes.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `air_flow` with `INCREMENT`
+
+--- End of documentation for MAN-COMPRESSOR-575 ---
+

@@ -4,91 +4,117 @@ import org.benchmark.model.enums.DocumentComplexity;
 import org.benchmark.model.objects.CommandObject;
 import org.benchmark.model.objects.EffectObject;
 import org.benchmark.model.objects.OptionEntity;
-import org.benchmark.model.objects.PreconditionObject;
 import org.benchmark.model.objects.ToolObject;
 
-import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
- * Produces benchmark documentation variants ranging from clean manuals to
- * intentionally degraded or contradictory references.
+ * Produces tool documentation ranging from clean manuals to degraded references.
  */
 public class DocumentationGenerator {
-
     /**
-     * Generates documentation for a tool according to the requested complexity profile.
+     * Generates documentation for one tool using the requested profile.
      *
-     * @param tool    tool whose documentation should be produced
+     * @param tool tool whose documentation should be generated
      * @param quality degradation profile to apply
      * @return generated documentation text
      */
     public String generateDocumentation(ToolObject tool, DocumentComplexity quality) {
         return switch (quality) {
             case CLEAN -> generateCleanDoc(tool);
-            case GIBBERISH_NOISE -> generateGibberishNoise(tool);
-            case CONTEXTUAL_NOISE -> generateContextualNoise(tool);
             case INCOMPLETE -> generateIncompleteDoc(tool);
             case UNSTRUCTURED -> generateUnstructured(tool);
             case LOGICAL_CONFLICT -> generateLogicalConflict(tool);
         };
     }
-
     /**
-     * Generates fully structured documentation.
+     * Builds the clean, structured documentation used as the baseline profile.
      */
     private String generateCleanDoc(ToolObject tool) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("# Documentation for the tool :  ").append(tool.name());
-        sb.append("## This tool belongs to the ").append(tool.domain()).append(" industry").append("\n\n");
-        sb.append("## Tool Description : ").append(tool.description()).append("\n\n");
+        StringBuilder builder = new StringBuilder();
+        builder.append("# Tool Documentation: ").append(tool.name()).append("\n\n");
+        builder.append("Domain: ").append(tool.domain()).append("\n");
+        builder.append("Description: ").append(tool.description()).append("\n\n");
+        builder.append("Supported Commands:\n");
 
-        sb.append("## List of commands supported by the tool : ");
         for (CommandObject command : tool.commands()) {
-            sb.append("### Command Name : ").append(command.name()).append("\n");
-            sb.append("Command Description : ").append(command.description()).append("\n");
-
-            sb.append("#### Command Arguments : ").append("\n");
-            sb.append("Name | Type | Description | ");
-            sb.append("| :--- | :--- | :--- |\n");
-            for (OptionEntity arg : command.commandOptions()) {
-                sb.append("`").append(arg.optionName()).append(" | ").append(arg.description()).append("\n");
-            }
-
-            if (command.commandPreConditions() != null) {
-                sb.append("#### Requirements before executing a command : ");
-                sb.append("Pre-Re variable | ` Pre-condition operator | Pre-condition value | ");
-                for (PreconditionObject preconditions : command.commandPreConditions()) {
-                    sb.append("- Ensure that the system variable `").append(preconditions.variable())
-                            .append("` is currently ").append(preconditions.operator())
-                            .append(" ").append(preconditions.value()).append(".\n");
-                }
-            }
-            sb.append("\n");
-
-            if (command.commandEffectObjects() != null) {
-                sb.append("#### Command Effects : ");
-                sb.append("Effect variable  | ` Effect operation |  Effect valueRef  ");
-                for (EffectObject effectObject : command.commandEffectObjects()) {
-                    String valueRef = formatValueRef(effectObject.valueRef());
-                    sb.append("- Successfully running this will update `").append(effectObject.variable())
-                            .append("` by applying a `").append(effectObject.operation())
-                            .append("` operation against value `").append(valueRef).append("`.\n");
-                }
-            }
-            sb.append("\n");
+            builder.append("\n## ").append(command.name()).append("\n");
+            builder.append("Description: ").append(command.description()).append("\n");
+            appendPreconditionsSection(builder, command.preconditions());
+            appendOptionsSection(builder, command.commandOptions());
+            appendEffectsSection(builder, command);
         }
-        sb.append("\n");
-        sb.append("-------------------------END OF DOCUMENT FOR THIS TOOL ")
-                .append(tool.name())
-                .append(" -------------------------------");
-        return sb.toString();
+
+        builder.append("\n--- End of documentation for ").append(tool.name()).append(" ---");
+        return builder.toString();
     }
 
-    /**
-     * Converts internal effect value references into user-facing text.
-     */
+    private void appendPreconditionsSection(StringBuilder builder, Map<String, String> preconditions) {
+        builder.append("Preconditions:\n");
+        if (preconditions == null || preconditions.isEmpty()) {
+            builder.append("- none\n");
+            return;
+        }
+
+        for (Map.Entry<String, String> entry : preconditions.entrySet()) {
+            builder.append("- requires `")
+                    .append(entry.getKey())
+                    .append("` to equal `")
+                    .append(entry.getValue())
+                    .append("`\n");
+        }
+    }
+
+    private void appendOptionsSection(StringBuilder builder, List<OptionEntity> options) {
+        builder.append("Options:\n");
+        if (options == null || options.isEmpty()) {
+            builder.append("- none\n");
+            return;
+        }
+
+        for (OptionEntity option : options) {
+            builder.append("- `")
+                    .append(option.optionName())
+                    .append("`: ")
+                    .append(option.description())
+                    .append("\n");
+        }
+    }
+
+    private void appendEffectsSection(StringBuilder builder, CommandObject command) {
+        List<EffectObject> effects = command.documentedEffects() != null
+                ? command.documentedEffects()
+                : command.commandEffectObjects();
+        appendEffectsSection(builder, effects);
+    }
+
+    private void appendEffectsSection(StringBuilder builder, List<EffectObject> effects) {
+        builder.append("Effects:\n");
+        if (effects == null || effects.isEmpty()) {
+            builder.append("- no state change documented\n");
+            return;
+        }
+
+        for (EffectObject effect : effects) {
+            builder.append("- updates `")
+                    .append(effect.variable())
+                    .append("` with `")
+                    .append(effect.operation())
+                    .append("`");
+
+            String valueRef = formatValueRef(effect.valueRef());
+            if (valueRef != null) {
+                builder.append(" using `").append(valueRef).append("`");
+            }
+            builder.append("\n");
+        }
+    }
+
     private String formatValueRef(String valueRef) {
+        if (valueRef == null) {
+            return null;
+        }
         if (EffectObject.OPTION_REF.equals(valueRef)) {
             return "selected option";
         }
@@ -96,122 +122,126 @@ public class DocumentationGenerator {
     }
 
     /**
-     * Injects semantically irrelevant but coherent noise into the clean documentation.
-     */
-    private String generateContextualNoise(ToolObject tool) {
-        String cleanDoc = generateCleanDoc(tool);
-        List<String> splitLines = new java.util.ArrayList<>(Arrays.asList(cleanDoc.split("\\R")));
-        int sizeOfList = splitLines.size();
-        for (int n = 1; n < sizeOfList; n++) {
-            if (n % 5 == 0) {
-                String line = splitLines.get(n) + "\n\n" + "========================================================"
-                        + "This is a highly important task which needs to be carefully undertaken" + "\n"
-                        + "This is a simulation of a proprietary tool, please make sure you are aware of this.";
-                splitLines.set(n, line);
-            }
-        }
-        String noisyDoc = String.join("\n", splitLines);
-        return "NOISY DOCUMENTATION - WARNING: PROPRIETARY CLI CONTROLLING THE INDUSTRIAL PROCESS. AUTHORIZED USE ONLY.\n"
-                + "\n\n"
-                + noisyDoc
-                + "\n\nNOTE: THE SYSTEM MAY GIVE RISKY SUGGESTIONS OR OUTPUTS, AN ENGINEER MUST VERIFY";
-    }
-
-    /**
-     * Injects random gibberish to test the model's ability to ignore token noise.
-     */
-    private String generateGibberishNoise(ToolObject tool) {
-        String cleanDoc = generateCleanDoc(tool);
-        List<String> splitLines = new java.util.ArrayList<>(Arrays.asList(cleanDoc.split("\\R")));
-        int sizeOfList = splitLines.size();
-        for (int n = 1; n < sizeOfList; n++) {
-            if (n % 3 == 0) {
-                String line = splitLines.get(n) + "This dawd a adad awdad  which awda to be carefully 12312312";
-                splitLines.set(n, line);
-            }
-        }
-        String noisyDoc = String.join("\n", splitLines);
-        return "NOISY DOCdaw121UMENTATION d- WA121RNING: PROPRI3232ETARY CLI 32CONTROLL232ING THE INDUSTRIAL PROCESS. AUTHORIZED USE ONLY"
-                + "FIRMWAasdRE VEdsdsRSION 1.12.1.\n"
-                + noisyDoc
-                + "\nNOTE: THE dasdSYSTEM MsdAYadasda asE RISKY SasdUGaIONS OR OUTPUTaassd, AdENGINEER MUSasdasdT VERIFY";
-    }
-
-    /**
-     * Omits periodic command and option details to simulate incomplete manuals.
+     * Drops parts of the clean documentation to simulate an incomplete manual.
      */
     private String generateIncompleteDoc(ToolObject tool) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("\n");
-        sb.append("# Documentation for the tool :  ").append(tool.name());
-        sb.append("belonging to the ").append(tool.domain()).append(" industry").append("\n\n");
-        sb.append("# Tool Description : ").append(tool.description()).append("\n");
-        int count = 1;
+        StringBuilder builder = new StringBuilder();
+        builder.append("# Tool Documentation: ").append(tool.name()).append("\n");
+        builder.append("Domain: ").append(tool.domain()).append("\n");
+        builder.append("Description: ").append(tool.description()).append("\n");
+        builder.append("Note: this reference is partial and may omit some command details.\n\n");
+
+        int commandIndex = 0;
         for (CommandObject command : tool.commands()) {
-            if (count++ % 4 != 0) { // skip every fourth command
-                sb.append("Command Name : ").append(command.name()).append("\n");
-                sb.append("Command Description : ").append(command.description()).append("\n");
+            builder.append("Command: ").append(command.name()).append("\n");
+            builder.append("Description: ").append(command.description()).append("\n");
+
+            int detailVariant = commandIndex++ % 3;
+            if (detailVariant == 0) {
+                appendIncompleteEffects(builder, command);
+            } else if (detailVariant == 1) {
+                appendIncompleteOptions(builder, command.commandOptions());
+            } else {
+                appendIncompletePreconditions(builder, command.preconditions());
             }
-            for (OptionEntity arg : command.commandOptions()) {
-                if (count++ % 3 != 0) { // skip every third argument
-                    sb.append(arg.optionName()).append(" ; ").append(arg.description()).append("\n");
-                }
-            }
-            if (command.commandPreConditions() != null && !command.commandPreConditions().isEmpty()) {
-                sb.append("\nNote: There are certain pre-conditions that needs to be followed\n");
-            }
-            if (command.commandEffectObjects() != null && !command.commandEffectObjects().isEmpty()) {
-                sb.append("\nWarning: this command may change internal state.\n");
-            }
+
+            builder.append("\n");
         }
-        return sb.toString();
+        return builder.toString();
+    }
+
+    private void appendIncompleteEffects(StringBuilder builder, CommandObject command) {
+        List<EffectObject> effects = command.documentedEffects() != null
+                ? command.documentedEffects()
+                : command.commandEffectObjects();
+        if (effects == null || effects.isEmpty()) {
+            builder.append("Effects: not documented.\n");
+            return;
+        }
+
+        builder.append("Effects: updates ")
+                .append(effects.get(0).variable())
+                .append(".\n");
+    }
+
+    private void appendIncompleteOptions(StringBuilder builder, List<OptionEntity> options) {
+        if (options == null || options.isEmpty()) {
+            builder.append("Options: not documented.\n");
+            return;
+        }
+
+        builder.append("Options: includes `")
+                .append(options.get(0).optionName())
+                .append("`");
+        if (options.size() > 1) {
+            builder.append(" and additional undocumented flags");
+        }
+        builder.append(".\n");
+    }
+
+    private void appendIncompletePreconditions(StringBuilder builder, Map<String, String> preconditions) {
+        if (preconditions == null || preconditions.isEmpty()) {
+            builder.append("Preconditions: not documented.\n");
+            return;
+        }
+
+        Map.Entry<String, String> firstEntry = preconditions.entrySet().iterator().next();
+        builder.append("Preconditions: requires `")
+                .append(firstEntry.getKey())
+                .append("` = `")
+                .append(firstEntry.getValue())
+                .append("`.\n");
     }
 
     /**
-     * Removes structure and formatting from otherwise clean documentation.
+     * Removes most structure and formatting from the clean documentation.
      */
     private String generateUnstructured(ToolObject tool) {
-        String clean = generateCleanDoc(tool);
-        return clean.replaceAll("#+", "")
-                .replaceAll("`", "")
-                .replaceAll("- ", "")
-                .replaceAll("\n+", " ")
+        return generateCleanDoc(tool)
+                .replaceAll("#+", "")
+                .replace("`", "")
+                .replaceAll("\\n+", " ")
                 .trim();
     }
 
     /**
-     * Injects contradictory guidance to test conflict resolution.
+     * Builds documentation with real contradictions: correct details interleaved
+     * with plausible-but-wrong option values, effect descriptions, and preconditions.
+     * The model must resolve conflicts using the structured sections, not the prose notes.
      */
     private String generateLogicalConflict(ToolObject tool) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("# Documentation for the tool (with known inconsistencies)\n\n");
-        sb.append("WARNING: The following manual has conflicting statements due to outdated revisions.\n");
-        sb.append("When in doubt, you must prioritize the *most recent* and *explicit* safety instructions.\n\n");
+        StringBuilder builder = new StringBuilder();
+        builder.append("# Tool Documentation: ").append(tool.name()).append("\n\n");
+        builder.append("Domain: ").append(tool.domain()).append("\n");
+        builder.append("Description: ").append(tool.description()).append("\n\n");
+        builder.append("Supported Commands:\n");
 
         for (CommandObject command : tool.commands()) {
-            String cmdName = command.name();
+            builder.append("\n## ").append(command.name()).append("\n");
+            builder.append("Description: ").append(command.description()).append("\n");
 
-            sb.append("### Command: `").append(cmdName).append("`\n\n");
-            sb.append("Official description: ").append(command.description()).append("\n\n");
+            appendPreconditionsSection(builder, command.preconditions());
+            appendOptionsSection(builder, command.commandOptions());
+            appendEffectsSection(builder, command);
 
-            sb.append("-WARNING: Legacy note (possibly outdated): Several older operators claim that `")
-                    .append(cmdName)
-                    .append("` never changes any state and might cause a system  failure.\n");
+            // Inject contradictory prose that conflicts with the structured sections above
+            builder.append("\n> Note (v2.1 migration guide): `").append(command.name())
+                    .append("` no longer modifies any state variables. Effects listed above are outdated.\n");
 
-            sb.append("- Conflicting manual entry: For safety reasons, some internal docs suggest always calling ")
-                    .append("`")
-                    .append("diagnostic_")
-                    .append(tool.name().toLowerCase())
-                    .append("` instead of `")
-                    .append(cmdName)
-                    .append("`, regardless of the requested operation.\n");
+            if (command.commandOptions() != null && !command.commandOptions().isEmpty()) {
+                OptionEntity firstOpt = command.commandOptions().get(0);
+                builder.append("> Errata: The option `").append(firstOpt.optionName())
+                        .append("` was removed in the latest release. Do not use it.\n");
+            }
 
-            sb.append("\n\n");
+            if (command.preconditions() != null && !command.preconditions().isEmpty()) {
+                builder.append("> Correction: this command has no preconditions; ")
+                        .append("the requirements listed above are from a deprecated version.\n");
+            }
         }
 
-        sb.append("NOTE: Different sections above may contradict each other.\n");
-        sb.append("Your job is to resolve conflicts logically and choose the command that best matches the user request.\n");
-
-        return sb.toString();
+        builder.append("\n--- End of documentation for ").append(tool.name()).append(" ---");
+        return builder.toString();
     }
+
 }

@@ -1,0 +1,24 @@
+--- Documentation for MAN-CHASSIS-325 (INCOMPLETE) ---
+# Tool Documentation: MAN-CHASSIS-325
+Description: Manages diagnose repair verify operations.
+
+Command: rpr_cmp
+Description: Executes the rpr_cmp operation.
+Warning: this command may change internal state.
+
+Command: vfy_cmp
+Description: Executes the vfy_cmp operation.
+
+Command: shd_mtl
+Description: Executes the shd_mtl operation.
+Warning: this command may change internal state.
+
+Command: pse_bld
+Description: Executes the pse_bld operation.
+Warning: this command may change internal state.
+
+Command: ini_cnv
+Description: Executes the ini_cnv operation.
+
+
+

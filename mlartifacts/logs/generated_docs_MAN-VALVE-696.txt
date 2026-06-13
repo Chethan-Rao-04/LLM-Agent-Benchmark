@@ -1,0 +1,105 @@
+--- Documentation for MAN-VALVE-696 (CLEAN) ---
+# Tool Documentation: MAN-VALVE-696
+
+Domain: MANUFACTURING
+Description: abort the redundant kiln configuration.
+
+Supported Commands:
+
+## prg_dye
+Description: Executes the prg_dye operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `coolant_temp` with `INCREMENT`
+
+## isp_inv
+Description: Executes the isp_inv operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `component_id` with `ASSIGN` using `5`
+
+## aln_btc
+Description: Executes the aln_btc operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--timeout`: Set a timeout for the operation.
+- `--dry-run`: Simulate execution without making changes.
+- `--version`: Show version information and exit.
+Effects:
+- updates `noise_level` with `ASSIGN` using `paused`
+
+## rec_que
+Description: Executes the rec_que operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--version`: Show version information and exit.
+- `--debug`: Enable debug output.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `noise_level` with `ASSIGN` using `queued`
+
+## torque_gnt
+Description: Executes the torque_gnt operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `coolant_temp` with `ASSIGN` using `8`
+
+## abt_kln
+Description: Executes the abt_kln operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `component_id` with `INCREMENT`
+
+## rsm_kln
+Description: Executes the rsm_kln operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--interactive`: Prompt for confirmations interactively.
+- `--debug`: Enable debug output.
+- `--quiet`: Suppress non-essential output.
+- `--help`: Show help information and exit.
+Effects:
+- updates `component_id` with `INCREMENT`
+
+## stp_pts
+Description: Executes the stp_pts operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+Effects:
+- updates `noise_level` with `ASSIGN` using `ready`
+
+## sel_pts
+Description: Executes the sel_pts operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+Effects:
+- updates `component_id` with `INCREMENT`
+
+--- End of documentation for MAN-VALVE-696 ---
+

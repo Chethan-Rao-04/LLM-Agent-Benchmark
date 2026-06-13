@@ -1,0 +1,92 @@
+--- Documentation for MAN-INVENTORY-215 (CLEAN) ---
+# Tool Documentation: MAN-INVENTORY-215
+
+Domain: MANUFACTURING
+Description: zero-out the legacy workstation configuration.
+
+Supported Commands:
+
+## vfy_chs
+Description: Executes the vfy_chs operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--quiet`: Suppress non-essential output.
+- `--help`: Show help information and exit.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `cycle_time` with `ASSIGN` using `paused`
+
+## sel_cmp
+Description: Executes the sel_cmp operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `cycle_time` with `ASSIGN` using `ready`
+
+## cal_dye
+Description: Executes the cal_dye operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `cycle_time` with `ASSIGN` using `queued`
+
+## bps_alm
+Description: Executes the bps_alm operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--help`: Show help information and exit.
+- `--output`: Write output to a file.
+Effects:
+- updates `cycle_time` with `ASSIGN` using `completed`
+
+## unset_vlv
+Description: Executes the unset_vlv operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `cycle_time` with `ASSIGN` using `completed`
+
+## set_nzl
+Description: Executes the set_nzl operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--debug`: Enable debug output.
+Effects:
+- updates `friction` with `INCREMENT`
+
+## uld_prc
+Description: Executes the uld_prc operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--output`: Write output to a file.
+- `--interactive`: Prompt for confirmations interactively.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `friction` with `INCREMENT`
+
+## ini_wks
+Description: Executes the ini_wks operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+Effects:
+- updates `cycle_time` with `ASSIGN` using `queued`
+
+--- End of documentation for MAN-INVENTORY-215 ---
+

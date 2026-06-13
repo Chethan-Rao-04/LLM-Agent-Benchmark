@@ -1,0 +1,102 @@
+--- Documentation for MAN-KILN-202 (CLEAN) ---
+# Tool Documentation: MAN-KILN-202
+
+Domain: MANUFACTURING
+Description: enable the primary alarm configuration.
+
+Supported Commands:
+
+## package_cmp
+Description: Executes the package_cmp operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--dry-run`: Simulate execution without making changes.
+- `--debug`: Enable debug output.
+Effects:
+- updates `inert_gas_level` with `INCREMENT`
+
+## enb_jig
+Description: Executes the enb_jig operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--simulate`: Run in simulation mode.
+- `--quiet`: Suppress non-essential output.
+- `--retry`: Retry the operation on failure.
+- `--debug`: Enable debug output.
+Effects:
+- updates `power` with `INCREMENT`
+
+## prg_spd
+Description: Executes the prg_spd operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--verbose`: Enable verbose logging/output.
+- `--simulate`: Run in simulation mode.
+- `--help`: Show help information and exit.
+Effects:
+- updates `duration` with `ASSIGN` using `queued`
+
+## sel_prc
+Description: Executes the sel_prc operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `duration` with `ASSIGN` using `queued`
+
+## msr_jig
+Description: Executes the msr_jig operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--verbose`: Enable verbose logging/output.
+- `--debug`: Enable debug output.
+Effects:
+- updates `power` with `ASSIGN` using `2`
+
+## rst_sch
+Description: Executes the rst_sch operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--quiet`: Suppress non-essential output.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `duration` with `ASSIGN` using `ready`
+
+## ini_dye
+Description: Executes the ini_dye operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--verbose`: Enable verbose logging/output.
+- `--retry`: Retry the operation on failure.
+- `--timeout`: Set a timeout for the operation.
+- `--debug`: Enable debug output.
+Effects:
+- updates `error_count` with `ASSIGN` using `paused`
+
+## bps_eng
+Description: Executes the bps_eng operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--retry`: Retry the operation on failure.
+- `--help`: Show help information and exit.
+Effects:
+- updates `efficiency` with `INCREMENT`
+
+--- End of documentation for MAN-KILN-202 ---
+

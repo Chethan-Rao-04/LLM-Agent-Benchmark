@@ -1,0 +1,84 @@
+--- Documentation for MAN-ACTUATOR-284 (CLEAN) ---
+# Tool Documentation: MAN-ACTUATOR-284
+
+Domain: MANUFACTURING
+Description: Manages auth provision deploy operations.
+
+Supported Commands:
+
+## auth_plc
+Description: Executes the auth_plc operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `auth_token` with `ASSIGN` using `valid`
+
+## prov_prg_n
+Description: Executes the prov_prg_n operation.
+Preconditions:
+- requires `auth_token` to equal `valid`
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `program_status` with `ASSIGN` using `ready`
+
+## dpl_prg_n
+Description: Executes the dpl_prg_n operation.
+Preconditions:
+- requires `program_status` to equal `ready`
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- no state change documented
+
+## package_chs
+Description: Executes the package_chs operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- no state change documented
+
+## ini_act
+Description: Executes the ini_act operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+## rbt_spd
+Description: Executes the rbt_spd operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- no state change documented
+
+## ext_opr_n
+Description: Executes the ext_opr_n operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+Effects:
+- no state change documented
+
+## rec_plt
+Description: Executes the rec_plt operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+--- End of documentation for MAN-ACTUATOR-284 ---
+

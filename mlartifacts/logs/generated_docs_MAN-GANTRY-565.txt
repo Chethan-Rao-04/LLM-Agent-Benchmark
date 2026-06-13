@@ -1,0 +1,104 @@
+--- Documentation for MAN-GANTRY-565 (CLEAN) ---
+# Tool Documentation: MAN-GANTRY-565
+
+Domain: MANUFACTURING
+Description: calibrate the virtualized process configuration.
+
+Supported Commands:
+
+## zero-out_cmp
+Description: Executes the zero-out_cmp operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+Effects:
+- updates `air_flow` with `ASSIGN` using `synced`
+
+## abt_mld
+Description: Executes the abt_mld operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `power` with `INCREMENT`
+
+## rst_rm
+Description: Executes the rst_rm operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `air_flow` with `ASSIGN` using `ready`
+
+## run_nzl
+Description: Executes the run_nzl operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--output`: Write output to a file.
+- `--simulate`: Run in simulation mode.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `air_flow` with `ASSIGN` using `stable`
+
+## rbt_inv
+Description: Executes the rbt_inv operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `power` with `ASSIGN` using `9`
+
+## rbt_vlv
+Description: Executes the rbt_vlv operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--verbose`: Enable verbose logging/output.
+- `--timeout`: Set a timeout for the operation.
+- `--help`: Show help information and exit.
+- `--version`: Show version information and exit.
+Effects:
+- updates `air_flow` with `ASSIGN` using `ready`
+
+## exe_mtl
+Description: Executes the exe_mtl operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--debug`: Enable debug output.
+- `--quiet`: Suppress non-essential output.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `air_flow` with `ASSIGN` using `paused`
+
+## enb_asm
+Description: Executes the enb_asm operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--verbose`: Enable verbose logging/output.
+- `--output`: Write output to a file.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `efficiency` with `ASSIGN` using `0`
+
+## quality-check_unt
+Description: Executes the quality-check_unt operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `air_flow` with `ASSIGN` using `completed`
+
+--- End of documentation for MAN-GANTRY-565 ---
+

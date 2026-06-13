@@ -1,298 +1,224 @@
 package org.benchmark.gen;
 
-import org.benchmark.exec.CommandEffectApplier;
-import org.benchmark.gen.doc_generator.DocumentationGenerator;
 import org.benchmark.gen.query_generator.UserQueryGenerator;
+import org.benchmark.gen.scenario.ResolvedScenario;
+import org.benchmark.gen.scenario.ResolvedStep;
+import org.benchmark.gen.scenario.ScenarioLoader;
+import org.benchmark.gen.scenario.ScenarioPattern;
+import org.benchmark.gen.scenario.ScenarioResolver;
+import org.benchmark.gen.tool_generator.CommandDict;
+import org.benchmark.gen.tool_generator.ScenarioToolGenerator;
+import org.benchmark.gen.tool_generator.SemanticDecoyGenerator;
 import org.benchmark.gen.tool_generator.ToolSpecGenerator;
+import org.benchmark.gen.doc_generator.DocumentationGenerator;
 import org.benchmark.model.enums.DocumentComplexity;
 import org.benchmark.model.enums.Domain;
-import org.benchmark.exec.ToolEnvironment;
-import org.benchmark.model.enums.EffectOp;
-import org.benchmark.model.objects.CommandObject;
-import org.benchmark.model.objects.OptionEntity;
-import org.benchmark.model.objects.PreconditionObject;
 import org.benchmark.model.objects.ToolObject;
-import org.benchmark.gen.tool_generator.CommandDict;
-import org.benchmark.model.objects.WorkflowStep;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Random;
 
 /**
- * Generates synthetic benchmark cases consisting of one target tool and a set
- * of distractor tools plus degraded documentation.
+ * Generates multi-step scenario-driven benchmark cases.
+ *
+ * <p>Each case is backed by a scenario pattern loaded from YAML. The generator
+ * resolves template variables, builds a target tool with scenario-aligned commands,
+ * creates semantic decoys from the same vocabulary pool, and adds random distractors.</p>
  */
 public class BenchmarkCaseGenerator {
+
+    private final Random random;
+    private final ScenarioLoader scenarioLoader;
+    private final ScenarioResolver scenarioResolver;
+    private final ScenarioToolGenerator scenarioToolGenerator;
+    private final SemanticDecoyGenerator semanticDecoyGenerator;
     private final ToolSpecGenerator toolSpecGenerator;
     private final DocumentationGenerator documentationGenerator;
-    private final Random random;
     private final UserQueryGenerator queryGenerator;
     private final DocumentComplexity documentationComplexity;
-    private final boolean multiStep;
+    private final boolean trapCommand;
 
-    /**
-     * Creates a generator with default complexity and no fixed seed.
-     */
+    public BenchmarkCaseGenerator(Random random,
+                                  ScenarioLoader scenarioLoader,
+                                  ScenarioResolver scenarioResolver,
+                                  ScenarioToolGenerator scenarioToolGenerator,
+                                  SemanticDecoyGenerator semanticDecoyGenerator,
+                                  ToolSpecGenerator toolSpecGenerator,
+                                  DocumentationGenerator documentationGenerator,
+                                  UserQueryGenerator queryGenerator,
+                                  DocumentComplexity documentationComplexity,
+                                  boolean trapCommand) {
+        this.random = Objects.requireNonNull(random, "random must not be null");
+        this.scenarioLoader = Objects.requireNonNull(scenarioLoader, "scenarioLoader must not be null");
+        this.scenarioResolver = Objects.requireNonNull(scenarioResolver, "scenarioResolver must not be null");
+        this.scenarioToolGenerator = Objects.requireNonNull(scenarioToolGenerator, "scenarioToolGenerator must not be null");
+        this.semanticDecoyGenerator = Objects.requireNonNull(semanticDecoyGenerator, "semanticDecoyGenerator must not be null");
+        this.toolSpecGenerator = Objects.requireNonNull(toolSpecGenerator, "toolSpecGenerator must not be null");
+        this.documentationGenerator = Objects.requireNonNull(documentationGenerator, "documentationGenerator must not be null");
+        this.queryGenerator = Objects.requireNonNull(queryGenerator, "queryGenerator must not be null");
+        this.documentationComplexity = documentationComplexity == null ? DocumentComplexity.CLEAN : documentationComplexity;
+        this.trapCommand = trapCommand;
+    }
+
     public BenchmarkCaseGenerator() {
         this(DocumentComplexity.CLEAN, null, false);
     }
 
-    /**
-     * Creates a generator configured for the given documentation complexity.
-     *
-     * @param documentationComplexity complexity profile applied to generated docs
-     */
     public BenchmarkCaseGenerator(DocumentComplexity documentationComplexity) {
         this(documentationComplexity, null, false);
     }
 
-    /**
-     * Creates a generator with the given complexity and optional random seed.
-     */
     public BenchmarkCaseGenerator(DocumentComplexity documentationComplexity, Long seed) {
         this(documentationComplexity, seed, false);
     }
 
-    /**
-     * Creates a generator with the given complexity, optional random seed, and multistep toggle.
-     */
-    public BenchmarkCaseGenerator(DocumentComplexity documentationComplexity, Long seed, boolean multiStep) {
-        this.random = (seed != null) ? new Random(seed) : new Random();
-        this.toolSpecGenerator = new ToolSpecGenerator(this.random);
-        this.documentationGenerator = new DocumentationGenerator();
-        this.queryGenerator = new UserQueryGenerator(this.random);
-        this.documentationComplexity = documentationComplexity == null ? DocumentComplexity.CLEAN : documentationComplexity;
-        this.multiStep = multiStep;
+    public BenchmarkCaseGenerator(DocumentComplexity documentationComplexity, Long seed, boolean trapCommand) {
+        this(createRandom(seed), documentationComplexity, trapCommand);
+    }
+
+    private BenchmarkCaseGenerator(Random random, DocumentComplexity documentationComplexity, boolean trapCommand) {
+        this(
+                random,
+                new ScenarioLoader(),
+                new ScenarioResolver(random),
+                new ScenarioToolGenerator(random, new CommandDict(random)),
+                new SemanticDecoyGenerator(random, new CommandDict(random)),
+                new ToolSpecGenerator(random),
+                new DocumentationGenerator(),
+                new UserQueryGenerator(random),
+                documentationComplexity,
+                trapCommand
+        );
+    }
+
+    private static Random createRandom(Long seed) {
+        return seed == null ? new Random() : new Random(seed);
     }
 
     /**
-     * Generates a batch of benchmark cases.
-     *
-     * @param count           number of cases to create
-     * @param distractorCount number of distractor tools per case
-     * @param specificDomain  optional fixed domain; {@code null} samples all domains
-     * @return generated benchmark cases
+     * Generates a batch of multi-step benchmark cases.
      */
     public List<BenchmarkCase> generateCases(int count, int distractorCount, Domain specificDomain) {
         List<BenchmarkCase> cases = new ArrayList<>();
-        List<Domain> domains = (specificDomain != null) ? List.of(specificDomain) : Arrays.asList(Domain.values());
+        List<Domain> availableDomains = specificDomain == null
+                ? Arrays.asList(Domain.values())
+                : List.of(specificDomain);
+        List<ScenarioPattern> patterns = scenarioLoader.getPatterns();
 
-        for (int i = 0; i < count; i++) {
-            Domain domain = domains.get(random.nextInt(domains.size()));
+        for (int index = 0; index < count; index++) {
+            Domain domain = availableDomains.get(random.nextInt(availableDomains.size()));
+            ScenarioPattern pattern = patterns.get(random.nextInt(patterns.size()));
 
-            ToolObject targetTool = toolSpecGenerator.generateTool(domain);
+            ResolvedScenario scenario = scenarioResolver.resolve(pattern, domain);
+            boolean enableTrapForCase = trapCommand && ((index + 1) % 5 == 0);
+            ScenarioToolGenerator.ToolGenerationResult result =
+                    scenarioToolGenerator.generateTool(scenario, enableTrapForCase);
+            ToolObject targetTool = result.tool();
+            String recoveryCommandName = result.recoveryCommandName();
 
-            List<CommandObject> eligibleTargetCommands = targetTool.commands().stream()
-                    .filter(cmd -> !cmd.name().equalsIgnoreCase(ToolSpecGenerator.PREP_COMMAND_NAME))
-                    .filter(cmd -> !cmd.name().startsWith("configure_"))
-                    .toList();
+            int semanticDecoyCount = Math.min(2, distractorCount);
+            List<ToolObject> semanticDecoys = semanticDecoyGenerator.generate(pattern, scenario, semanticDecoyCount);
 
-            // For multi-step: prefer commands that have domain preconditions (real chain)
-            List<CommandObject> commandPool;
-            if (multiStep) {
-                List<CommandObject> withDomainPrecond = eligibleTargetCommands.stream()
-                    .filter(cmd -> cmd.commandPreConditions() != null
-                        && cmd.commandPreConditions().stream()
-                            .anyMatch(p -> !p.variable().equals(ToolEnvironment.SYSTEM_STATUS_KEY)))
-                    .toList();
-                commandPool = withDomainPrecond.isEmpty() ? eligibleTargetCommands : withDomainPrecond;
-            } else {
-                commandPool = eligibleTargetCommands;
+            int remainingDistractors = distractorCount - semanticDecoys.size();
+            List<ToolObject> randomDistractors = new ArrayList<>();
+            for (int d = 0; d < remainingDistractors; d++) {
+                randomDistractors.add(toolSpecGenerator.generateTool(domain));
             }
+            List<ToolObject> allDistractors = new ArrayList<>(semanticDecoys);
+            allDistractors.addAll(randomDistractors);
 
-            if (commandPool.isEmpty()) {
-                commandPool = targetTool.commands();
-            }
-            CommandObject targetCommand = commandPool.get(random.nextInt(commandPool.size()));
-
-            String targetOptionName = "";
-            if (targetCommand.commandOptions() != null && !targetCommand.commandOptions().isEmpty()) {
-                int randomIndex = random.nextInt(targetCommand.commandOptions().size());
-                OptionEntity selectedOption = targetCommand.commandOptions().get(randomIndex);
-                targetOptionName = selectedOption.optionName();
-            }
-
-            Map<String, String> expectedState = new HashMap<>();
-            String optionForExpected = targetOptionName == null ? "" : targetOptionName;
-            
-            List<org.benchmark.model.objects.WorkflowStep> workflowSteps = null;
-
-            if (multiStep) {
-                workflowSteps = buildWorkflowChain(targetTool, targetCommand, optionForExpected);
-                expectedState = computeChainedExpectedState(targetTool, workflowSteps);
-            } else {
-                CommandEffectApplier.applyEffectsToMap(targetCommand.commandEffectObjects(), optionForExpected, expectedState);
-            }
-
-            List<ToolObject> distractors = new ArrayList<>();
-            for (int d = 0; d < distractorCount; d++) {
-                distractors.add(toolSpecGenerator.generateTool(domains.get(random.nextInt(domains.size()))));
-            }
-
-            Map<String, String> docsByToolName = new LinkedHashMap<>();
-            docsByToolName.put(targetTool.name(), documentationGenerator.generateDocumentation(targetTool, documentationComplexity));
-
-            StringBuilder combinedDoc = new StringBuilder(docsByToolName.get(targetTool.name()));
-            for (ToolObject dist : distractors) {
-                String doc = documentationGenerator.generateDocumentation(dist, documentationComplexity);
-                docsByToolName.put(dist.name(), doc);
-                combinedDoc.append("\n").append(doc);
-            }
-
+            Map<String, String> docsByToolName = buildDocumentationBundle(targetTool, allDistractors);
             cases.add(new BenchmarkCase(
+                    scenario,
                     targetTool,
-                    targetCommand,
-                    combinedDoc.toString(),
+                    scenario.steps(),
                     docsByToolName,
-                    targetOptionName,
-                    expectedState,
-                    distractors,
+                    scenario.cumulativeExpectedState(),
+                    allDistractors,
+                    semanticDecoys,
+                    randomDistractors,
                     queryGenerator,
-                    workflowSteps
+                    enableTrapForCase,
+                    recoveryCommandName
             ));
         }
+
         return cases;
     }
 
-    private List<WorkflowStep> buildWorkflowChain(ToolObject tool, CommandObject targetCmd, String targetOption) {
-        List<WorkflowStep> steps = new ArrayList<>();
-
-        // Step 1: Always initialize system (starts SHUTDOWN in multi-step mode)
-        steps.add(new WorkflowStep("initialize_system", "", "Initialize the system to RUNNING state"));
-
-        // Step 2: Find configure_* commands that satisfy target's domain preconditions
-        if (targetCmd.commandPreConditions() != null) {
-            List<PreconditionObject> domainPreconds = targetCmd.commandPreConditions().stream()
-                .filter(p -> !p.variable().equals(ToolEnvironment.SYSTEM_STATUS_KEY))
-                .toList();
-
-            for (PreconditionObject precond : domainPreconds) {
-                tool.commands().stream()
-                    .filter(cmd -> cmd.name().startsWith("configure_"))
-                    .filter(cmd -> cmd.commandEffectObjects() != null)
-                    .filter(cmd -> cmd.commandEffectObjects().stream().anyMatch(
-                        eff -> eff.variable().equals(precond.variable())
-                            && eff.operation() == EffectOp.ASSIGN
-                            && precond.value().equals(eff.valueRef())))
-                    .findFirst()
-                    .ifPresent(cmd -> steps.add(new WorkflowStep(
-                        cmd.name(), "",
-                        "Configure " + precond.variable() + " to " + precond.value())));
-            }
+    private Map<String, String> buildDocumentationBundle(ToolObject targetTool, List<ToolObject> distractors) {
+        Map<String, String> docsByToolName = new LinkedHashMap<>();
+        docsByToolName.put(targetTool.name(), documentationGenerator.generateDocumentation(targetTool, documentationComplexity));
+        for (ToolObject distractor : distractors) {
+            docsByToolName.put(distractor.name(), documentationGenerator.generateDocumentation(distractor, documentationComplexity));
         }
-
-        // Step 3: Target command as final step
-        steps.add(new WorkflowStep(targetCmd.name(), targetOption, "Execute the target command"));
-        return steps;
-    }
-
-    private Map<String, String> computeChainedExpectedState(ToolObject tool, List<org.benchmark.model.objects.WorkflowStep> steps) {
-        Map<String, String> state = new HashMap<>();
-        for (WorkflowStep step : steps) {
-            CommandObject cmd = tool.commands().stream()
-                .filter(c -> c.name().equals(step.commandName()))
-                .findFirst().orElseThrow();
-            CommandEffectApplier.applyEffectsToMap(cmd.commandEffectObjects(), step.optionName(), state);
-        }
-        return state;
+        return docsByToolName;
     }
 
     /**
-     * Immutable benchmark-case representation consumed by the runner and MCP server.
-     *
-     * @param targetToolObject tool that should satisfy the user request
-     * @param targetCommand    target command to execute
-     * @param combinedToolDesc concatenated documentation across target and distractors
-     * @param docsByToolName   per-tool documentation lookup map
-     * @param targetOptionName expected option for the target command
-     * @param expectedState    expected state delta after successful execution
-     * @param distractors      distractor tools included in the case
-     * @param queryGenerator   helper used to convert command metadata into user requests
+     * Immutable multi-step benchmark case consumed by the runner and MCP server.
      */
     public record BenchmarkCase(
+            ResolvedScenario scenario,
             ToolObject targetToolObject,
-            CommandObject targetCommand,
-            String combinedToolDesc,
+            List<ResolvedStep> targetSteps,
             Map<String, String> docsByToolName,
-            String targetOptionName,
             Map<String, String> expectedState,
             List<ToolObject> distractors,
+            List<ToolObject> semanticDecoys,
+            List<ToolObject> randomDistractors,
             UserQueryGenerator queryGenerator,
-            List<org.benchmark.model.objects.WorkflowStep> workflowSteps
+            boolean hasTrap,
+            String recoveryCommandName
     ) {
-        // Cached combined tools list (target + distractors)
-        private static final Map<BenchmarkCase, List<ToolObject>> ALL_TOOLS_CACHE = new WeakHashMap<>();
-
-        /**
-         * Generates the user-facing request corresponding to this benchmark case.
-         *
-         * @param targetTool target tool used for fallback phrasing
-         * @return synthetic natural-language user request
-         */
-        public String generateUserQuery(ToolObject targetTool) {
-            String rawCmdName = targetCommand.name();
-            String[] parts = rawCmdName.split("_");
-
-            String action = parts.length > 0 ? capitalize(parts[0]) : "Execute";
-            String target = parts.length > 1 ? capitalize(parts[1]) : targetTool.name();
-
-            String optionHint = null;
-            if (targetOptionName != null && !targetOptionName.isEmpty() && targetCommand.commandOptions() != null) {
-                optionHint = targetCommand.commandOptions().stream()
-                        .filter(opt -> opt.optionName() != null)
-                        .filter(opt -> opt.optionName().trim().equalsIgnoreCase(targetOptionName.trim()))
-                        .findFirst()
-                        .map(CommandDict::hintFromOptionSpec)
-                        .orElse(null);
-            }
-
-            if (workflowSteps != null && workflowSteps.size() > 1) {
-                return queryGenerator.generateMultiStep(workflowSteps, target);
-            }
-
-            return queryGenerator.generate(action, target, optionHint);
+        public BenchmarkCase {
+            scenario = Objects.requireNonNull(scenario, "scenario must not be null");
+            targetToolObject = Objects.requireNonNull(targetToolObject, "targetToolObject must not be null");
+            targetSteps = Collections.unmodifiableList(new ArrayList<>(
+                    Objects.requireNonNull(targetSteps, "targetSteps must not be null")));
+            docsByToolName = Collections.unmodifiableMap(new LinkedHashMap<>(
+                    Objects.requireNonNull(docsByToolName, "docsByToolName must not be null")));
+            expectedState = Collections.unmodifiableMap(new LinkedHashMap<>(
+                    Objects.requireNonNull(expectedState, "expectedState must not be null")));
+            distractors = Collections.unmodifiableList(new ArrayList<>(
+                    Objects.requireNonNull(distractors, "distractors must not be null")));
+            semanticDecoys = Collections.unmodifiableList(new ArrayList<>(
+                    Objects.requireNonNull(semanticDecoys, "semanticDecoys must not be null")));
+            randomDistractors = Collections.unmodifiableList(new ArrayList<>(
+                    Objects.requireNonNull(randomDistractors, "randomDistractors must not be null")));
+            queryGenerator = Objects.requireNonNull(queryGenerator, "queryGenerator must not be null");
         }
 
         /**
-         * Returns the target tool followed by all distractor tools.
-         * The result is cached to avoid repeated list allocations.
-         *
-         * @return ordered list of all tools visible in this case
+         * Generates the synthetic user request — goal-oriented, not step-revealing.
          */
+        public String generateUserQuery() {
+            return queryGenerator.generateGoalQuery(scenario);
+        }
+
         public List<ToolObject> allTools() {
-            return ALL_TOOLS_CACHE.computeIfAbsent(this, key -> {
-                List<ToolObject> tools = new ArrayList<>();
-                tools.add(targetToolObject);
-                tools.addAll(distractors);
-                return Collections.unmodifiableList(tools);
-            });
+            List<ToolObject> tools = new ArrayList<>(distractors.size() + 1);
+            tools.add(targetToolObject);
+            tools.addAll(distractors);
+            return Collections.unmodifiableList(tools);
         }
 
-        /**
-         * Finds a tool in this case by case-insensitive name.
-         *
-         * @param toolName tool name to search for
-         * @return matching tool or {@code null}
-         */
         public ToolObject findTool(String toolName) {
-            if (toolName == null || toolName.isBlank()) {
-                return null;
-            }
+            if (toolName == null || toolName.isBlank()) return null;
             return allTools().stream()
                     .filter(tool -> tool.name().equalsIgnoreCase(toolName))
                     .findFirst()
                     .orElse(null);
         }
 
-        /**
-         * Returns documentation for a tool in this case by case-insensitive name.
-         *
-         * @param toolName tool name to search for
-         * @return matching documentation text or {@code null}
-         */
         public String documentationForTool(String toolName) {
-            if (toolName == null || toolName.isBlank()) {
-                return null;
-            }
+            if (toolName == null || toolName.isBlank()) return null;
             return docsByToolName.entrySet().stream()
                     .filter(entry -> entry.getKey().equalsIgnoreCase(toolName))
                     .map(Map.Entry::getValue)
@@ -300,11 +226,16 @@ public class BenchmarkCaseGenerator {
                     .orElse(null);
         }
 
-        private String capitalize(String word) {
-            if (word == null || word.isEmpty()) {
-                return word;
-            }
-            return word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase();
+        /**
+         * Returns the trapped command — a required step whose real effects
+         * differ from its documented effects. Returns null if no trap exists.
+         */
+        public org.benchmark.model.objects.CommandObject trapCommand() {
+            if (!hasTrap) return null;
+            return targetToolObject.commands().stream()
+                    .filter(c -> c.documentedEffects() != null)
+                    .findFirst()
+                    .orElse(null);
         }
     }
 }

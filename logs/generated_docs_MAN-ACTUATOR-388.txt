@@ -1,0 +1,79 @@
+--- Documentation for MAN-ACTUATOR-388 (CLEAN) ---
+# Tool Documentation: MAN-ACTUATOR-388
+
+Domain: MANUFACTURING
+Description: override the virtualized batch configuration.
+
+Supported Commands:
+
+## aln_cnv
+Description: Executes the aln_cnv operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `count` with `ASSIGN` using `completed`
+
+## run_cmp
+Description: Executes the run_cmp operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `coolant_temp` with `INCREMENT`
+
+## lub_rm
+Description: Executes the lub_rm operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--retry`: Retry the operation on failure.
+- `--debug`: Enable debug output.
+Effects:
+- updates `coolant_temp` with `ASSIGN` using `7`
+
+## exe_unt
+Description: Executes the exe_unt operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `voltage` with `ASSIGN` using `4`
+
+## tgl_alm
+Description: Executes the tgl_alm operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+Effects:
+- updates `count` with `ASSIGN` using `queued`
+
+## exe_eng
+Description: Executes the exe_eng operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+Effects:
+- updates `voltage` with `INCREMENT`
+
+## wring_pts
+Description: Executes the wring_pts operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--version`: Show version information and exit.
+- `--interactive`: Prompt for confirmations interactively.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `coolant_temp` with `INCREMENT`
+
+--- End of documentation for MAN-ACTUATOR-388 ---
+

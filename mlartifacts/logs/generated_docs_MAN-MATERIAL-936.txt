@@ -1,0 +1,95 @@
+--- Documentation for MAN-MATERIAL-936 (CLEAN) ---
+# Tool Documentation: MAN-MATERIAL-936
+
+Domain: MANUFACTURING
+Description: Manages auth provision deploy operations for manufacturing domain.
+
+Supported Commands:
+
+## auth_scd
+Description: Executes the auth_scd operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `auth_token` with `ASSIGN` using `valid`
+
+## prov_rcp
+Description: Executes the prov_rcp operation.
+Preconditions:
+- requires `auth_token` to equal `valid`
+Options:
+- none
+Effects:
+- updates `recipe_status` with `ASSIGN` using `ready`
+
+## dpl_rcp
+Description: Executes the dpl_rcp operation.
+Preconditions:
+- requires `recipe_status` to equal `ready`
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- no state change documented
+
+## package_hop
+Description: Executes the package_hop operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `battery_level` with `INCREMENT`
+
+## stp_nzl
+Description: Executes the stp_nzl operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `voltage` with `INCREMENT`
+
+## mld_mld
+Description: Executes the mld_mld operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+Effects:
+- updates `battery_level` with `INCREMENT`
+
+## cal_eng
+Description: Executes the cal_eng operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `battery_level` with `INCREMENT`
+
+## bps_jig
+Description: Executes the bps_jig operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `battery_level` with `INCREMENT`
+
+## run_wks
+Description: Executes the run_wks operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `voltage` with `INCREMENT`
+
+--- End of documentation for MAN-MATERIAL-936 ---
+

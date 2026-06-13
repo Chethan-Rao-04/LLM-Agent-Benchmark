@@ -1,0 +1,84 @@
+--- Documentation for MAN-TURBINE-847 (CLEAN) ---
+# Tool Documentation: MAN-TURBINE-847
+
+Domain: MANUFACTURING
+Description: Manages diagnose repair verify operations.
+
+Supported Commands:
+
+## diag_cmp
+Description: Executes the diag_cmp operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `fault_status` with `ASSIGN` using `identified`
+
+## rpr_cmp
+Description: Executes the rpr_cmp operation.
+Preconditions:
+- requires `fault_status` to equal `identified`
+Options:
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `compressor_health` with `ASSIGN` using `restored`
+
+## vfy_cmp
+Description: Executes the vfy_cmp operation.
+Preconditions:
+- requires `compressor_health` to equal `restored`
+Options:
+- none
+Effects:
+- no state change documented
+
+## stp_rm
+Description: Executes the stp_rm operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- no state change documented
+
+## sel_btc
+Description: Executes the sel_btc operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--simulate`: Run in simulation mode.
+Effects:
+- no state change documented
+
+## msr_mld
+Description: Executes the msr_mld operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+## sel_sch
+Description: Executes the sel_sch operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+## run_kln
+Description: Executes the run_kln operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+Effects:
+- no state change documented
+
+--- End of documentation for MAN-TURBINE-847 ---
+

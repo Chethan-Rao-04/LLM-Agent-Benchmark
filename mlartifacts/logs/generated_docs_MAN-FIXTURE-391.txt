@@ -1,0 +1,106 @@
+--- Documentation for MAN-FIXTURE-391 (GIBBERISH_NOISE) ---
+NOISY DOC 77a
+# Tool Documentation: MAN-FIXTURE-391
+
+Domain: MANUFACTURING
+Description: operate the primary turbine configuration. xad12 noise qqq 441
+
+Supported Commands:
+ xad12 noise qqq 441
+## rsm_eng
+Description: Executes the rsm_eng operation.
+Preconditions: xad12 noise qqq 441
+- none
+Options:
+- `--force`: Force the operation even if warnings are present. xad12 noise qqq 441
+- `--simulate`: Run in simulation mode.
+- `--quiet`: Suppress non-essential output.
+- `--confirm`: Require explicit confirmation before proceeding. xad12 noise qqq 441
+Effects:
+- updates `temperature` with `ASSIGN` using `stable`
+ xad12 noise qqq 441
+## cal_sch
+Description: Executes the cal_sch operation.
+Preconditions: xad12 noise qqq 441
+- none
+Options:
+- `--retry`: Retry the operation on failure. xad12 noise qqq 441
+- `--simulate`: Run in simulation mode.
+- `--version`: Show version information and exit.
+- `--output`: Write output to a file. xad12 noise qqq 441
+Effects:
+- updates `joint_angle` with `ASSIGN` using `ready`
+ xad12 noise qqq 441
+## torque_dye
+Description: Executes the torque_dye operation.
+Preconditions: xad12 noise qqq 441
+- none
+Options:
+- `--simulate`: Run in simulation mode. xad12 noise qqq 441
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `joint_angle` with `ASSIGN` using `paused` xad12 noise qqq 441
+
+## mld_mld
+Description: Executes the mld_mld operation. xad12 noise qqq 441
+Preconditions:
+- none
+Options: xad12 noise qqq 441
+- `--force`: Force the operation even if warnings are present.
+- `--version`: Show version information and exit.
+- `--simulate`: Run in simulation mode. xad12 noise qqq 441
+- `--timeout`: Set a timeout for the operation.
+- `--dry-run`: Simulate execution without making changes.
+Effects: xad12 noise qqq 441
+- updates `lubrication_index` with `INCREMENT`
+
+## torque_asm xad12 noise qqq 441
+Description: Executes the torque_asm operation.
+Preconditions:
+- none xad12 noise qqq 441
+Options:
+- none
+Effects: xad12 noise qqq 441
+- updates `joint_angle` with `ASSIGN` using `completed`
+
+## exe_eng xad12 noise qqq 441
+Description: Executes the exe_eng operation.
+Preconditions:
+- none xad12 noise qqq 441
+Options:
+- none
+Effects: xad12 noise qqq 441
+- updates `temperature` with `ASSIGN` using `paused`
+
+## ovr_btc xad12 noise qqq 441
+Description: Executes the ovr_btc operation.
+Preconditions:
+- none xad12 noise qqq 441
+Options:
+- `--output`: Write output to a file.
+- `--timeout`: Set a timeout for the operation. xad12 noise qqq 441
+Effects:
+- updates `lubrication_index` with `ASSIGN` using `5`
+ xad12 noise qqq 441
+## package_btc
+Description: Executes the package_btc operation.
+Preconditions: xad12 noise qqq 441
+- none
+Options:
+- none xad12 noise qqq 441
+Effects:
+- updates `joint_angle` with `ASSIGN` using `paused`
+ xad12 noise qqq 441
+## lub_chs
+Description: Executes the lub_chs operation.
+Preconditions: xad12 noise qqq 441
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding. xad12 noise qqq 441
+- `--debug`: Enable debug output.
+- `--output`: Write output to a file.
+Effects: xad12 noise qqq 441
+- updates `coolant_temp` with `INCREMENT`
+
+--- End of documentation for MAN-FIXTURE-391 --- xad12 noise qqq 441
+

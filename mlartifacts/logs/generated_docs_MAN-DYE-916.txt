@@ -1,0 +1,104 @@
+--- Documentation for MAN-DYE-916 (GIBBERISH_NOISE) ---
+NOISY DOC 77a
+# Tool Documentation: MAN-DYE-916
+
+Domain: MANUFACTURING
+Description: wring the legacy actuator configuration. xad12 noise qqq 441
+
+Supported Commands:
+ xad12 noise qqq 441
+## ovr_fix
+Description: Executes the ovr_fix operation.
+Preconditions: xad12 noise qqq 441
+- none
+Options:
+- `--timeout`: Set a timeout for the operation. xad12 noise qqq 441
+- `--debug`: Enable debug output.
+- `--force`: Force the operation even if warnings are present.
+Effects: xad12 noise qqq 441
+- updates `psi_reading` with `ASSIGN` using `7`
+
+## unset_mtl xad12 noise qqq 441
+Description: Executes the unset_mtl operation.
+Preconditions:
+- none xad12 noise qqq 441
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--debug`: Enable debug output. xad12 noise qqq 441
+- `--quiet`: Suppress non-essential output.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--help`: Show help information and exit. xad12 noise qqq 441
+Effects:
+- updates `pressure` with `ASSIGN` using `9`
+ xad12 noise qqq 441
+## isp_spd
+Description: Executes the isp_spd operation.
+Preconditions: xad12 noise qqq 441
+- none
+Options:
+- none xad12 noise qqq 441
+Effects:
+- updates `pressure` with `INCREMENT`
+ xad12 noise qqq 441
+## run_fix
+Description: Executes the run_fix operation.
+Preconditions: xad12 noise qqq 441
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively. xad12 noise qqq 441
+- `--quiet`: Suppress non-essential output.
+- `--output`: Write output to a file.
+- `--retry`: Retry the operation on failure. xad12 noise qqq 441
+Effects:
+- updates `pressure` with `INCREMENT`
+ xad12 noise qqq 441
+## isp_mld
+Description: Executes the isp_mld operation.
+Preconditions: xad12 noise qqq 441
+- none
+Options:
+- `--simulate`: Run in simulation mode. xad12 noise qqq 441
+- `--interactive`: Prompt for confirmations interactively.
+- `--verbose`: Enable verbose logging/output.
+Effects: xad12 noise qqq 441
+- updates `rate` with `ASSIGN` using `completed`
+
+## wring_btc xad12 noise qqq 441
+Description: Executes the wring_btc operation.
+Preconditions:
+- none xad12 noise qqq 441
+Options:
+- `--retry`: Retry the operation on failure.
+Effects: xad12 noise qqq 441
+- updates `psi_reading` with `ASSIGN` using `6`
+
+## wld_gnt xad12 noise qqq 441
+Description: Executes the wld_gnt operation.
+Preconditions:
+- none xad12 noise qqq 441
+Options:
+- `--verbose`: Enable verbose logging/output.
+Effects: xad12 noise qqq 441
+- updates `inert_gas_level` with `ASSIGN` using `completed`
+
+## stp_sch xad12 noise qqq 441
+Description: Executes the stp_sch operation.
+Preconditions:
+- none xad12 noise qqq 441
+Options:
+- none
+Effects: xad12 noise qqq 441
+- updates `psi_reading` with `INCREMENT`
+
+## exe_sch xad12 noise qqq 441
+Description: Executes the exe_sch operation.
+Preconditions:
+- none xad12 noise qqq 441
+Options:
+- `--version`: Show version information and exit.
+- `--interactive`: Prompt for confirmations interactively. xad12 noise qqq 441
+Effects:
+- updates `inert_gas_level` with `ASSIGN` using `queued`
+ xad12 noise qqq 441
+--- End of documentation for MAN-DYE-916 ---
+

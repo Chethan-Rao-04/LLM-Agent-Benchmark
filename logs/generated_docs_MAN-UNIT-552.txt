@@ -1,0 +1,89 @@
+--- Documentation for MAN-UNIT-552 (CLEAN) ---
+# Tool Documentation: MAN-UNIT-552
+
+Domain: MANUFACTURING
+Description: Manages diagnose repair verify operations for manufacturing domain.
+
+Supported Commands:
+
+## diag_cmp
+Description: Executes the diag_cmp operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `fault_status` with `ASSIGN` using `identified`
+
+## rpr_cmp
+Description: Executes the rpr_cmp operation.
+Preconditions:
+- requires `fault_status` to equal `identified`
+Options:
+- `--retry`: Retry the operation on failure.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `compressor_health` with `ASSIGN` using `restored`
+
+## vfy_cmp
+Description: Executes the vfy_cmp operation.
+Preconditions:
+- requires `compressor_health` to equal `restored`
+Options:
+- none
+Effects:
+- no state change documented
+
+## dsb_opr_n
+Description: Executes the dsb_opr_n operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `position` with `INCREMENT`
+
+## abt_sns
+Description: Executes the abt_sns operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--version`: Show version information and exit.
+Effects:
+- updates `cycle_time` with `INCREMENT`
+
+## lub_asm
+Description: Executes the lub_asm operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `position` with `INCREMENT`
+
+## vfy_dye
+Description: Executes the vfy_dye operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `position` with `INCREMENT`
+
+## stp_tsp
+Description: Executes the stp_tsp operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--version`: Show version information and exit.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `position` with `INCREMENT`
+
+--- End of documentation for MAN-UNIT-552 ---
+

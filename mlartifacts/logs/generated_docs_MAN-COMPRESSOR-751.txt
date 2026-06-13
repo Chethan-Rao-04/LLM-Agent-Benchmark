@@ -1,0 +1,93 @@
+--- Documentation for MAN-COMPRESSOR-751 (CLEAN) ---
+# Tool Documentation: MAN-COMPRESSOR-751
+
+Domain: MANUFACTURING
+Description: torque the primary pallet configuration.
+
+Supported Commands:
+
+## mld_inv
+Description: Executes the mld_inv operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `speed` with `INCREMENT`
+
+## zero-out_inv
+Description: Executes the zero-out_inv operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--version`: Show version information and exit.
+- `--interactive`: Prompt for confirmations interactively.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `friction` with `ASSIGN` using `paused`
+
+## ini_opr_n
+Description: Executes the ini_opr_n operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `speed` with `ASSIGN` using `0`
+
+## torque_opr_n
+Description: Executes the torque_opr_n operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--timeout`: Set a timeout for the operation.
+- `--simulate`: Run in simulation mode.
+- `--quiet`: Suppress non-essential output.
+- `--debug`: Enable debug output.
+Effects:
+- updates `friction` with `ASSIGN` using `completed`
+
+## cal_opr_n
+Description: Executes the cal_opr_n operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `load_cell` with `ASSIGN` using `9`
+
+## sel_alm
+Description: Executes the sel_alm operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `error_count` with `ASSIGN` using `stable`
+
+## torque_chs
+Description: Executes the torque_chs operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--output`: Write output to a file.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `load_cell` with `ASSIGN` using `9`
+
+## uld_gen
+Description: Executes the uld_gen operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `speed` with `INCREMENT`
+
+--- End of documentation for MAN-COMPRESSOR-751 ---
+

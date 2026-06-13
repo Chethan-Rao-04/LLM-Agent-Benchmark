@@ -1,0 +1,106 @@
+--- Documentation for MAN-ENGINE-644 (CLEAN) ---
+# Tool Documentation: MAN-ENGINE-644
+
+Domain: MANUFACTURING
+Description: shutdown the upstream operator configuration.
+
+Supported Commands:
+
+## srt_que
+Description: Executes the srt_que operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `voltage` with `ASSIGN` using `6`
+
+## rec_btc
+Description: Executes the rec_btc operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+Effects:
+- updates `battery_level` with `ASSIGN` using `queued`
+
+## ext_gnt
+Description: Executes the ext_gnt operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--version`: Show version information and exit.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--retry`: Retry the operation on failure.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `battery_level` with `ASSIGN` using `ready`
+
+## tgl_dye
+Description: Executes the tgl_dye operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--version`: Show version information and exit.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--debug`: Enable debug output.
+Effects:
+- updates `battery_level` with `ASSIGN` using `completed`
+
+## set_vlv
+Description: Executes the set_vlv operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `pressure` with `ASSIGN` using `3`
+
+## set_dye
+Description: Executes the set_dye operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `speed` with `INCREMENT`
+
+## ini_sns
+Description: Executes the ini_sns operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--timeout`: Set a timeout for the operation.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `voltage` with `ASSIGN` using `9`
+
+## msr_fix
+Description: Executes the msr_fix operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--retry`: Retry the operation on failure.
+- `--verbose`: Enable verbose logging/output.
+- `--output`: Write output to a file.
+Effects:
+- updates `battery_level` with `ASSIGN` using `synced`
+
+## enb_sch
+Description: Executes the enb_sch operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `battery_level` with `ASSIGN` using `queued`
+
+--- End of documentation for MAN-ENGINE-644 ---
+

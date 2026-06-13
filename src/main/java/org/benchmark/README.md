@@ -1,22 +1,24 @@
-This project benchmarks LLM agents for operating proprietary industrial-style CLI tools.
+This project benchmarks LLM agents on single-step tool selection under degraded documentation.
 
 Core packages:
-- `org.benchmark.app`: entry point (`BenchmarkRunner`)
-- `org.benchmark.gen`: synthetic tool + documentation + user-query generation
-- `org.benchmark.exec`: simulator, precondition checks, and state updates
+- `org.benchmark.app`: entry point and case execution
+- `org.benchmark.config`: Spring configuration properties and infrastructure beans
+- `org.benchmark.exec`: simulator, state management, and effect application
+- `org.benchmark.gen`: synthetic tool, documentation, and user-query generation
 - `org.benchmark.llm`: model client (`LlmClient`)
-- `org.benchmark.mcp.client` / `org.benchmark.mcp.server`: loopback MCP wiring
-- `org.benchmark.mcp.runtime`: session registry, execution records, and generated benchmark-tool callbacks
-- `org.benchmark.utils`: unified event logging with optional CSV export
-- `org.benchmark.model.enums`: enum types (`Domain`, `DocumentComplexity`, `ConditionOp`, `EffectOp`)
+- `org.benchmark.tools.server`: benchmark tool service (discovery + execution)
+- `org.benchmark.tools.runtime`: runtime tool callbacks bound to generated cases
+- `org.benchmark.model.enums`: enum types (`Domain`, `DocumentComplexity`, `EffectOp`)
+- `org.benchmark.model.objects`: immutable generated tool specifications
+- `org.benchmark.utils`: utility classes
 
 Main flow:
-1. Generate benchmark cases (`BenchmarkCaseGenerator`).
-2. Build tool documentation with distractors (`DocumentationGenerator`).
-3. Expose documentation/state utilities through loopback MCP and generated benchmark tools through tool callbacks.
-4. Let the model inspect documentation/state and execute one benchmark-tool command at a time.
-5. Execute commands in the in-memory CLI simulator with precondition validation.
-6. Apply command effects (`CommandEffectApplier`) to session state and log results through `RunEventLogger` (JSONL plus optional CSV export).
+1. Generate single-step benchmark cases (`BenchmarkCaseGenerator`).
+2. Build degraded documentation bundles for the target tool and distractors (`DocumentationGenerator`).
+3. Expose discovery utilities and executable benchmark tools through Spring AI tool callbacks.
+4. Let the model inspect documentation, choose a tool, and execute one command with an optional flag.
+5. Run the command in the in-memory simulator and apply its effects to session state.
+6. Score tool choice, command choice, option choice, state accuracy, efficiency, and recovery.
 
 Current entry point:
 - `org.benchmark.app.BenchmarkRunner`

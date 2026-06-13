@@ -1,0 +1,28 @@
+--- Documentation for TEST-TOOL-001 (CLEAN) ---
+# Tool Documentation: TEST-TOOL-001
+
+Domain: MANUFACTURING
+Description: A test tool for unit testing
+
+Supported Commands:
+
+## start_process
+Description: Start the manufacturing process
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging
+Effects:
+- updates `counter` with `INCREMENT`
+
+## stop_process
+Description: Stop the manufacturing process
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `status` with `ASSIGN` using `stopped`
+
+--- End of documentation for TEST-TOOL-001 ---
+

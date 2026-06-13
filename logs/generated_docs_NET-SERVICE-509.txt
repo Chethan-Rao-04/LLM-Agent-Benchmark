@@ -1,0 +1,91 @@
+--- Documentation for NET-SERVICE-509 (CLEAN) ---
+# Tool Documentation: NET-SERVICE-509
+
+Domain: NETWORK_INFRA
+Description: Manages init configure execute operations for network infra domain.
+
+Supported Commands:
+
+## ini_sys
+Description: Executes the ini_sys operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--quiet`: Suppress non-essential output.
+- `--version`: Show version information and exit.
+Effects:
+- updates `system_status` with `ASSIGN` using `RUNNING`
+
+## enb_authn
+Description: Executes the enb_authn operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+Options:
+- `--help`: Show help information and exit.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `authentication` with `ASSIGN` using `active`
+
+## mon_gtw
+Description: Executes the mon_gtw operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+- requires `authentication` to equal `active`
+Options:
+- `--debug`: Enable debug output.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- no state change documented
+
+## opt_ont
+Description: Executes the opt_ont operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--help`: Show help information and exit.
+- `--debug`: Enable debug output.
+Effects:
+- updates `rx_bytes` with `INCREMENT`
+
+## brc_nat
+Description: Executes the brc_nat operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `rx_bytes` with `INCREMENT`
+
+## sav_ifr
+Description: Executes the sav_ifr operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `rx_bytes` with `INCREMENT`
+
+## stp__ap
+Description: Executes the stp__ap operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `rx_bytes` with `INCREMENT`
+
+## bkl_ep
+Description: Executes the bkl_ep operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `rx_bytes` with `INCREMENT`
+
+--- End of documentation for NET-SERVICE-509 ---
+

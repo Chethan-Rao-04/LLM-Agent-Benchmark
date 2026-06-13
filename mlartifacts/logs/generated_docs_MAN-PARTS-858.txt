@@ -1,0 +1,75 @@
+--- Documentation for MAN-PARTS-858 (CLEAN) ---
+# Tool Documentation: MAN-PARTS-858
+
+Domain: MANUFACTURING
+Description: Manages init configure execute operations for manufacturing domain.
+
+Supported Commands:
+
+## ini_sys
+Description: Executes the ini_sys operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `system_status` with `ASSIGN` using `RUNNING`
+
+## enb_si
+Description: Executes the enb_si operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `safety_interlock` with `ASSIGN` using `active`
+
+## cal_vlv
+Description: Executes the cal_vlv operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+- requires `safety_interlock` to equal `active`
+Options:
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- no state change documented
+
+## lub_sch
+Description: Executes the lub_sch operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+Effects:
+- updates `power` with `INCREMENT`
+
+## shd_btc
+Description: Executes the shd_btc operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `humidity` with `INCREMENT`
+
+## run_jig
+Description: Executes the run_jig operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `humidity` with `INCREMENT`
+
+## enb_sns
+Description: Executes the enb_sns operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `power` with `INCREMENT`
+
+--- End of documentation for MAN-PARTS-858 ---
+

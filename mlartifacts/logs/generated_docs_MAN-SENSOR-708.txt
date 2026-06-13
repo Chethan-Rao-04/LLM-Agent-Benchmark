@@ -1,0 +1,107 @@
+--- Documentation for MAN-SENSOR-708 (CLEAN) ---
+# Tool Documentation: MAN-SENSOR-708
+
+Domain: MANUFACTURING
+Description: inspect the virtualized spindle configuration.
+
+Supported Commands:
+
+## srt_que
+Description: Executes the srt_que operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `output_yield` with `ASSIGN` using `4`
+
+## rec_alm
+Description: Executes the rec_alm operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+Effects:
+- updates `rate` with `ASSIGN` using `synced`
+
+## run_prc
+Description: Executes the run_prc operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--force`: Force the operation even if warnings are present.
+- `--simulate`: Run in simulation mode.
+- `--debug`: Enable debug output.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `rate` with `ASSIGN` using `synced`
+
+## enb_sns
+Description: Executes the enb_sns operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--verbose`: Enable verbose logging/output.
+- `--help`: Show help information and exit.
+Effects:
+- updates `count` with `INCREMENT`
+
+## rsm_sch
+Description: Executes the rsm_sch operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `cycle_time` with `ASSIGN` using `synced`
+
+## package_chs
+Description: Executes the package_chs operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--verbose`: Enable verbose logging/output.
+- `--quiet`: Suppress non-essential output.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `count` with `INCREMENT`
+
+## uld_plt
+Description: Executes the uld_plt operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `cycle_time` with `ASSIGN` using `stable`
+
+## prg_jig
+Description: Executes the prg_jig operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--quiet`: Suppress non-essential output.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `rate` with `ASSIGN` using `completed`
+
+## zero-out_dye
+Description: Executes the zero-out_dye operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--interactive`: Prompt for confirmations interactively.
+- `--dry-run`: Simulate execution without making changes.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `count` with `INCREMENT`
+
+--- End of documentation for MAN-SENSOR-708 ---
+

@@ -1,0 +1,79 @@
+--- Documentation for MAN-ACTUATOR-378 (GIBBERISH_NOISE) ---
+NOISY DOC 77a
+# Tool Documentation: MAN-ACTUATOR-378
+
+Domain: MANUFACTURING
+Description: measure the upstream gantry configuration. xad12 noise qqq 441
+
+Supported Commands:
+ xad12 noise qqq 441
+## quality-check_chs
+Description: Executes the quality-check_chs operation.
+Preconditions: xad12 noise qqq 441
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively. xad12 noise qqq 441
+- `--debug`: Enable debug output.
+Effects:
+- updates `cycle_time` with `INCREMENT` xad12 noise qqq 441
+
+## mld_act
+Description: Executes the mld_act operation. xad12 noise qqq 441
+Preconditions:
+- none
+Options: xad12 noise qqq 441
+- `--timeout`: Set a timeout for the operation.
+- `--output`: Write output to a file.
+- `--debug`: Enable debug output. xad12 noise qqq 441
+Effects:
+- updates `cycle_time` with `INCREMENT`
+ xad12 noise qqq 441
+## unset_cnv
+Description: Executes the unset_cnv operation.
+Preconditions: xad12 noise qqq 441
+- none
+Options:
+- `--force`: Force the operation even if warnings are present. xad12 noise qqq 441
+Effects:
+- updates `position` with `ASSIGN` using `4`
+ xad12 noise qqq 441
+## prg_cnv
+Description: Executes the prg_cnv operation.
+Preconditions: xad12 noise qqq 441
+- none
+Options:
+- none xad12 noise qqq 441
+Effects:
+- updates `position` with `INCREMENT`
+ xad12 noise qqq 441
+## prg_mch
+Description: Executes the prg_mch operation.
+Preconditions: xad12 noise qqq 441
+- none
+Options:
+- `--quiet`: Suppress non-essential output. xad12 noise qqq 441
+- `--output`: Write output to a file.
+- `--verbose`: Enable verbose logging/output.
+Effects: xad12 noise qqq 441
+- updates `cycle_time` with `ASSIGN` using `7`
+
+## sel_gnt xad12 noise qqq 441
+Description: Executes the sel_gnt operation.
+Preconditions:
+- none xad12 noise qqq 441
+Options:
+- `--retry`: Retry the operation on failure.
+Effects: xad12 noise qqq 441
+- updates `cycle_time` with `ASSIGN` using `9`
+
+## uld_mtl xad12 noise qqq 441
+Description: Executes the uld_mtl operation.
+Preconditions:
+- none xad12 noise qqq 441
+Options:
+- none
+Effects: xad12 noise qqq 441
+- updates `efficiency` with `ASSIGN` using `ready`
+
+--- End of documentation for MAN-ACTUATOR-378 --- xad12 noise qqq 441
+

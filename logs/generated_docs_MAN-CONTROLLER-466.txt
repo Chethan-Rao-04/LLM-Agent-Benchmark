@@ -1,0 +1,28 @@
+--- Documentation for MAN-CONTROLLER-466 (INCOMPLETE) ---
+# Tool Documentation: MAN-CONTROLLER-466
+Description: Manages init configure execute operations.
+
+Command: enb_tp
+Description: Executes the enb_tp operation.
+Warning: this command may change internal state.
+
+Command: msr_trb
+Description: Executes the msr_trb operation.
+
+Command: ld_pts
+Description: Executes the ld_pts operation.
+Warning: this command may change internal state.
+
+Command: ovr_act
+Description: Executes the ovr_act operation.
+Warning: this command may change internal state.
+
+Command: shd_prc
+Description: Executes the shd_prc operation.
+
+Command: clp_mtl
+Description: Executes the clp_mtl operation.
+Warning: this command may change internal state.
+
+
+

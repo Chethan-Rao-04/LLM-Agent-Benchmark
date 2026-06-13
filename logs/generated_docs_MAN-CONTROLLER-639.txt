@@ -1,0 +1,24 @@
+--- Documentation for MAN-CONTROLLER-639 (INCOMPLETE) ---
+# Tool Documentation: MAN-CONTROLLER-639
+Description: Manages auth provision deploy operations.
+
+Command: prov_fw
+Description: Executes the prov_fw operation.
+Warning: this command may change internal state.
+
+Command: dpl_fw
+Description: Executes the dpl_fw operation.
+
+Command: unset_act
+Description: Executes the unset_act operation.
+Warning: this command may change internal state.
+
+Command: mld_plt
+Description: Executes the mld_plt operation.
+Warning: this command may change internal state.
+
+Command: aln_prc
+Description: Executes the aln_prc operation.
+
+
+

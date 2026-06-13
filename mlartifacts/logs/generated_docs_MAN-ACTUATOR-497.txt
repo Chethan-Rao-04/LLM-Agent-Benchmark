@@ -1,0 +1,96 @@
+--- Documentation for MAN-ACTUATOR-497 (GIBBERISH_NOISE) ---
+NOISY DOC 77a
+# Tool Documentation: MAN-ACTUATOR-497
+
+Domain: MANUFACTURING
+Description: run the redundant spindle configuration. xad12 noise qqq 441
+
+Supported Commands:
+ xad12 noise qqq 441
+## uld_cmp
+Description: Executes the uld_cmp operation.
+Preconditions: xad12 noise qqq 441
+- none
+Options:
+- `--version`: Show version information and exit. xad12 noise qqq 441
+- `--debug`: Enable debug output.
+Effects:
+- updates `humidity` with `INCREMENT` xad12 noise qqq 441
+
+## sel_btc
+Description: Executes the sel_btc operation. xad12 noise qqq 441
+Preconditions:
+- none
+Options: xad12 noise qqq 441
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--force`: Force the operation even if warnings are present.
+- `--quiet`: Suppress non-essential output. xad12 noise qqq 441
+- `--interactive`: Prompt for confirmations interactively.
+- `--simulate`: Run in simulation mode.
+Effects: xad12 noise qqq 441
+- updates `wear_level` with `ASSIGN` using `completed`
+
+## exe_unt xad12 noise qqq 441
+Description: Executes the exe_unt operation.
+Preconditions:
+- none xad12 noise qqq 441
+Options:
+- `--help`: Show help information and exit.
+Effects: xad12 noise qqq 441
+- updates `wear_level` with `ASSIGN` using `ready`
+
+## lub_fix xad12 noise qqq 441
+Description: Executes the lub_fix operation.
+Preconditions:
+- none xad12 noise qqq 441
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+Effects: xad12 noise qqq 441
+- updates `wear_level` with `ASSIGN` using `ready`
+
+## mld_asm xad12 noise qqq 441
+Description: Executes the mld_asm operation.
+Preconditions:
+- none xad12 noise qqq 441
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--version`: Show version information and exit. xad12 noise qqq 441
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `vibration` with `INCREMENT` xad12 noise qqq 441
+
+## torque_mch
+Description: Executes the torque_mch operation. xad12 noise qqq 441
+Preconditions:
+- none
+Options: xad12 noise qqq 441
+- `--interactive`: Prompt for confirmations interactively.
+- `--force`: Force the operation even if warnings are present.
+- `--version`: Show version information and exit. xad12 noise qqq 441
+Effects:
+- updates `wear_level` with `ASSIGN` using `completed`
+ xad12 noise qqq 441
+## vfy_jig
+Description: Executes the vfy_jig operation.
+Preconditions: xad12 noise qqq 441
+- none
+Options:
+- `--debug`: Enable debug output. xad12 noise qqq 441
+- `--help`: Show help information and exit.
+- `--force`: Force the operation even if warnings are present.
+Effects: xad12 noise qqq 441
+- updates `wear_level` with `ASSIGN` using `paused`
+
+## run_mtl xad12 noise qqq 441
+Description: Executes the run_mtl operation.
+Preconditions:
+- none xad12 noise qqq 441
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--simulate`: Run in simulation mode. xad12 noise qqq 441
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `vibration` with `ASSIGN` using `1` xad12 noise qqq 441
+
+--- End of documentation for MAN-ACTUATOR-497 ---
+

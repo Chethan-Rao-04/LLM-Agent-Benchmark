@@ -1,0 +1,94 @@
+--- Documentation for MAN-HOPPER-574 (CLEAN) ---
+# Tool Documentation: MAN-HOPPER-574
+
+Domain: MANUFACTURING
+Description: inspect the virtualized machine configuration.
+
+Supported Commands:
+
+## quality-check_sch
+Description: Executes the quality-check_sch operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--verbose`: Enable verbose logging/output.
+- `--version`: Show version information and exit.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `wear_level` with `ASSIGN` using `ready`
+
+## quality-check_inv
+Description: Executes the quality-check_inv operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--interactive`: Prompt for confirmations interactively.
+- `--verbose`: Enable verbose logging/output.
+- `--timeout`: Set a timeout for the operation.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `wear_level` with `ASSIGN` using `paused`
+
+## ld_alm
+Description: Executes the ld_alm operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--retry`: Retry the operation on failure.
+- `--version`: Show version information and exit.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `friction` with `ASSIGN` using `completed`
+
+## stp_gnt
+Description: Executes the stp_gnt operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--force`: Force the operation even if warnings are present.
+- `--output`: Write output to a file.
+- `--quiet`: Suppress non-essential output.
+- `--version`: Show version information and exit.
+Effects:
+- updates `cycle_time` with `ASSIGN` using `5`
+
+## exe_plt
+Description: Executes the exe_plt operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--debug`: Enable debug output.
+- `--quiet`: Suppress non-essential output.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `cycle_time` with `ASSIGN` using `9`
+
+## torque_sns
+Description: Executes the torque_sns operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--verbose`: Enable verbose logging/output.
+- `--output`: Write output to a file.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `threshold` with `INCREMENT`
+
+## uld_prc
+Description: Executes the uld_prc operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `vibration` with `INCREMENT`
+
+--- End of documentation for MAN-HOPPER-574 ---
+

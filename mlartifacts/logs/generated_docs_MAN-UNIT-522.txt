@@ -1,0 +1,78 @@
+--- Documentation for MAN-UNIT-522 (CLEAN) ---
+# Tool Documentation: MAN-UNIT-522
+
+Domain: MANUFACTURING
+Description: Manages init configure execute operations.
+
+Supported Commands:
+
+## ini_sys
+Description: Executes the ini_sys operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `system_status` with `ASSIGN` using `RUNNING`
+
+## enb_tp
+Description: Executes the enb_tp operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+Options:
+- `--debug`: Enable debug output.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `thermal_protection` with `ASSIGN` using `active`
+
+## isp_cnv
+Description: Executes the isp_cnv operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+- requires `thermal_protection` to equal `active`
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- no state change documented
+
+## abt_gen
+Description: Executes the abt_gen operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--help`: Show help information and exit.
+Effects:
+- no state change documented
+
+## quality-check_tsp
+Description: Executes the quality-check_tsp operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+## srt_chs
+Description: Executes the srt_chs operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+Effects:
+- no state change documented
+
+## run_unt
+Description: Executes the run_unt operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- no state change documented
+
+--- End of documentation for MAN-UNIT-522 ---
+

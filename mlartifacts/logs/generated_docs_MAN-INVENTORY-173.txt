@@ -1,0 +1,67 @@
+--- Documentation for MAN-INVENTORY-173 (CLEAN) ---
+# Tool Documentation: MAN-INVENTORY-173
+
+Domain: MANUFACTURING
+Description: Manages init configure execute operations.
+
+Supported Commands:
+
+## ini_sys
+Description: Executes the ini_sys operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `system_status` with `ASSIGN` using `RUNNING`
+
+## enb_tp
+Description: Executes the enb_tp operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+Options:
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `thermal_protection` with `ASSIGN` using `active`
+
+## msr_cnv
+Description: Executes the msr_cnv operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+- requires `thermal_protection` to equal `active`
+Options:
+- none
+Effects:
+- no state change documented
+
+## sel_mld
+Description: Executes the sel_mld operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+## ovr_fix
+Description: Executes the ovr_fix operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+## rsm_cnv
+Description: Executes the rsm_cnv operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- no state change documented
+
+--- End of documentation for MAN-INVENTORY-173 ---
+

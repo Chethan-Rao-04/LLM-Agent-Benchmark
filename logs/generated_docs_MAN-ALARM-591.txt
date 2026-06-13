@@ -1,0 +1,85 @@
+--- Documentation for MAN-ALARM-591 (CLEAN) ---
+# Tool Documentation: MAN-ALARM-591
+
+Domain: MANUFACTURING
+Description: Manages init configure execute operations.
+
+Supported Commands:
+
+## ini_sys
+Description: Executes the ini_sys operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `system_status` with `ASSIGN` using `RUNNING`
+
+## enb_pm
+Description: Executes the enb_pm operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+Options:
+- `--simulate`: Run in simulation mode.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `precision_mode` with `ASSIGN` using `active`
+
+## isp_cmp
+Description: Executes the isp_cmp operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+- requires `precision_mode` to equal `active`
+Options:
+- none
+Effects:
+- no state change documented
+
+## abt_opr_n
+Description: Executes the abt_opr_n operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+Effects:
+- no state change documented
+
+## pse_alm
+Description: Executes the pse_alm operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+Effects:
+- no state change documented
+
+## wring_spd
+Description: Executes the wring_spd operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- no state change documented
+
+## ini_sns
+Description: Executes the ini_sns operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+## run_nzl
+Description: Executes the run_nzl operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+Effects:
+- no state change documented
+
+--- End of documentation for MAN-ALARM-591 ---
+

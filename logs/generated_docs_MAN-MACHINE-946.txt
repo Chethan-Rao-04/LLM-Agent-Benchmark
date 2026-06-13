@@ -1,0 +1,82 @@
+--- Documentation for MAN-MACHINE-946 (CLEAN) ---
+# Tool Documentation: MAN-MACHINE-946
+
+Domain: MANUFACTURING
+Description: Manages auth provision deploy operations.
+
+Supported Commands:
+
+## auth_hmi
+Description: Executes the auth_hmi operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `auth_token` with `ASSIGN` using `valid`
+
+## prov_rcp
+Description: Executes the prov_rcp operation.
+Preconditions:
+- requires `auth_token` to equal `valid`
+Options:
+- none
+Effects:
+- updates `recipe_status` with `ASSIGN` using `ready`
+
+## dpl_rcp
+Description: Executes the dpl_rcp operation.
+Preconditions:
+- requires `recipe_status` to equal `ready`
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- no state change documented
+
+## run_chs
+Description: Executes the run_chs operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+Effects:
+- no state change documented
+
+## opr_jig
+Description: Executes the opr_jig operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+Effects:
+- no state change documented
+
+## aln_mld
+Description: Executes the aln_mld operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+Effects:
+- no state change documented
+
+## set_vlv
+Description: Executes the set_vlv operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+Effects:
+- no state change documented
+
+## ext_vlv
+Description: Executes the ext_vlv operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+--- End of documentation for MAN-MACHINE-946 ---
+

@@ -1,0 +1,97 @@
+--- Documentation for MAN-PARTS-753 (CLEAN) ---
+# Tool Documentation: MAN-PARTS-753
+
+Domain: MANUFACTURING
+Description: wring the legacy alarm configuration.
+
+Supported Commands:
+
+## wring_asm
+Description: Executes the wring_asm operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `efficiency` with `ASSIGN` using `ready`
+
+## prg_spd
+Description: Executes the prg_spd operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `status` with `ASSIGN` using `4`
+
+## tgl_cmp
+Description: Executes the tgl_cmp operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--verbose`: Enable verbose logging/output.
+- `--dry-run`: Simulate execution without making changes.
+- `--force`: Force the operation even if warnings are present.
+- `--version`: Show version information and exit.
+Effects:
+- updates `efficiency` with `ASSIGN` using `paused`
+
+## opr_asm
+Description: Executes the opr_asm operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--force`: Force the operation even if warnings are present.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `efficiency` with `ASSIGN` using `ready`
+
+## vfy_pts
+Description: Executes the vfy_pts operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--quiet`: Suppress non-essential output.
+- `--version`: Show version information and exit.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `status` with `INCREMENT`
+
+## pse_cmp
+Description: Executes the pse_cmp operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--verbose`: Enable verbose logging/output.
+- `--timeout`: Set a timeout for the operation.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `efficiency` with `ASSIGN` using `queued`
+
+## pse_pts
+Description: Executes the pse_pts operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `efficiency` with `ASSIGN` using `paused`
+
+## ovr_btc
+Description: Executes the ovr_btc operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--version`: Show version information and exit.
+- `--output`: Write output to a file.
+Effects:
+- updates `efficiency` with `ASSIGN` using `synced`
+
+--- End of documentation for MAN-PARTS-753 ---
+

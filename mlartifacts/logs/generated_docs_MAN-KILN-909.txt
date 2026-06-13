@@ -1,0 +1,95 @@
+--- Documentation for MAN-KILN-909 (CLEAN) ---
+# Tool Documentation: MAN-KILN-909
+
+Domain: MANUFACTURING
+Description: set the virtualized parts configuration.
+
+Supported Commands:
+
+## opr_vlv
+Description: Executes the opr_vlv operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `temperature` with `ASSIGN` using `completed`
+
+## zero-out_rm
+Description: Executes the zero-out_rm operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `moisture` with `ASSIGN` using `7`
+
+## uld_alm
+Description: Executes the uld_alm operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--verbose`: Enable verbose logging/output.
+- `--simulate`: Run in simulation mode.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `moisture` with `ASSIGN` using `7`
+
+## unset_hop
+Description: Executes the unset_hop operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--retry`: Retry the operation on failure.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `temperature` with `ASSIGN` using `completed`
+
+## shd_mtl
+Description: Executes the shd_mtl operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `inert_gas_level` with `ASSIGN` using `2`
+
+## sel_ln
+Description: Executes the sel_ln operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--verbose`: Enable verbose logging/output.
+- `--interactive`: Prompt for confirmations interactively.
+- `--debug`: Enable debug output.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `vibration` with `ASSIGN` using `ready`
+
+## clp_wks
+Description: Executes the clp_wks operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `temperature` with `ASSIGN` using `stable`
+
+## opr_fix
+Description: Executes the opr_fix operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--dry-run`: Simulate execution without making changes.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `vibration` with `ASSIGN` using `queued`
+
+--- End of documentation for MAN-KILN-909 ---
+

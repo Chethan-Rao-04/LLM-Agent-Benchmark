@@ -1,0 +1,102 @@
+--- Documentation for MAN-DYE-720 (CLEAN) ---
+# Tool Documentation: MAN-DYE-720
+
+Domain: MANUFACTURING
+Description: execute the primary dye configuration.
+
+Supported Commands:
+
+## lub_prc
+Description: Executes the lub_prc operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--retry`: Retry the operation on failure.
+- `--version`: Show version information and exit.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `threshold` with `ASSIGN` using `synced`
+
+## aln_mld
+Description: Executes the aln_mld operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `inert_gas_level` with `INCREMENT`
+
+## msr_trb
+Description: Executes the msr_trb operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `power` with `ASSIGN` using `2`
+
+## rsm_spd
+Description: Executes the rsm_spd operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--debug`: Enable debug output.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `power` with `INCREMENT`
+
+## prg_asm
+Description: Executes the prg_asm operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `status` with `ASSIGN` using `queued`
+
+## shd_chs
+Description: Executes the shd_chs operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `output_yield` with `ASSIGN` using `0`
+
+## pse_eng
+Description: Executes the pse_eng operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `threshold` with `ASSIGN` using `synced`
+
+## prg_act
+Description: Executes the prg_act operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--help`: Show help information and exit.
+- `--debug`: Enable debug output.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `inert_gas_level` with `INCREMENT`
+
+## ini_nzl
+Description: Executes the ini_nzl operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--interactive`: Prompt for confirmations interactively.
+- `--quiet`: Suppress non-essential output.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `status` with `ASSIGN` using `synced`
+
+--- End of documentation for MAN-DYE-720 ---
+

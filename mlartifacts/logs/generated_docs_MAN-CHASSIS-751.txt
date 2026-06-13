@@ -1,0 +1,66 @@
+--- Documentation for MAN-CHASSIS-751 (CLEAN) ---
+# Tool Documentation: MAN-CHASSIS-751
+
+Domain: MANUFACTURING
+Description: Manages init configure execute operations.
+
+Supported Commands:
+
+## ini_sys
+Description: Executes the ini_sys operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+Effects:
+- updates `system_status` with `ASSIGN` using `RUNNING`
+
+## enb_pm
+Description: Executes the enb_pm operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `precision_mode` with `ASSIGN` using `active`
+
+## msr_vlv
+Description: Executes the msr_vlv operation.
+Preconditions:
+- requires `precision_mode` to equal `active`
+- requires `system_status` to equal `RUNNING`
+Options:
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- no state change documented
+
+## torque_sch
+Description: Executes the torque_sch operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- no state change documented
+
+## dsb_vlv
+Description: Executes the dsb_vlv operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- no state change documented
+
+## exe_plt
+Description: Executes the exe_plt operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+Effects:
+- no state change documented
+
+--- End of documentation for MAN-CHASSIS-751 ---
+

@@ -1,0 +1,24 @@
+--- Documentation for MAN-GENERATOR-144 (INCOMPLETE) ---
+# Tool Documentation: MAN-GENERATOR-144
+Description: Manages init configure execute operations.
+
+Command: enb_si
+Description: Executes the enb_si operation.
+Warning: this command may change internal state.
+
+Command: msr_cmp
+Description: Executes the msr_cmp operation.
+
+Command: srt_hop
+Description: Executes the srt_hop operation.
+Warning: this command may change internal state.
+
+Command: isp_jig
+Description: Executes the isp_jig operation.
+Warning: this command may change internal state.
+
+Command: vfy_alm
+Description: Executes the vfy_alm operation.
+
+
+

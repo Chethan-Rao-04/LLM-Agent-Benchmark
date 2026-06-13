@@ -1,0 +1,64 @@
+--- Documentation for MAN-COMPRESSOR-597 (CLEAN) ---
+# Tool Documentation: MAN-COMPRESSOR-597
+
+Domain: MANUFACTURING
+Description: Manages diagnose repair verify operations.
+
+Supported Commands:
+
+## diag_cnv
+Description: Executes the diag_cnv operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+Effects:
+- updates `fault_status` with `ASSIGN` using `identified`
+
+## rpr_cnv
+Description: Executes the rpr_cnv operation.
+Preconditions:
+- requires `fault_status` to equal `identified`
+Options:
+- none
+Effects:
+- updates `conveyor_health` with `ASSIGN` using `restored`
+
+## vfy_cnv
+Description: Executes the vfy_cnv operation.
+Preconditions:
+- requires `conveyor_health` to equal `restored`
+Options:
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- no state change documented
+
+## tgl_que
+Description: Executes the tgl_que operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+## set_btc
+Description: Executes the set_btc operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- no state change documented
+
+## srt_mtl
+Description: Executes the srt_mtl operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+--- End of documentation for MAN-COMPRESSOR-597 ---
+

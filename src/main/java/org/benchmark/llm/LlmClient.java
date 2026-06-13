@@ -8,13 +8,16 @@ import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.openai.OpenAiChatOptions;
+import org.springframework.ai.retry.TransientAiException;
 import org.springframework.ai.tool.ToolCallbackProvider;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
- * Thin wrapper over Spring AI chat execution with MCP tool-callback support.
+ * Thin wrapper over Spring AI chat execution with tool-callback support.
  */
 @Slf4j
 @RequiredArgsConstructor
@@ -28,42 +31,58 @@ public class LlmClient {
      *
      * @param systemInstruction    system prompt content
      * @param userQuery            user prompt content
-     * @param toolCallbackProvider provider exposing MCP-backed tool callbacks
+     * @param toolCallbackProvider provider exposing tool callbacks
      * @return assistant text plus total token usage
      */
     public LlmResult execute(String systemInstruction, String userQuery, ToolCallbackProvider toolCallbackProvider) {
-        // Each call enables internal tool execution and exposes MCP callbacks.
         OpenAiChatOptions options = OpenAiChatOptions.builder()
                 .internalToolExecutionEnabled(true)
                 .toolCallbacks(toolCallbackProvider.getToolCallbacks())
                 .build();
 
-        Prompt prompt = new Prompt(
+        try {
+            ChatResponse response = chatModel.call(buildPrompt(systemInstruction, userQuery, options));
+            String content = extractContent(response);
+            int tokenCount = extractTokenUsage(response).orElseGet(() -> {
+                log.warn("Token usage metadata is absent from the model response. Token counts will be inaccurate.");
+                return 0;
+            });
+            return new LlmResult(content, tokenCount);
+        } catch (TransientAiException e) {
+            log.warn("Transient model failure: {}", summarize(e.getMessage()));
+            throw new LlmTransientException("Transient model failure", e);
+        } catch (IllegalStateException e) {
+            log.warn("Model attempted to call an unavailable tool: {}", summarize(e.getMessage()));
+            throw new LlmToolCallbackException("Model attempted to call an unavailable tool", e);
+        } catch (RuntimeException e) {
+            log.warn("Model call failed: {}", summarize(e.getMessage()));
+            throw new LlmServiceException("Model call failed", e);
+        }
+    }
+
+    private Prompt buildPrompt(String systemInstruction, String userQuery, OpenAiChatOptions options) {
+        return new Prompt(
                 List.of(
-                        new SystemMessage(systemInstruction),
-                        new UserMessage(userQuery)
+                        new SystemMessage(Objects.requireNonNullElse(systemInstruction, "")),
+                        new UserMessage(Objects.requireNonNullElse(userQuery, ""))
                 ),
                 options
         );
+    }
 
-        // Execute one turn and extract assistant text + usage metadata.
-        ChatResponse response = chatModel.call(prompt);
-        String content = "";
-        if (response.getResult() != null && response.getResult().getOutput() != null
-                && response.getResult().getOutput().getText() != null) {
-            content = response.getResult().getOutput().getText();
-        }
+    private String extractContent(ChatResponse response) {
+        return Optional.ofNullable(response)
+                .map(ChatResponse::getResult)
+                .map(result -> result.getOutput())
+                .map(output -> output.getText())
+                .orElse("");
+    }
 
-        int tokenCount = 0;
-        if (response.getMetadata() != null
-                && response.getMetadata().getUsage() != null
-                && response.getMetadata().getUsage().getTotalTokens() != null) {
-            tokenCount = response.getMetadata().getUsage().getTotalTokens();
-        } else {
-            log.warn("Token usage metadata is absent from the model response — token counts will be inaccurate");
-        }
-
-        return new LlmResult(content, tokenCount);
+    private Optional<Integer> extractTokenUsage(ChatResponse response) {
+        return Optional.ofNullable(response)
+                .map(ChatResponse::getMetadata)
+                .map(metadata -> metadata.getUsage())
+                .map(usage -> usage.getTotalTokens());
     }
 
     /**
@@ -73,5 +92,13 @@ public class LlmClient {
      * @param tokenUsage total tokens reported by the model provider
      */
     public record LlmResult(String content, int tokenUsage) {
+    }
+
+    private String summarize(String message) {
+        if (message == null || message.isBlank()) {
+            return "<no message>";
+        }
+        String singleLine = message.replace('\n', ' ').replace('\r', ' ').trim();
+        return singleLine.length() <= 220 ? singleLine : singleLine.substring(0, 220) + "...";
     }
 }

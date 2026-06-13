@@ -1,0 +1,105 @@
+--- Documentation for MAN-ACTUATOR-752 (CLEAN) ---
+# Tool Documentation: MAN-ACTUATOR-752
+
+Domain: MANUFACTURING
+Description: clamp the primary controller configuration.
+
+Supported Commands:
+
+## ld_chs
+Description: Executes the ld_chs operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `position` with `ASSIGN` using `5`
+
+## uld_alm
+Description: Executes the uld_alm operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `position` with `INCREMENT`
+
+## ext_dye
+Description: Executes the ext_dye operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `humidity` with `ASSIGN` using `3`
+
+## abt_chs
+Description: Executes the abt_chs operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `humidity` with `INCREMENT`
+
+## prg_mtl
+Description: Executes the prg_mtl operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--force`: Force the operation even if warnings are present.
+- `--output`: Write output to a file.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `level` with `ASSIGN` using `completed`
+
+## ld_cnv
+Description: Executes the ld_cnv operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--version`: Show version information and exit.
+- `--help`: Show help information and exit.
+Effects:
+- updates `coolant_temp` with `INCREMENT`
+
+## torque_eng
+Description: Executes the torque_eng operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--help`: Show help information and exit.
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `level` with `ASSIGN` using `paused`
+
+## zero-out_trb
+Description: Executes the zero-out_trb operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--output`: Write output to a file.
+- `--help`: Show help information and exit.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `level` with `ASSIGN` using `completed`
+
+## abt_bld
+Description: Executes the abt_bld operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--version`: Show version information and exit.
+Effects:
+- updates `level` with `ASSIGN` using `queued`
+
+--- End of documentation for MAN-ACTUATOR-752 ---
+

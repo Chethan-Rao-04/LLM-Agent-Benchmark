@@ -1,0 +1,119 @@
+--- Documentation for MAN-MACHINE-852 (CLEAN) ---
+# Tool Documentation: MAN-MACHINE-852
+
+Domain: MANUFACTURING
+Description: disable the upstream fixture configuration.
+
+Supported Commands:
+
+## sel_btc
+Description: Executes the sel_btc operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--force`: Force the operation even if warnings are present.
+- `--interactive`: Prompt for confirmations interactively.
+- `--version`: Show version information and exit.
+Effects:
+- updates `power` with `ASSIGN` using `stable`
+
+## clp_kln
+Description: Executes the clp_kln operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--interactive`: Prompt for confirmations interactively.
+- `--timeout`: Set a timeout for the operation.
+- `--debug`: Enable debug output.
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `load_cell` with `INCREMENT`
+
+## zero-out_spd
+Description: Executes the zero-out_spd operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--version`: Show version information and exit.
+- `--output`: Write output to a file.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `friction` with `ASSIGN` using `completed`
+
+## cal_ctrl
+Description: Executes the cal_ctrl operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--debug`: Enable debug output.
+Effects:
+- updates `friction` with `ASSIGN` using `paused`
+
+## sel_kln
+Description: Executes the sel_kln operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--dry-run`: Simulate execution without making changes.
+- `--timeout`: Set a timeout for the operation.
+- `--help`: Show help information and exit.
+Effects:
+- updates `load_cell` with `ASSIGN` using `6`
+
+## tgl_inv
+Description: Executes the tgl_inv operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--dry-run`: Simulate execution without making changes.
+- `--verbose`: Enable verbose logging/output.
+- `--simulate`: Run in simulation mode.
+- `--help`: Show help information and exit.
+Effects:
+- updates `friction` with `ASSIGN` using `synced`
+
+## msr_jig
+Description: Executes the msr_jig operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--dry-run`: Simulate execution without making changes.
+- `--force`: Force the operation even if warnings are present.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `friction` with `ASSIGN` using `synced`
+
+## set_prc
+Description: Executes the set_prc operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--help`: Show help information and exit.
+- `--output`: Write output to a file.
+Effects:
+- updates `load_cell` with `ASSIGN` using `9`
+
+## torque_unt
+Description: Executes the torque_unt operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--timeout`: Set a timeout for the operation.
+- `--force`: Force the operation even if warnings are present.
+- `--quiet`: Suppress non-essential output.
+- `--debug`: Enable debug output.
+Effects:
+- updates `voltage` with `ASSIGN` using `2`
+
+--- End of documentation for MAN-MACHINE-852 ---
+

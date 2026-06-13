@@ -1,0 +1,92 @@
+--- Documentation for MAN-QUEUE-734 (CLEAN) ---
+# Tool Documentation: MAN-QUEUE-734
+
+Domain: MANUFACTURING
+Description: Manages diagnose repair verify operations for manufacturing domain.
+
+Supported Commands:
+
+## diag_trb
+Description: Executes the diag_trb operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `fault_status` with `ASSIGN` using `identified`
+
+## rpr_trb
+Description: Executes the rpr_trb operation.
+Preconditions:
+- requires `fault_status` to equal `identified`
+Options:
+- `--help`: Show help information and exit.
+Effects:
+- updates `turbine_health` with `ASSIGN` using `restored`
+
+## vfy_trb
+Description: Executes the vfy_trb operation.
+Preconditions:
+- requires `turbine_health` to equal `restored`
+Options:
+- none
+Effects:
+- no state change documented
+
+## enb_que
+Description: Executes the enb_que operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--help`: Show help information and exit.
+Effects:
+- updates `air_flow` with `INCREMENT`
+
+## lub_unt
+Description: Executes the lub_unt operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `torque` with `INCREMENT`
+
+## stp_mtl
+Description: Executes the stp_mtl operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `air_flow` with `INCREMENT`
+
+## reset_trb
+Description: Applies turbine parameter adjustments.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `fault_status` with `ASSIGN` using `identified`
+
+## ext_jig
+Description: Executes the ext_jig operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `torque` with `INCREMENT`
+
+## set_cmp
+Description: Executes the set_cmp operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `air_flow` with `INCREMENT`
+
+--- End of documentation for MAN-QUEUE-734 ---
+

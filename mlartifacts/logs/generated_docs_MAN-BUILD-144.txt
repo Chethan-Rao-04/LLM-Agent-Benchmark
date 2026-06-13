@@ -1,0 +1,89 @@
+--- Documentation for MAN-BUILD-144 (CLEAN) ---
+# Tool Documentation: MAN-BUILD-144
+
+Domain: MANUFACTURING
+Description: abort the virtualized engine configuration.
+
+Supported Commands:
+
+## ld_tsp
+Description: Executes the ld_tsp operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `temperature` with `ASSIGN` using `completed`
+
+## msr_opr_n
+Description: Executes the msr_opr_n operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+Effects:
+- updates `temperature` with `ASSIGN` using `completed`
+
+## zero-out_rm
+Description: Executes the zero-out_rm operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+Effects:
+- updates `temperature` with `ASSIGN` using `completed`
+
+## opr_inv
+Description: Executes the opr_inv operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--timeout`: Set a timeout for the operation.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `temperature` with `ASSIGN` using `completed`
+
+## cal_opr_n
+Description: Executes the cal_opr_n operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--retry`: Retry the operation on failure.
+- `--version`: Show version information and exit.
+Effects:
+- updates `component_id` with `INCREMENT`
+
+## wld_plt
+Description: Executes the wld_plt operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+Effects:
+- updates `air_flow` with `ASSIGN` using `7`
+
+## cal_alm
+Description: Executes the cal_alm operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `component_id` with `ASSIGN` using `3`
+
+## srt_prc
+Description: Executes the srt_prc operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--quiet`: Suppress non-essential output.
+- `--debug`: Enable debug output.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `temperature` with `ASSIGN` using `synced`
+
+--- End of documentation for MAN-BUILD-144 ---
+

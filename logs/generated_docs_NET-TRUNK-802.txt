@@ -1,0 +1,98 @@
+--- Documentation for NET-TRUNK-802 (CLEAN) ---
+# Tool Documentation: NET-TRUNK-802
+
+Domain: NETWORK_INFRA
+Description: Manages diagnose repair verify operations for network infra domain.
+
+Supported Commands:
+
+## diag_swt
+Description: Executes the diag_swt operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `fault_status` with `ASSIGN` using `identified`
+
+## rpr_swt
+Description: Executes the rpr_swt operation.
+Preconditions:
+- requires `fault_status` to equal `identified`
+Options:
+- `--output`: Write output to a file.
+- `--simulate`: Run in simulation mode.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `switch_health` with `ASSIGN` using `restored`
+
+## vfy_swt
+Description: Executes the vfy_swt operation.
+Preconditions:
+- requires `switch_health` to equal `restored`
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--help`: Show help information and exit.
+Effects:
+- no state change documented
+
+## cap_dlk
+Description: Executes the cap_dlk operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--version`: Show version information and exit.
+Effects:
+- updates `mtu` with `INCREMENT`
+
+## per_snt
+Description: Executes the per_snt operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `latency_jitter` with `INCREMENT`
+
+## lse_rpt
+Description: Executes the lse_rpt operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `mtu` with `INCREMENT`
+
+## rte_ont
+Description: Executes the rte_ont operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `latency_jitter` with `INCREMENT`
+
+## whl_dlk
+Description: Executes the whl_dlk operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `mtu` with `INCREMENT`
+
+## blk_krn
+Description: Executes the blk_krn operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `latency_jitter` with `INCREMENT`
+
+--- End of documentation for NET-TRUNK-802 ---
+

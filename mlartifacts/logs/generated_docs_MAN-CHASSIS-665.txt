@@ -1,0 +1,99 @@
+--- Documentation for MAN-CHASSIS-665 (CLEAN) ---
+# Tool Documentation: MAN-CHASSIS-665
+
+Domain: MANUFACTURING
+Description: package the redundant conveyor configuration.
+
+Supported Commands:
+
+## set_eng
+Description: Executes the set_eng operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--verbose`: Enable verbose logging/output.
+- `--help`: Show help information and exit.
+Effects:
+- updates `duration` with `ASSIGN` using `queued`
+
+## tgl_ctrl
+Description: Executes the tgl_ctrl operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--verbose`: Enable verbose logging/output.
+- `--debug`: Enable debug output.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `duration` with `ASSIGN` using `ready`
+
+## set_nzl
+Description: Executes the set_nzl operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--help`: Show help information and exit.
+- `--interactive`: Prompt for confirmations interactively.
+- `--timeout`: Set a timeout for the operation.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `duration` with `ASSIGN` using `ready`
+
+## lub_mtl
+Description: Executes the lub_mtl operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `threshold` with `INCREMENT`
+
+## stp_wks
+Description: Executes the stp_wks operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--output`: Write output to a file.
+- `--retry`: Retry the operation on failure.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `duration` with `ASSIGN` using `paused`
+
+## ext_rm
+Description: Executes the ext_rm operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--dry-run`: Simulate execution without making changes.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `duration` with `ASSIGN` using `completed`
+
+## msr_cmp
+Description: Executes the msr_cmp operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `humidity` with `INCREMENT`
+
+## aln_fix
+Description: Executes the aln_fix operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--timeout`: Set a timeout for the operation.
+- `--version`: Show version information and exit.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `humidity` with `INCREMENT`
+
+--- End of documentation for MAN-CHASSIS-665 ---
+

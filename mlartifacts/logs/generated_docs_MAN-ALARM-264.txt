@@ -1,0 +1,82 @@
+--- Documentation for MAN-ALARM-264 (CLEAN) ---
+# Tool Documentation: MAN-ALARM-264
+
+Domain: MANUFACTURING
+Description: enable the upstream queue configuration.
+
+Supported Commands:
+
+## stp_trb
+Description: Executes the stp_trb operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--debug`: Enable debug output.
+Effects:
+- updates `current` with `ASSIGN` using `9`
+
+## sel_kln
+Description: Executes the sel_kln operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `position` with `INCREMENT`
+
+## lub_vlv
+Description: Executes the lub_vlv operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--debug`: Enable debug output.
+- `--quiet`: Suppress non-essential output.
+- `--output`: Write output to a file.
+Effects:
+- updates `torque` with `ASSIGN` using `paused`
+
+## rbt_wks
+Description: Executes the rbt_wks operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `torque` with `ASSIGN` using `queued`
+
+## stp_ctrl
+Description: Executes the stp_ctrl operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--debug`: Enable debug output.
+- `--help`: Show help information and exit.
+- `--simulate`: Run in simulation mode.
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `torque` with `ASSIGN` using `completed`
+
+## rst_kln
+Description: Executes the rst_kln operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `current` with `ASSIGN` using `2`
+
+## cal_mtl
+Description: Executes the cal_mtl operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `torque` with `ASSIGN` using `paused`
+
+--- End of documentation for MAN-ALARM-264 ---
+

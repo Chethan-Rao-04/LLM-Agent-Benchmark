@@ -1,0 +1,95 @@
+--- Documentation for MAN-WORKSTATION-858 (CLEAN) ---
+# Tool Documentation: MAN-WORKSTATION-858
+
+Domain: MANUFACTURING
+Description: operate the primary batch configuration.
+
+Supported Commands:
+
+## stp_cmp
+Description: Executes the stp_cmp operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--timeout`: Set a timeout for the operation.
+- `--retry`: Retry the operation on failure.
+- `--debug`: Enable debug output.
+Effects:
+- updates `noise_level` with `ASSIGN` using `completed`
+
+## clp_dye
+Description: Executes the clp_dye operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `noise_level` with `ASSIGN` using `synced`
+
+## package_hop
+Description: Executes the package_hop operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `noise_level` with `ASSIGN` using `synced`
+
+## dsb_asm
+Description: Executes the dsb_asm operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `position` with `INCREMENT`
+
+## set_alm
+Description: Executes the set_alm operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--interactive`: Prompt for confirmations interactively.
+- `--simulate`: Run in simulation mode.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `noise_level` with `ASSIGN` using `stable`
+
+## bps_btc
+Description: Executes the bps_btc operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--timeout`: Set a timeout for the operation.
+- `--force`: Force the operation even if warnings are present.
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `noise_level` with `ASSIGN` using `completed`
+
+## uld_btc
+Description: Executes the uld_btc operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--debug`: Enable debug output.
+Effects:
+- updates `density` with `ASSIGN` using `6`
+
+## sel_mtl
+Description: Executes the sel_mtl operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `noise_level` with `ASSIGN` using `ready`
+
+--- End of documentation for MAN-WORKSTATION-858 ---
+

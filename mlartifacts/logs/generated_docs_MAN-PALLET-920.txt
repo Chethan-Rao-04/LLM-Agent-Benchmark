@@ -1,0 +1,78 @@
+--- Documentation for MAN-PALLET-920 (CLEAN) ---
+# Tool Documentation: MAN-PALLET-920
+
+Domain: MANUFACTURING
+Description: torque the upstream hopper configuration.
+
+Supported Commands:
+
+## ovr_cmp
+Description: Executes the ovr_cmp operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--output`: Write output to a file.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `temperature` with `INCREMENT`
+
+## srt_fix
+Description: Executes the srt_fix operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `status` with `ASSIGN` using `ready`
+
+## stp_inv
+Description: Executes the stp_inv operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `temperature` with `INCREMENT`
+
+## package_kln
+Description: Executes the package_kln operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `temperature` with `INCREMENT`
+
+## rec_vlv
+Description: Executes the rec_vlv operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `humidity` with `INCREMENT`
+
+## srt_opr_n
+Description: Executes the srt_opr_n operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--retry`: Retry the operation on failure.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `status` with `ASSIGN` using `queued`
+
+## stp_act
+Description: Executes the stp_act operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `status` with `ASSIGN` using `synced`
+
+--- End of documentation for MAN-PALLET-920 ---
+

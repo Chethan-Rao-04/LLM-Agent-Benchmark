@@ -1,0 +1,115 @@
+--- Documentation for MAN-DYE-577 (CLEAN) ---
+# Tool Documentation: MAN-DYE-577
+
+Domain: MANUFACTURING
+Description: lubricate the virtualized hopper configuration.
+
+Supported Commands:
+
+## bps_dye
+Description: Executes the bps_dye operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--quiet`: Suppress non-essential output.
+- `--interactive`: Prompt for confirmations interactively.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--debug`: Enable debug output.
+Effects:
+- updates `speed` with `ASSIGN` using `stable`
+
+## package_sch
+Description: Executes the package_sch operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--interactive`: Prompt for confirmations interactively.
+- `--help`: Show help information and exit.
+- `--dry-run`: Simulate execution without making changes.
+- `--debug`: Enable debug output.
+Effects:
+- updates `torque` with `ASSIGN` using `0`
+
+## ext_gnt
+Description: Executes the ext_gnt operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--verbose`: Enable verbose logging/output.
+- `--interactive`: Prompt for confirmations interactively.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `wear_level` with `ASSIGN` using `0`
+
+## aln_gnt
+Description: Executes the aln_gnt operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--version`: Show version information and exit.
+- `--dry-run`: Simulate execution without making changes.
+- `--interactive`: Prompt for confirmations interactively.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `speed` with `ASSIGN` using `paused`
+
+## prg_jig
+Description: Executes the prg_jig operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--version`: Show version information and exit.
+Effects:
+- updates `speed` with `ASSIGN` using `synced`
+
+## set_vlv
+Description: Executes the set_vlv operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `wear_level` with `INCREMENT`
+
+## ini_jig
+Description: Executes the ini_jig operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+Effects:
+- updates `speed` with `ASSIGN` using `stable`
+
+## abt_alm
+Description: Executes the abt_alm operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--version`: Show version information and exit.
+- `--verbose`: Enable verbose logging/output.
+- `--retry`: Retry the operation on failure.
+- `--output`: Write output to a file.
+Effects:
+- updates `speed` with `ASSIGN` using `completed`
+
+## enb_act
+Description: Executes the enb_act operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--force`: Force the operation even if warnings are present.
+- `--retry`: Retry the operation on failure.
+- `--output`: Write output to a file.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `speed` with `ASSIGN` using `completed`
+
+--- End of documentation for MAN-DYE-577 ---
+

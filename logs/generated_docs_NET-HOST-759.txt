@@ -1,0 +1,98 @@
+--- Documentation for NET-HOST-759 (CLEAN) ---
+# Tool Documentation: NET-HOST-759
+
+Domain: NETWORK_INFRA
+Description: Manages diagnose repair verify operations for network infra domain.
+
+Supported Commands:
+
+## diag_rtr
+Description: Executes the diag_rtr operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `fault_status` with `ASSIGN` using `identified`
+
+## rpr_rtr
+Description: Executes the rpr_rtr operation.
+Preconditions:
+- requires `fault_status` to equal `identified`
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `router_health` with `ASSIGN` using `restored`
+
+## vfy_rtr
+Description: Executes the vfy_rtr operation.
+Preconditions:
+- requires `router_health` to equal `restored`
+Options:
+- `--help`: Show help information and exit.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- no state change documented
+
+## upd_rpt
+Description: Executes the upd_rpt operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `interface_name` with `INCREMENT`
+
+## sav_dlk
+Description: Executes the sav_dlk operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--debug`: Enable debug output.
+Effects:
+- updates `interface_name` with `INCREMENT`
+
+## sav_ifc
+Description: Executes the sav_ifc operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `interface_name` with `INCREMENT`
+
+## stp__jmp
+Description: Executes the stp__jmp operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `rx_bytes` with `INCREMENT`
+
+## alw_cfg_n
+Description: Executes the alw_cfg_n operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--force`: Force the operation even if warnings are present.
+- `--help`: Show help information and exit.
+Effects:
+- updates `interface_name` with `INCREMENT`
+
+## dny_nat
+Description: Executes the dny_nat operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `interface_name` with `INCREMENT`
+
+--- End of documentation for NET-HOST-759 ---
+

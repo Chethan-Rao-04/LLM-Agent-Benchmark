@@ -1,0 +1,28 @@
+--- Documentation for MAN-TOOLSPEC-158 (INCOMPLETE) ---
+# Tool Documentation: MAN-TOOLSPEC-158
+Description: restart the upstream conveyor configuration.
+
+Command: quality-check_gnt
+Description: Executes the quality-check_gnt operation.
+Warning: this command may change internal state.
+
+Command: srt_que
+Description: Executes the srt_que operation.
+
+Command: stp_mch
+Description: Executes the stp_mch operation.
+Warning: this command may change internal state.
+
+Command: rst_cmp
+Description: Executes the rst_cmp operation.
+Warning: this command may change internal state.
+
+Command: clp_tsp
+Description: Executes the clp_tsp operation.
+
+Command: run_eng
+Description: Executes the run_eng operation.
+Warning: this command may change internal state.
+
+
+

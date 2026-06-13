@@ -1,0 +1,88 @@
+--- Documentation for MAN-COMPRESSOR-318 (CLEAN) ---
+# Tool Documentation: MAN-COMPRESSOR-318
+
+Domain: MANUFACTURING
+Description: run the redundant batch configuration.
+
+Supported Commands:
+
+## ini_chs
+Description: Executes the ini_chs operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `load_cell` with `INCREMENT`
+
+## vfy_dye
+Description: Executes the vfy_dye operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `load_cell` with `INCREMENT`
+
+## opr_tsp
+Description: Executes the opr_tsp operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `position` with `INCREMENT`
+
+## stp_plt
+Description: Executes the stp_plt operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--output`: Write output to a file.
+- `--quiet`: Suppress non-essential output.
+- `--dry-run`: Simulate execution without making changes.
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `position` with `ASSIGN` using `0`
+
+## prg_gnt
+Description: Executes the prg_gnt operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `inert_gas_level` with `ASSIGN` using `ready`
+
+## unset_nzl
+Description: Executes the unset_nzl operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `load_cell` with `ASSIGN` using `1`
+
+## ext_inv
+Description: Executes the ext_inv operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `load_cell` with `INCREMENT`
+
+## dsb_que
+Description: Executes the dsb_que operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `load_cell` with `ASSIGN` using `3`
+
+--- End of documentation for MAN-COMPRESSOR-318 ---
+

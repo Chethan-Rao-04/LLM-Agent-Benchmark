@@ -1,0 +1,28 @@
+--- Documentation for MAN-LINE-547 (INCOMPLETE) ---
+# Tool Documentation: MAN-LINE-547
+Description: clamp the primary assembly configuration.
+
+Command: rst_act
+Description: Executes the rst_act operation.
+Warning: this command may change internal state.
+
+Command: bps_sns
+Description: Executes the bps_sns operation.
+
+Command: mld_btc
+Description: Executes the mld_btc operation.
+Warning: this command may change internal state.
+
+Command: sel_dye
+Description: Executes the sel_dye operation.
+Warning: this command may change internal state.
+
+Command: ld_cmp
+Description: Executes the ld_cmp operation.
+
+Command: stp_opr_n
+Description: Executes the stp_opr_n operation.
+Warning: this command may change internal state.
+
+
+

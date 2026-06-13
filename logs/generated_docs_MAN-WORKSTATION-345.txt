@@ -1,0 +1,28 @@
+--- Documentation for MAN-WORKSTATION-345 (INCOMPLETE) ---
+# Tool Documentation: MAN-WORKSTATION-345
+Description: wring the upstream assembly configuration.
+
+Command: aln_nzl
+Description: Executes the aln_nzl operation.
+Warning: this command may change internal state.
+
+Command: clp_fix
+Description: Executes the clp_fix operation.
+
+Command: dsb_asm
+Description: Executes the dsb_asm operation.
+Warning: this command may change internal state.
+
+Command: enb_sch
+Description: Executes the enb_sch operation.
+Warning: this command may change internal state.
+
+Command: clp_sch
+Description: Executes the clp_sch operation.
+
+Command: dsb_btc
+Description: Executes the dsb_btc operation.
+Warning: this command may change internal state.
+
+
+

@@ -1,0 +1,95 @@
+--- Documentation for MAN-ACTUATOR-371 (CLEAN) ---
+# Tool Documentation: MAN-ACTUATOR-371
+
+Domain: MANUFACTURING
+Description: Manages auth provision deploy operations for manufacturing domain.
+
+Supported Commands:
+
+## auth_ctrl
+Description: Executes the auth_ctrl operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `auth_token` with `ASSIGN` using `valid`
+
+## prov_fw
+Description: Executes the prov_fw operation.
+Preconditions:
+- requires `auth_token` to equal `valid`
+Options:
+- `--output`: Write output to a file.
+Effects:
+- updates `firmware_status` with `ASSIGN` using `ready`
+
+## dpl_fw
+Description: Executes the dpl_fw operation.
+Preconditions:
+- requires `firmware_status` to equal `ready`
+Options:
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- no state change documented
+
+## rbt_plt
+Description: Executes the rbt_plt operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+Effects:
+- updates `coolant_temp` with `INCREMENT`
+
+## exe_chs
+Description: Executes the exe_chs operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `power` with `INCREMENT`
+
+## rec_wks
+Description: Executes the rec_wks operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `power` with `INCREMENT`
+
+## clp_bld
+Description: Executes the clp_bld operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `coolant_temp` with `INCREMENT`
+
+## lub_inv
+Description: Executes the lub_inv operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `coolant_temp` with `INCREMENT`
+
+## mld_ln
+Description: Executes the mld_ln operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--version`: Show version information and exit.
+Effects:
+- updates `coolant_temp` with `INCREMENT`
+
+--- End of documentation for MAN-ACTUATOR-371 ---
+

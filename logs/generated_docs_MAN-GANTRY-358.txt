@@ -1,0 +1,28 @@
+--- Documentation for MAN-GANTRY-358 (INCOMPLETE) ---
+# Tool Documentation: MAN-GANTRY-358
+Description: purge the primary spindle configuration.
+
+Command: rec_unt
+Description: Executes the rec_unt operation.
+Warning: this command may change internal state.
+
+Command: rst_mtl
+Description: Executes the rst_mtl operation.
+
+Command: ovr_unt
+Description: Executes the ovr_unt operation.
+Warning: this command may change internal state.
+
+Command: ext_trb
+Description: Executes the ext_trb operation.
+Warning: this command may change internal state.
+
+Command: set_bld
+Description: Executes the set_bld operation.
+
+Command: prg_cmp
+Description: Executes the prg_cmp operation.
+Warning: this command may change internal state.
+
+
+

@@ -1,0 +1,21 @@
+--- Documentation for MAN-TURBINE-631 (INCOMPLETE) ---
+# Tool Documentation: MAN-TURBINE-631
+Description: Manages diagnose repair verify operations.
+
+Command: rpr_trb
+Description: Executes the rpr_trb operation.
+Warning: this command may change internal state.
+
+Command: vfy_trb
+Description: Executes the vfy_trb operation.
+
+Command: shd_mtl
+Description: Executes the shd_mtl operation.
+Warning: this command may change internal state.
+
+Command: aln_mtl
+Description: Executes the aln_mtl operation.
+Warning: this command may change internal state.
+
+
+

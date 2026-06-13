@@ -1,0 +1,100 @@
+--- Documentation for MAN-TURBINE-143 (CLEAN) ---
+# Tool Documentation: MAN-TURBINE-143
+
+Domain: MANUFACTURING
+Description: abort the legacy line configuration.
+
+Supported Commands:
+
+## ld_btc
+Description: Executes the ld_btc operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `current` with `ASSIGN` using `2`
+
+## run_cmp
+Description: Executes the run_cmp operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `joint_angle` with `ASSIGN` using `paused`
+
+## ld_prc
+Description: Executes the ld_prc operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `joint_angle` with `ASSIGN` using `queued`
+
+## srt_tsp
+Description: Executes the srt_tsp operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `joint_angle` with `ASSIGN` using `stable`
+
+## ovr_dye
+Description: Executes the ovr_dye operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `joint_angle` with `ASSIGN` using `ready`
+
+## rsm_nzl
+Description: Executes the rsm_nzl operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `air_flow` with `INCREMENT`
+
+## rst_cnv
+Description: Executes the rst_cnv operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--help`: Show help information and exit.
+- `--version`: Show version information and exit.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `rate` with `INCREMENT`
+
+## ini_pts
+Description: Executes the ini_pts operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--simulate`: Run in simulation mode.
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `level` with `INCREMENT`
+
+## tgl_plt
+Description: Executes the tgl_plt operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `joint_angle` with `ASSIGN` using `stable`
+
+--- End of documentation for MAN-TURBINE-143 ---
+

@@ -1,0 +1,24 @@
+--- Documentation for MAN-MOLD-436 (INCOMPLETE) ---
+# Tool Documentation: MAN-MOLD-436
+Description: initialize the redundant sensor configuration.
+
+Command: torque_prc
+Description: Executes the torque_prc operation.
+Warning: this command may change internal state.
+
+Command: dsb_kln
+Description: Executes the dsb_kln operation.
+
+Command: mld_unt
+Description: Executes the mld_unt operation.
+Warning: this command may change internal state.
+
+Command: srt_pts
+Description: Executes the srt_pts operation.
+Warning: this command may change internal state.
+
+Command: isp_eng
+Description: Executes the isp_eng operation.
+
+
+

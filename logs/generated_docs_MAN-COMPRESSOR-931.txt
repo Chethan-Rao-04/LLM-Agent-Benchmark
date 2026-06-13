@@ -1,0 +1,80 @@
+--- Documentation for MAN-COMPRESSOR-931 (CLEAN) ---
+# Tool Documentation: MAN-COMPRESSOR-931
+
+Domain: MANUFACTURING
+Description: record the upstream process configuration.
+
+Supported Commands:
+
+## dsb_plt
+Description: Executes the dsb_plt operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--help`: Show help information and exit.
+- `--output`: Write output to a file.
+Effects:
+- updates `level` with `ASSIGN` using `completed`
+
+## wring_wks
+Description: Executes the wring_wks operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--interactive`: Prompt for confirmations interactively.
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `air_flow` with `ASSIGN` using `0`
+
+## cal_inv
+Description: Executes the cal_inv operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `air_flow` with `INCREMENT`
+
+## ini_wks
+Description: Executes the ini_wks operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--output`: Write output to a file.
+- `--version`: Show version information and exit.
+Effects:
+- updates `air_flow` with `ASSIGN` using `1`
+
+## package_hop
+Description: Executes the package_hop operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `output_yield` with `INCREMENT`
+
+## ovr_plt
+Description: Executes the ovr_plt operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `air_flow` with `INCREMENT`
+
+## set_act
+Description: Executes the set_act operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `air_flow` with `ASSIGN` using `5`
+
+--- End of documentation for MAN-COMPRESSOR-931 ---
+

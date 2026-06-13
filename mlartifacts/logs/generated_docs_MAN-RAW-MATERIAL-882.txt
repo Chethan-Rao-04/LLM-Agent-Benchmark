@@ -1,0 +1,111 @@
+--- Documentation for MAN-RAW-MATERIAL-882 (CLEAN) ---
+# Tool Documentation: MAN-RAW-MATERIAL-882
+
+Domain: MANUFACTURING
+Description: load the upstream material configuration.
+
+Supported Commands:
+
+## rbt_unt
+Description: Executes the rbt_unt operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--debug`: Enable debug output.
+- `--quiet`: Suppress non-essential output.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `joint_angle` with `ASSIGN` using `completed`
+
+## quality-check_mtl
+Description: Executes the quality-check_mtl operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `psi_reading` with `ASSIGN` using `8`
+
+## ovr_plt
+Description: Executes the ovr_plt operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `quality_score` with `ASSIGN` using `paused`
+
+## run_kln
+Description: Executes the run_kln operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--debug`: Enable debug output.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `quality_score` with `ASSIGN` using `ready`
+
+## pse_trb
+Description: Executes the pse_trb operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--output`: Write output to a file.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--help`: Show help information and exit.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `battery_level` with `INCREMENT`
+
+## package_prc
+Description: Executes the package_prc operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--interactive`: Prompt for confirmations interactively.
+- `--force`: Force the operation even if warnings are present.
+- `--output`: Write output to a file.
+Effects:
+- updates `quality_score` with `ASSIGN` using `ready`
+
+## ext_alm
+Description: Executes the ext_alm operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--retry`: Retry the operation on failure.
+- `--output`: Write output to a file.
+- `--dry-run`: Simulate execution without making changes.
+- `--version`: Show version information and exit.
+Effects:
+- updates `joint_angle` with `ASSIGN` using `completed`
+
+## set_gen
+Description: Executes the set_gen operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `quality_score` with `ASSIGN` using `paused`
+
+## run_hop
+Description: Executes the run_hop operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--simulate`: Run in simulation mode.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `moisture` with `INCREMENT`
+
+--- End of documentation for MAN-RAW-MATERIAL-882 ---
+

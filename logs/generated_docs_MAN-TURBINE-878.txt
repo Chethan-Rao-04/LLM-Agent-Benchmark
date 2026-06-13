@@ -1,0 +1,21 @@
+--- Documentation for MAN-TURBINE-878 (INCOMPLETE) ---
+# Tool Documentation: MAN-TURBINE-878
+Description: Manages init configure execute operations.
+
+Command: enb_pm
+Description: Executes the enb_pm operation.
+Warning: this command may change internal state.
+
+Command: cal_cnv
+Description: Executes the cal_cnv operation.
+
+Command: ini_eng
+Description: Executes the ini_eng operation.
+Warning: this command may change internal state.
+
+Command: torque_asm
+Description: Executes the torque_asm operation.
+Warning: this command may change internal state.
+
+
+

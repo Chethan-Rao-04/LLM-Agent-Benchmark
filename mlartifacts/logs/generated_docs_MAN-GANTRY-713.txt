@@ -1,0 +1,66 @@
+--- Documentation for MAN-GANTRY-713 (CLEAN) ---
+# Tool Documentation: MAN-GANTRY-713
+
+Domain: MANUFACTURING
+Description: Manages diagnose repair verify operations.
+
+Supported Commands:
+
+## diag_vlv
+Description: Executes the diag_vlv operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `fault_status` with `ASSIGN` using `identified`
+
+## rpr_vlv
+Description: Executes the rpr_vlv operation.
+Preconditions:
+- requires `fault_status` to equal `identified`
+Options:
+- none
+Effects:
+- updates `valve_health` with `ASSIGN` using `restored`
+
+## vfy_vlv
+Description: Executes the vfy_vlv operation.
+Preconditions:
+- requires `valve_health` to equal `restored`
+Options:
+- `--simulate`: Run in simulation mode.
+Effects:
+- no state change documented
+
+## srt_trb
+Description: Executes the srt_trb operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- no state change documented
+
+## uld_act
+Description: Executes the uld_act operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+Effects:
+- no state change documented
+
+## rsm_cmp
+Description: Executes the rsm_cmp operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+Effects:
+- no state change documented
+
+--- End of documentation for MAN-GANTRY-713 ---
+

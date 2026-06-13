@@ -1,0 +1,114 @@
+--- Documentation for MAN-GENERATOR-746 (CLEAN) ---
+# Tool Documentation: MAN-GENERATOR-746
+
+Domain: MANUFACTURING
+Description: clamp the redundant actuator configuration.
+
+Supported Commands:
+
+## run_inv
+Description: Executes the run_inv operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--version`: Show version information and exit.
+Effects:
+- updates `humidity` with `ASSIGN` using `ready`
+
+## tgl_que
+Description: Executes the tgl_que operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--debug`: Enable debug output.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `humidity` with `ASSIGN` using `completed`
+
+## ext_jig
+Description: Executes the ext_jig operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `torque` with `INCREMENT`
+
+## srt_fix
+Description: Executes the srt_fix operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--force`: Force the operation even if warnings are present.
+- `--quiet`: Suppress non-essential output.
+- `--version`: Show version information and exit.
+Effects:
+- updates `humidity` with `ASSIGN` using `queued`
+
+## srt_tsp
+Description: Executes the srt_tsp operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--simulate`: Run in simulation mode.
+- `--interactive`: Prompt for confirmations interactively.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `humidity` with `ASSIGN` using `stable`
+
+## exe_vlv
+Description: Executes the exe_vlv operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--debug`: Enable debug output.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `error_count` with `ASSIGN` using `1`
+
+## package_sch
+Description: Executes the package_sch operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--timeout`: Set a timeout for the operation.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `humidity` with `ASSIGN` using `synced`
+
+## pse_kln
+Description: Executes the pse_kln operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--debug`: Enable debug output.
+- `--timeout`: Set a timeout for the operation.
+- `--verbose`: Enable verbose logging/output.
+- `--help`: Show help information and exit.
+Effects:
+- updates `error_count` with `ASSIGN` using `8`
+
+## torque_alm
+Description: Executes the torque_alm operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--simulate`: Run in simulation mode.
+- `--debug`: Enable debug output.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `humidity` with `ASSIGN` using `completed`
+
+--- End of documentation for MAN-GENERATOR-746 ---
+

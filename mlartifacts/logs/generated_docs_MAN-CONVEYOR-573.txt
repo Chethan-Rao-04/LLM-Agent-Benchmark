@@ -1,0 +1,97 @@
+--- Documentation for MAN-CONVEYOR-573 (CLEAN) ---
+# Tool Documentation: MAN-CONVEYOR-573
+
+Domain: MANUFACTURING
+Description: Manages init configure execute operations for manufacturing domain.
+
+Supported Commands:
+
+## ini_sys
+Description: Executes the ini_sys operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+Effects:
+- updates `system_status` with `ASSIGN` using `RUNNING`
+
+## enb_pm
+Description: Executes the enb_pm operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `precision_mode` with `ASSIGN` using `active`
+
+## isp_cmp
+Description: Executes the isp_cmp operation.
+Preconditions:
+- requires `precision_mode` to equal `active`
+- requires `system_status` to equal `RUNNING`
+Options:
+- `--help`: Show help information and exit.
+Effects:
+- no state change documented
+
+## sel_gnt
+Description: Executes the sel_gnt operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `cycle_time` with `INCREMENT`
+
+## enb_mtl
+Description: Executes the enb_mtl operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `status` with `INCREMENT`
+
+## dsb_alm
+Description: Executes the dsb_alm operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `cycle_time` with `INCREMENT`
+
+## quality-check_bld
+Description: Executes the quality-check_bld operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `cycle_time` with `INCREMENT`
+
+## wld_fix
+Description: Executes the wld_fix operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--dry-run`: Simulate execution without making changes.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `cycle_time` with `INCREMENT`
+
+## run_cmp
+Description: Executes the run_cmp operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `status` with `INCREMENT`
+
+--- End of documentation for MAN-CONVEYOR-573 ---
+

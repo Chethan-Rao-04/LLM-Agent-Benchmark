@@ -1,0 +1,102 @@
+--- Documentation for MAN-DYE-396 (CLEAN) ---
+# Tool Documentation: MAN-DYE-396
+
+Domain: MANUFACTURING
+Description: torque the legacy unit configuration.
+
+Supported Commands:
+
+## dsb_gen
+Description: Executes the dsb_gen operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--output`: Write output to a file.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `output_yield` with `ASSIGN` using `synced`
+
+## zero-out_mld
+Description: Executes the zero-out_mld operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `voltage` with `ASSIGN` using `9`
+
+## mld_cnv
+Description: Executes the mld_cnv operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `humidity` with `ASSIGN` using `paused`
+
+## mld_alm
+Description: Executes the mld_alm operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--force`: Force the operation even if warnings are present.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `pressure` with `ASSIGN` using `9`
+
+## rsm_mtl
+Description: Executes the rsm_mtl operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--simulate`: Run in simulation mode.
+- `--output`: Write output to a file.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `humidity` with `ASSIGN` using `stable`
+
+## pse_chs
+Description: Executes the pse_chs operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `voltage` with `ASSIGN` using `5`
+
+## quality-check_bld
+Description: Executes the quality-check_bld operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `voltage` with `ASSIGN` using `7`
+
+## ovr_opr_n
+Description: Executes the ovr_opr_n operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--timeout`: Set a timeout for the operation.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `output_yield` with `ASSIGN` using `paused`
+
+## sel_tsp
+Description: Executes the sel_tsp operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `humidity` with `ASSIGN` using `completed`
+
+--- End of documentation for MAN-DYE-396 ---
+

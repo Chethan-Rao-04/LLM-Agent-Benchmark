@@ -1,0 +1,66 @@
+--- Documentation for MAN-INVENTORY-512 (CLEAN) ---
+# Tool Documentation: MAN-INVENTORY-512
+
+Domain: MANUFACTURING
+Description: Manages init configure execute operations.
+
+Supported Commands:
+
+## ini_sys
+Description: Executes the ini_sys operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `system_status` with `ASSIGN` using `RUNNING`
+
+## enb_tp
+Description: Executes the enb_tp operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+Options:
+- none
+Effects:
+- updates `thermal_protection` with `ASSIGN` using `active`
+
+## cal_trb
+Description: Executes the cal_trb operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+- requires `thermal_protection` to equal `active`
+Options:
+- none
+Effects:
+- no state change documented
+
+## quality-check_mch
+Description: Executes the quality-check_mch operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+## unset_opr_n
+Description: Executes the unset_opr_n operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--debug`: Enable debug output.
+Effects:
+- no state change documented
+
+## package_mch
+Description: Executes the package_mch operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+--- End of documentation for MAN-INVENTORY-512 ---
+

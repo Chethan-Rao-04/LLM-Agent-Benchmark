@@ -1,0 +1,97 @@
+--- Documentation for MAN-WORKSTATION-531 (GIBBERISH_NOISE) ---
+NOISY DOC 77a
+# Tool Documentation: MAN-WORKSTATION-531
+
+Domain: MANUFACTURING
+Description: reboot the upstream schedule configuration. xad12 noise qqq 441
+
+Supported Commands:
+ xad12 noise qqq 441
+## sel_nzl
+Description: Executes the sel_nzl operation.
+Preconditions: xad12 noise qqq 441
+- none
+Options:
+- none xad12 noise qqq 441
+Effects:
+- updates `quality_score` with `ASSIGN` using `paused`
+ xad12 noise qqq 441
+## quality-check_prc
+Description: Executes the quality-check_prc operation.
+Preconditions: xad12 noise qqq 441
+- none
+Options:
+- `--version`: Show version information and exit. xad12 noise qqq 441
+Effects:
+- updates `noise_level` with `ASSIGN` using `stable`
+ xad12 noise qqq 441
+## rbt_opr_n
+Description: Executes the rbt_opr_n operation.
+Preconditions: xad12 noise qqq 441
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes. xad12 noise qqq 441
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `noise_level` with `ASSIGN` using `ready` xad12 noise qqq 441
+
+## ini_cmp
+Description: Executes the ini_cmp operation. xad12 noise qqq 441
+Preconditions:
+- none
+Options: xad12 noise qqq 441
+- `--quiet`: Suppress non-essential output.
+- `--dry-run`: Simulate execution without making changes.
+- `--simulate`: Run in simulation mode. xad12 noise qqq 441
+- `--debug`: Enable debug output.
+Effects:
+- updates `humidity` with `ASSIGN` using `8` xad12 noise qqq 441
+
+## shd_nzl
+Description: Executes the shd_nzl operation. xad12 noise qqq 441
+Preconditions:
+- none
+Options: xad12 noise qqq 441
+- `--help`: Show help information and exit.
+- `--output`: Write output to a file.
+- `--retry`: Retry the operation on failure. xad12 noise qqq 441
+- `--force`: Force the operation even if warnings are present.
+- `--version`: Show version information and exit.
+Effects: xad12 noise qqq 441
+- updates `noise_level` with `ASSIGN` using `synced`
+
+## run_nzl xad12 noise qqq 441
+Description: Executes the run_nzl operation.
+Preconditions:
+- none xad12 noise qqq 441
+Options:
+- `--simulate`: Run in simulation mode.
+- `--debug`: Enable debug output. xad12 noise qqq 441
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `noise_level` with `ASSIGN` using `completed` xad12 noise qqq 441
+
+## rst_spd
+Description: Executes the rst_spd operation. xad12 noise qqq 441
+Preconditions:
+- none
+Options: xad12 noise qqq 441
+- `--retry`: Retry the operation on failure.
+- `--help`: Show help information and exit.
+- `--confirm`: Require explicit confirmation before proceeding. xad12 noise qqq 441
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `noise_level` with `ASSIGN` using `ready` xad12 noise qqq 441
+
+## srt_fix
+Description: Executes the srt_fix operation. xad12 noise qqq 441
+Preconditions:
+- none
+Options: xad12 noise qqq 441
+- `--help`: Show help information and exit.
+- `--quiet`: Suppress non-essential output.
+Effects: xad12 noise qqq 441
+- updates `quality_score` with `ASSIGN` using `ready`
+
+--- End of documentation for MAN-WORKSTATION-531 --- xad12 noise qqq 441
+

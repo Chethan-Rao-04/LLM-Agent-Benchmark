@@ -1,0 +1,100 @@
+--- Documentation for NET-JUMPER-777 (CLEAN) ---
+# Tool Documentation: NET-JUMPER-777
+
+Domain: NETWORK_INFRA
+Description: Manages auth provision deploy operations for network infra domain.
+
+Supported Commands:
+
+## auth_cld
+Description: Executes the auth_cld operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `auth_token` with `ASSIGN` using `valid`
+
+## prov_svc
+Description: Executes the prov_svc operation.
+Preconditions:
+- requires `auth_token` to equal `valid`
+Options:
+- `--version`: Show version information and exit.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `service_status` with `ASSIGN` using `ready`
+
+## dpl_svc
+Description: Executes the dpl_svc operation.
+Preconditions:
+- requires `service_status` to equal `ready`
+Options:
+- `--output`: Write output to a file.
+- `--debug`: Enable debug output.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- no state change documented
+
+## map_loc
+Description: Executes the map_loc operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+Effects:
+- updates `session_id` with `INCREMENT`
+
+## map_srv
+Description: Executes the map_srv operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--verbose`: Enable verbose logging/output.
+- `--help`: Show help information and exit.
+Effects:
+- updates `mtu` with `INCREMENT`
+
+## con_dev
+Description: Executes the con_dev operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `mtu` with `INCREMENT`
+
+## syn_svc
+Description: Executes the syn_svc operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `mtu` with `INCREMENT`
+
+## lse_eth
+Description: Executes the lse_eth operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `session_id` with `INCREMENT`
+
+## swt_cfg_n
+Description: Executes the swt_cfg_n operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--output`: Write output to a file.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `mtu` with `INCREMENT`
+
+--- End of documentation for NET-JUMPER-777 ---
+

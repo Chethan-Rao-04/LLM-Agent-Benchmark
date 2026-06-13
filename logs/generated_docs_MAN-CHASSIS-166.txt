@@ -1,0 +1,28 @@
+--- Documentation for MAN-CHASSIS-166 (INCOMPLETE) ---
+# Tool Documentation: MAN-CHASSIS-166
+Description: resume the upstream compressor configuration.
+
+Command: uld_sns
+Description: Executes the uld_sns operation.
+Warning: this command may change internal state.
+
+Command: ovr_gnt
+Description: Executes the ovr_gnt operation.
+
+Command: dsb_nzl
+Description: Executes the dsb_nzl operation.
+Warning: this command may change internal state.
+
+Command: vfy_act
+Description: Executes the vfy_act operation.
+Warning: this command may change internal state.
+
+Command: ovr_bld
+Description: Executes the ovr_bld operation.
+
+Command: tgl_vlv
+Description: Executes the tgl_vlv operation.
+Warning: this command may change internal state.
+
+
+

@@ -1,0 +1,107 @@
+--- Documentation for MAN-ACTUATOR-116 (CLEAN) ---
+# Tool Documentation: MAN-ACTUATOR-116
+
+Domain: MANUFACTURING
+Description: seal the legacy queue configuration.
+
+Supported Commands:
+
+## run_cmp
+Description: Executes the run_cmp operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `speed` with `ASSIGN` using `completed`
+
+## vfy_mtl
+Description: Executes the vfy_mtl operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--simulate`: Run in simulation mode.
+- `--quiet`: Suppress non-essential output.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `threshold` with `INCREMENT`
+
+## ini_plt
+Description: Executes the ini_plt operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `battery_level` with `INCREMENT`
+
+## pse_que
+Description: Executes the pse_que operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `load_cell` with `INCREMENT`
+
+## pse_opr_n
+Description: Executes the pse_opr_n operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--simulate`: Run in simulation mode.
+- `--quiet`: Suppress non-essential output.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `speed` with `ASSIGN` using `ready`
+
+## exe_pts
+Description: Executes the exe_pts operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `speed` with `ASSIGN` using `stable`
+
+## aln_eng
+Description: Executes the aln_eng operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--simulate`: Run in simulation mode.
+- `--interactive`: Prompt for confirmations interactively.
+- `--force`: Force the operation even if warnings are present.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `load_cell` with `INCREMENT`
+
+## srt_trb
+Description: Executes the srt_trb operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--simulate`: Run in simulation mode.
+- `--force`: Force the operation even if warnings are present.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `speed` with `ASSIGN` using `stable`
+
+## clp_opr_n
+Description: Executes the clp_opr_n operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `speed` with `ASSIGN` using `completed`
+
+--- End of documentation for MAN-ACTUATOR-116 ---
+

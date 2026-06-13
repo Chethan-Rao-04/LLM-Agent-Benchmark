@@ -1,0 +1,90 @@
+--- Documentation for NET-SWITCHPORT-303 (CLEAN) ---
+# Tool Documentation: NET-SWITCHPORT-303
+
+Domain: NETWORK_INFRA
+Description: Manages diagnose repair verify operations for network infra domain.
+
+Supported Commands:
+
+## diag_swt
+Description: Executes the diag_swt operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--version`: Show version information and exit.
+Effects:
+- updates `fault_status` with `ASSIGN` using `identified`
+
+## rpr_swt
+Description: Executes the rpr_swt operation.
+Preconditions:
+- requires `fault_status` to equal `identified`
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `switch_health` with `ASSIGN` using `restored`
+
+## vfy_swt
+Description: Executes the vfy_swt operation.
+Preconditions:
+- requires `switch_health` to equal `restored`
+Options:
+- `--help`: Show help information and exit.
+Effects:
+- no state change documented
+
+## brc_loc
+Description: Executes the brc_loc operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `throughput` with `INCREMENT`
+
+## dec_cfg_n
+Description: Executes the dec_cfg_n operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--simulate`: Run in simulation mode.
+- `--output`: Write output to a file.
+Effects:
+- updates `power_level` with `INCREMENT`
+
+## enc_tpo
+Description: Executes the enc_tpo operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--output`: Write output to a file.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `power_level` with `INCREMENT`
+
+## dec_ap
+Description: Executes the dec_ap operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `throughput` with `INCREMENT`
+
+## upd_mf
+Description: Executes the upd_mf operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `power_level` with `INCREMENT`
+
+--- End of documentation for NET-SWITCHPORT-303 ---
+

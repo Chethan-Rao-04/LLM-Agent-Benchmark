@@ -1,0 +1,114 @@
+--- Documentation for MAN-COMPRESSOR-569 (CLEAN) ---
+# Tool Documentation: MAN-COMPRESSOR-569
+
+Domain: MANUFACTURING
+Description: lubricate the redundant spindle configuration.
+
+Supported Commands:
+
+## sel_act
+Description: Executes the sel_act operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--simulate`: Run in simulation mode.
+- `--verbose`: Enable verbose logging/output.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `psi_reading` with `INCREMENT`
+
+## torque_chs
+Description: Executes the torque_chs operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--help`: Show help information and exit.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `pressure` with `ASSIGN` using `queued`
+
+## cal_rm
+Description: Executes the cal_rm operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--dry-run`: Simulate execution without making changes.
+- `--force`: Force the operation even if warnings are present.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `pressure` with `ASSIGN` using `queued`
+
+## tgl_sns
+Description: Executes the tgl_sns operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `noise_level` with `INCREMENT`
+
+## ld_prc
+Description: Executes the ld_prc operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `pressure` with `ASSIGN` using `synced`
+
+## prg_prc
+Description: Executes the prg_prc operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--force`: Force the operation even if warnings are present.
+- `--verbose`: Enable verbose logging/output.
+- `--interactive`: Prompt for confirmations interactively.
+- `--debug`: Enable debug output.
+Effects:
+- updates `noise_level` with `ASSIGN` using `8`
+
+## enb_pts
+Description: Executes the enb_pts operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--simulate`: Run in simulation mode.
+- `--output`: Write output to a file.
+Effects:
+- updates `psi_reading` with `ASSIGN` using `6`
+
+## tgl_cmp
+Description: Executes the tgl_cmp operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--quiet`: Suppress non-essential output.
+- `--dry-run`: Simulate execution without making changes.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `psi_reading` with `ASSIGN` using `4`
+
+## vfy_kln
+Description: Executes the vfy_kln operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--force`: Force the operation even if warnings are present.
+- `--simulate`: Run in simulation mode.
+- `--interactive`: Prompt for confirmations interactively.
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `psi_reading` with `ASSIGN` using `6`
+
+--- End of documentation for MAN-COMPRESSOR-569 ---
+

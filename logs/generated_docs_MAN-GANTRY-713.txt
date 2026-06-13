@@ -1,0 +1,21 @@
+--- Documentation for MAN-GANTRY-713 (INCOMPLETE) ---
+# Tool Documentation: MAN-GANTRY-713
+Description: Manages diagnose repair verify operations.
+
+Command: rpr_vlv
+Description: Executes the rpr_vlv operation.
+Warning: this command may change internal state.
+
+Command: vfy_vlv
+Description: Executes the vfy_vlv operation.
+
+Command: srt_trb
+Description: Executes the srt_trb operation.
+Warning: this command may change internal state.
+
+Command: rsm_cmp
+Description: Executes the rsm_cmp operation.
+Warning: this command may change internal state.
+
+
+

@@ -1,0 +1,24 @@
+--- Documentation for MAN-LINE-780 (INCOMPLETE) ---
+# Tool Documentation: MAN-LINE-780
+Description: Manages auth provision deploy operations for manufacturing domain.
+
+Command: prov_fw
+Description: Executes the prov_fw operation.
+Warning: this command may change internal state.
+
+Command: dpl_fw
+Description: Executes the dpl_fw operation.
+
+Command: rbt_pts
+Description: Executes the rbt_pts operation.
+Warning: this command may change internal state.
+
+Command: package_tsp
+Description: Executes the package_tsp operation.
+Warning: this command may change internal state.
+
+Command: clp_pts
+Description: Executes the clp_pts operation.
+
+
+

@@ -1,0 +1,82 @@
+--- Documentation for MAN-ALARM-677 (CLEAN) ---
+# Tool Documentation: MAN-ALARM-677
+
+Domain: MANUFACTURING
+Description: Manages auth provision deploy operations.
+
+Supported Commands:
+
+## auth_ctrl
+Description: Executes the auth_ctrl operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `auth_token` with `ASSIGN` using `valid`
+
+## prov_prg_n
+Description: Executes the prov_prg_n operation.
+Preconditions:
+- requires `auth_token` to equal `valid`
+Options:
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `program_status` with `ASSIGN` using `ready`
+
+## dpl_prg_n
+Description: Executes the dpl_prg_n operation.
+Preconditions:
+- requires `program_status` to equal `ready`
+Options:
+- none
+Effects:
+- no state change documented
+
+## srt_jig
+Description: Executes the srt_jig operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+## vfy_plt
+Description: Executes the vfy_plt operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+## mld_opr_n
+Description: Executes the mld_opr_n operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+## rec_wks
+Description: Executes the rec_wks operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- no state change documented
+
+## prg_cmp
+Description: Executes the prg_cmp operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+Effects:
+- no state change documented
+
+--- End of documentation for MAN-ALARM-677 ---
+

@@ -1,0 +1,85 @@
+--- Documentation for MAN-SENSOR-582 (GIBBERISH_NOISE) ---
+NOISY DOC 77a
+# Tool Documentation: MAN-SENSOR-582
+
+Domain: MANUFACTURING
+Description: override the upstream alarm configuration. xad12 noise qqq 441
+
+Supported Commands:
+ xad12 noise qqq 441
+## rec_nzl
+Description: Executes the rec_nzl operation.
+Preconditions: xad12 noise qqq 441
+- none
+Options:
+- `--version`: Show version information and exit. xad12 noise qqq 441
+- `--help`: Show help information and exit.
+- `--timeout`: Set a timeout for the operation.
+- `--output`: Write output to a file. xad12 noise qqq 441
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `quality_score` with `ASSIGN` using `completed` xad12 noise qqq 441
+
+## wld_act
+Description: Executes the wld_act operation. xad12 noise qqq 441
+Preconditions:
+- none
+Options: xad12 noise qqq 441
+- `--output`: Write output to a file.
+- `--verbose`: Enable verbose logging/output.
+- `--timeout`: Set a timeout for the operation. xad12 noise qqq 441
+Effects:
+- updates `quality_score` with `ASSIGN` using `queued`
+ xad12 noise qqq 441
+## unset_alm
+Description: Executes the unset_alm operation.
+Preconditions: xad12 noise qqq 441
+- none
+Options:
+- none xad12 noise qqq 441
+Effects:
+- updates `load_cell` with `ASSIGN` using `0`
+ xad12 noise qqq 441
+## ld_alm
+Description: Executes the ld_alm operation.
+Preconditions: xad12 noise qqq 441
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding. xad12 noise qqq 441
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `quality_score` with `ASSIGN` using `synced` xad12 noise qqq 441
+
+## dsb_chs
+Description: Executes the dsb_chs operation. xad12 noise qqq 441
+Preconditions:
+- none
+Options: xad12 noise qqq 441
+- none
+Effects:
+- updates `quality_score` with `ASSIGN` using `queued` xad12 noise qqq 441
+
+## rec_cnv
+Description: Executes the rec_cnv operation. xad12 noise qqq 441
+Preconditions:
+- none
+Options: xad12 noise qqq 441
+- none
+Effects:
+- updates `humidity` with `ASSIGN` using `stable` xad12 noise qqq 441
+
+## pse_tsp
+Description: Executes the pse_tsp operation. xad12 noise qqq 441
+Preconditions:
+- none
+Options: xad12 noise qqq 441
+- `--version`: Show version information and exit.
+- `--timeout`: Set a timeout for the operation.
+- `--verbose`: Enable verbose logging/output. xad12 noise qqq 441
+- `--retry`: Retry the operation on failure.
+- `--output`: Write output to a file.
+Effects: xad12 noise qqq 441
+- updates `error_count` with `INCREMENT`
+
+--- End of documentation for MAN-SENSOR-582 --- xad12 noise qqq 441
+

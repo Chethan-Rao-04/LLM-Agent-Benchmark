@@ -1,0 +1,66 @@
+--- Documentation for NET-DOWNLINK-504 (CLEAN) ---
+# Tool Documentation: NET-DOWNLINK-504
+
+Domain: NETWORK_INFRA
+Description: Manages init configure execute operations.
+
+Supported Commands:
+
+## ini_sys
+Description: Executes the ini_sys operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `system_status` with `ASSIGN` using `RUNNING`
+
+## enb_enc_n
+Description: Executes the enb_enc_n operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+Options:
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `encryption` with `ASSIGN` using `active`
+
+## mon_rtr
+Description: Executes the mon_rtr operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+- requires `encryption` to equal `active`
+Options:
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- no state change documented
+
+## wtc_mf
+Description: Executes the wtc_mf operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+## ppg_bbn
+Description: Executes the ppg_bbn operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+## dny_dev
+Description: Executes the dny_dev operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- no state change documented
+
+--- End of documentation for NET-DOWNLINK-504 ---
+

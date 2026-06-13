@@ -1,5 +1,6 @@
 package org.benchmark.app;
 
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -10,6 +11,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * client, and runs the autonomous benchmark at startup.</p>
  */
 @SpringBootApplication(scanBasePackages = "org.benchmark")
+@ConfigurationPropertiesScan(basePackages = "org.benchmark")
 public class BenchmarkApplication {
 
     /**

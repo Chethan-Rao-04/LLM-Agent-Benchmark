@@ -1,0 +1,96 @@
+--- Documentation for MAN-PALLET-205 (CLEAN) ---
+# Tool Documentation: MAN-PALLET-205
+
+Domain: MANUFACTURING
+Description: Manages auth provision deploy operations for manufacturing domain.
+
+Supported Commands:
+
+## auth_ctrl
+Description: Executes the auth_ctrl operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `auth_token` with `ASSIGN` using `valid`
+
+## prov_fw
+Description: Executes the prov_fw operation.
+Preconditions:
+- requires `auth_token` to equal `valid`
+Options:
+- `--help`: Show help information and exit.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `firmware_status` with `ASSIGN` using `ready`
+
+## dpl_fw
+Description: Executes the dpl_fw operation.
+Preconditions:
+- requires `firmware_status` to equal `ready`
+Options:
+- `--output`: Write output to a file.
+Effects:
+- no state change documented
+
+## exe_alm
+Description: Executes the exe_alm operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `output_yield` with `INCREMENT`
+
+## wring_pts
+Description: Executes the wring_pts operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--dry-run`: Simulate execution without making changes.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `status` with `INCREMENT`
+
+## package_alm
+Description: Executes the package_alm operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `output_yield` with `INCREMENT`
+
+## shd_tsp
+Description: Executes the shd_tsp operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `status` with `INCREMENT`
+
+## package_chs
+Description: Executes the package_chs operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `output_yield` with `INCREMENT`
+
+## torque_cmp
+Description: Executes the torque_cmp operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `output_yield` with `INCREMENT`
+
+--- End of documentation for MAN-PALLET-205 ---
+

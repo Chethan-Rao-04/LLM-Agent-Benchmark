@@ -1,0 +1,93 @@
+--- Documentation for MAN-PROCESS-565 (CLEAN) ---
+# Tool Documentation: MAN-PROCESS-565
+
+Domain: MANUFACTURING
+Description: reboot the primary generator configuration.
+
+Supported Commands:
+
+## rbt_cnv
+Description: Executes the rbt_cnv operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+Effects:
+- updates `torque` with `INCREMENT`
+
+## rsm_mld
+Description: Executes the rsm_mld operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--version`: Show version information and exit.
+Effects:
+- updates `torque` with `ASSIGN` using `5`
+
+## quality-check_tsp
+Description: Executes the quality-check_tsp operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--dry-run`: Simulate execution without making changes.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `wear_level` with `ASSIGN` using `ready`
+
+## sel_alm
+Description: Executes the sel_alm operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--version`: Show version information and exit.
+- `--help`: Show help information and exit.
+- `--simulate`: Run in simulation mode.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `efficiency` with `INCREMENT`
+
+## msr_alm
+Description: Executes the msr_alm operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `torque` with `INCREMENT`
+
+## bps_sns
+Description: Executes the bps_sns operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `wear_level` with `ASSIGN` using `paused`
+
+## stp_sch
+Description: Executes the stp_sch operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--debug`: Enable debug output.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `current` with `ASSIGN` using `completed`
+
+## ext_inv
+Description: Executes the ext_inv operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--interactive`: Prompt for confirmations interactively.
+- `--output`: Write output to a file.
+Effects:
+- updates `rate` with `ASSIGN` using `3`
+
+--- End of documentation for MAN-PROCESS-565 ---
+

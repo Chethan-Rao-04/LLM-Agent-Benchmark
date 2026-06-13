@@ -1,0 +1,77 @@
+--- Documentation for NET-ROUTER-509 (CLEAN) ---
+# Tool Documentation: NET-ROUTER-509
+
+Domain: NETWORK_INFRA
+Description: Manages init configure execute operations.
+
+Supported Commands:
+
+## ini_sys
+Description: Executes the ini_sys operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--version`: Show version information and exit.
+Effects:
+- updates `system_status` with `ASSIGN` using `RUNNING`
+
+## enb_enc_n
+Description: Executes the enb_enc_n operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `encryption` with `ASSIGN` using `active`
+
+## mon_swt
+Description: Executes the mon_swt operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+- requires `encryption` to equal `active`
+Options:
+- `--debug`: Enable debug output.
+Effects:
+- no state change documented
+
+## rls_ep
+Description: Executes the rls_ep operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--help`: Show help information and exit.
+Effects:
+- no state change documented
+
+## wtc_krn
+Description: Executes the wtc_krn operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- no state change documented
+
+## dsc_ulk
+Description: Executes the dsc_ulk operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+Effects:
+- no state change documented
+
+## dsc_mod
+Description: Executes the dsc_mod operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- no state change documented
+
+--- End of documentation for NET-ROUTER-509 ---
+

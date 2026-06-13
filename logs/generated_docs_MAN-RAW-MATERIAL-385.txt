@@ -1,0 +1,24 @@
+--- Documentation for MAN-RAW-MATERIAL-385 (INCOMPLETE) ---
+# Tool Documentation: MAN-RAW-MATERIAL-385
+Description: restart the virtualized line configuration.
+
+Command: lub_mld
+Description: Executes the lub_mld operation.
+Warning: this command may change internal state.
+
+Command: vfy_wks
+Description: Executes the vfy_wks operation.
+
+Command: clp_spd
+Description: Executes the clp_spd operation.
+Warning: this command may change internal state.
+
+Command: opr_btc
+Description: Executes the opr_btc operation.
+Warning: this command may change internal state.
+
+Command: ovr_act
+Description: Executes the ovr_act operation.
+
+
+
