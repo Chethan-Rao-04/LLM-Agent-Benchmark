@@ -1,0 +1,79 @@
+--- Documentation for MAN-QUEUE-453 (CLEAN) ---
+# Tool Documentation: MAN-QUEUE-453
+
+Domain: MANUFACTURING
+Description: Manages init configure execute operations for manufacturing domain.
+
+Supported Commands:
+
+## ini_sys
+Description: Executes the ini_sys operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `system_status` with `ASSIGN` using `RUNNING`
+
+## enb_tp
+Description: Executes the enb_tp operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+Options:
+- `--debug`: Enable debug output.
+Effects:
+- updates `thermal_protection` with `ASSIGN` using `active`
+
+## opr_trb
+Description: Executes the opr_trb operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+- requires `thermal_protection` to equal `active`
+Options:
+- `--version`: Show version information and exit.
+- `--debug`: Enable debug output.
+Effects:
+- no state change documented
+
+## shd_mld
+Description: Executes the shd_mld operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `rate` with `INCREMENT`
+
+## abt_gnt
+Description: Executes the abt_gnt operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--version`: Show version information and exit.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `duration` with `INCREMENT`
+
+## run_prc
+Description: Executes the run_prc operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `rate` with `INCREMENT`
+
+## abt_wks
+Description: Executes the abt_wks operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--version`: Show version information and exit.
+Effects:
+- updates `duration` with `INCREMENT`
+
+--- End of documentation for MAN-QUEUE-453 ---
+

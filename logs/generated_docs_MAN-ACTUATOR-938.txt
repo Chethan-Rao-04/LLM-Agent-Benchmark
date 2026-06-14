@@ -1,0 +1,28 @@
+--- Documentation for MAN-ACTUATOR-938 (INCOMPLETE) ---
+# Tool Documentation: MAN-ACTUATOR-938
+Description: calibrate the virtualized gantry configuration.
+
+Command: vfy_que
+Description: Executes the vfy_que operation.
+Warning: this command may change internal state.
+
+Command: wld_alm
+Description: Executes the wld_alm operation.
+
+Command: set_wks
+Description: Executes the set_wks operation.
+Warning: this command may change internal state.
+
+Command: ld_spd
+Description: Executes the ld_spd operation.
+Warning: this command may change internal state.
+
+Command: quality-check_tsp
+Description: Executes the quality-check_tsp operation.
+
+Command: clp_cnv
+Description: Executes the clp_cnv operation.
+Warning: this command may change internal state.
+
+
+

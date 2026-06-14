@@ -1,0 +1,83 @@
+--- Documentation for MAN-ACTUATOR-910 (CLEAN) ---
+# Tool Documentation: MAN-ACTUATOR-910
+
+Domain: MANUFACTURING
+Description: reboot the virtualized jig configuration.
+
+Supported Commands:
+
+## ld_inv
+Description: Executes the ld_inv operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `output_yield` with `ASSIGN` using `ready`
+
+## pse_vlv
+Description: Executes the pse_vlv operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--debug`: Enable debug output.
+Effects:
+- updates `output_yield` with `ASSIGN` using `ready`
+
+## unset_inv
+Description: Executes the unset_inv operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `output_yield` with `ASSIGN` using `stable`
+
+## wring_rm
+Description: Executes the wring_rm operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `coolant_temp` with `INCREMENT`
+
+## sel_trb
+Description: Executes the sel_trb operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--force`: Force the operation even if warnings are present.
+- `--output`: Write output to a file.
+- `--simulate`: Run in simulation mode.
+- `--version`: Show version information and exit.
+Effects:
+- updates `output_yield` with `ASSIGN` using `synced`
+
+## rec_que
+Description: Executes the rec_que operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--quiet`: Suppress non-essential output.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `coolant_temp` with `INCREMENT`
+
+## shd_trb
+Description: Executes the shd_trb operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `output_yield` with `ASSIGN` using `synced`
+
+--- End of documentation for MAN-ACTUATOR-910 ---
+

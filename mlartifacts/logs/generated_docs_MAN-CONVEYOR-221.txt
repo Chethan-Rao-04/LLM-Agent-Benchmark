@@ -1,0 +1,105 @@
+--- Documentation for MAN-CONVEYOR-221 (CLEAN) ---
+# Tool Documentation: MAN-CONVEYOR-221
+
+Domain: MANUFACTURING
+Description: record the virtualized alarm configuration.
+
+Supported Commands:
+
+## pse_que
+Description: Executes the pse_que operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--debug`: Enable debug output.
+- `--output`: Write output to a file.
+Effects:
+- updates `output_yield` with `ASSIGN` using `ready`
+
+## pse_eng
+Description: Executes the pse_eng operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--timeout`: Set a timeout for the operation.
+- `--interactive`: Prompt for confirmations interactively.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `output_yield` with `ASSIGN` using `synced`
+
+## pse_kln
+Description: Executes the pse_kln operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `output_yield` with `ASSIGN` using `ready`
+
+## package_act
+Description: Executes the package_act operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--interactive`: Prompt for confirmations interactively.
+- `--quiet`: Suppress non-essential output.
+- `--debug`: Enable debug output.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `wear_level` with `ASSIGN` using `stable`
+
+## wring_mld
+Description: Executes the wring_mld operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `threshold` with `ASSIGN` using `1`
+
+## rec_gnt
+Description: Executes the rec_gnt operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `torque` with `INCREMENT`
+
+## rst_kln
+Description: Executes the rst_kln operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+Effects:
+- updates `torque` with `INCREMENT`
+
+## srt_unt
+Description: Executes the srt_unt operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `output_yield` with `ASSIGN` using `synced`
+
+## package_cmp
+Description: Executes the package_cmp operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--output`: Write output to a file.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--quiet`: Suppress non-essential output.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `threshold` with `INCREMENT`
+
+--- End of documentation for MAN-CONVEYOR-221 ---
+

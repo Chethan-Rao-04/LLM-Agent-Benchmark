@@ -1,0 +1,78 @@
+--- Documentation for NET-NAT-724 (CLEAN) ---
+# Tool Documentation: NET-NAT-724
+
+Domain: NETWORK_INFRA
+Description: Manages init configure execute operations for network infra domain.
+
+Supported Commands:
+
+## ini_sys
+Description: Executes the ini_sys operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--version`: Show version information and exit.
+Effects:
+- updates `system_status` with `ASSIGN` using `RUNNING`
+
+## enb_authn
+Description: Executes the enb_authn operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+Options:
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `authentication` with `ASSIGN` using `active`
+
+## mon_gtw
+Description: Executes the mon_gtw operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+- requires `authentication` to equal `active`
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- no state change documented
+
+## blk_rtr
+Description: Executes the blk_rtr operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `packet_loss` with `INCREMENT`
+
+## brg_loc
+Description: Executes the brg_loc operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--debug`: Enable debug output.
+Effects:
+- updates `packet_loss` with `INCREMENT`
+
+## syn_chn
+Description: Executes the syn_chn operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--version`: Show version information and exit.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `bandwidth` with `INCREMENT`
+
+## lse_ifc
+Description: Executes the lse_ifc operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+Effects:
+- updates `bandwidth` with `INCREMENT`
+
+--- End of documentation for NET-NAT-724 ---
+

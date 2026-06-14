@@ -1,0 +1,100 @@
+--- Documentation for MAN-SCHEDULE-647 (CLEAN) ---
+# Tool Documentation: MAN-SCHEDULE-647
+
+Domain: MANUFACTURING
+Description: Manages diagnose repair verify operations for manufacturing domain.
+
+Supported Commands:
+
+## diag_cmp
+Description: Executes the diag_cmp operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `fault_status` with `ASSIGN` using `identified`
+
+## rpr_cmp
+Description: Executes the rpr_cmp operation.
+Preconditions:
+- requires `fault_status` to equal `identified`
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--interactive`: Prompt for confirmations interactively.
+- `--debug`: Enable debug output.
+Effects:
+- updates `compressor_health` with `ASSIGN` using `restored`
+
+## vfy_cmp
+Description: Executes the vfy_cmp operation.
+Preconditions:
+- requires `compressor_health` to equal `restored`
+Options:
+- `--simulate`: Run in simulation mode.
+- `--debug`: Enable debug output.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- no state change documented
+
+## uld_opr_n
+Description: Executes the uld_opr_n operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--debug`: Enable debug output.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `lubrication_index` with `INCREMENT`
+
+## restore_cmp
+Description: Applies compressor parameter adjustments.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `fault_status` with `ASSIGN` using `identified`
+
+## unset_ctrl
+Description: Executes the unset_ctrl operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `cycle_time` with `INCREMENT`
+
+## package_pts
+Description: Executes the package_pts operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+Effects:
+- updates `lubrication_index` with `INCREMENT`
+
+## pse_cmp
+Description: Executes the pse_cmp operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--quiet`: Suppress non-essential output.
+- `--help`: Show help information and exit.
+Effects:
+- updates `lubrication_index` with `INCREMENT`
+
+## rst_tsp
+Description: Executes the rst_tsp operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `lubrication_index` with `INCREMENT`
+
+--- End of documentation for MAN-SCHEDULE-647 ---
+

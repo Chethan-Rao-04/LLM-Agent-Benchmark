@@ -1,0 +1,28 @@
+--- Documentation for MAN-HOPPER-867 (INCOMPLETE) ---
+# Tool Documentation: MAN-HOPPER-867
+Description: Manages auth provision deploy operations.
+
+Command: prov_rcp
+Description: Executes the prov_rcp operation.
+Warning: this command may change internal state.
+
+Command: dpl_rcp
+Description: Executes the dpl_rcp operation.
+
+Command: rec_kln
+Description: Executes the rec_kln operation.
+Warning: this command may change internal state.
+
+Command: lub_mtl
+Description: Executes the lub_mtl operation.
+Warning: this command may change internal state.
+
+Command: dsb_plt
+Description: Executes the dsb_plt operation.
+
+Command: vfy_cmp
+Description: Executes the vfy_cmp operation.
+Warning: this command may change internal state.
+
+
+

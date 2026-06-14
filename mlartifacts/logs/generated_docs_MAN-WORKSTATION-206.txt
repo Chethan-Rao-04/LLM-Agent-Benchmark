@@ -1,0 +1,81 @@
+--- Documentation for MAN-WORKSTATION-206 (CLEAN) ---
+# Tool Documentation: MAN-WORKSTATION-206
+
+Domain: MANUFACTURING
+Description: align the legacy queue configuration.
+
+Supported Commands:
+
+## tgl_unt
+Description: Executes the tgl_unt operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `efficiency` with `ASSIGN` using `4`
+
+## clp_fix
+Description: Executes the clp_fix operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--help`: Show help information and exit.
+- `--simulate`: Run in simulation mode.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `power` with `ASSIGN` using `paused`
+
+## pse_mtl
+Description: Executes the pse_mtl operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `joint_angle` with `ASSIGN` using `stable`
+
+## prg_unt
+Description: Executes the prg_unt operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--version`: Show version information and exit.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `efficiency` with `ASSIGN` using `2`
+
+## zero-out_prc
+Description: Executes the zero-out_prc operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `power` with `ASSIGN` using `stable`
+
+## wld_nzl
+Description: Executes the wld_nzl operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--quiet`: Suppress non-essential output.
+- `--force`: Force the operation even if warnings are present.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `component_id` with `INCREMENT`
+
+## srt_btc
+Description: Executes the srt_btc operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `joint_angle` with `ASSIGN` using `completed`
+
+--- End of documentation for MAN-WORKSTATION-206 ---
+

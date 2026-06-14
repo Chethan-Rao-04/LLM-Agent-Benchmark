@@ -1,0 +1,75 @@
+--- Documentation for MAN-MOLD-661 (CLEAN) ---
+# Tool Documentation: MAN-MOLD-661
+
+Domain: MANUFACTURING
+Description: calibrate the upstream dye configuration.
+
+Supported Commands:
+
+## zero-out_cmp
+Description: Executes the zero-out_cmp operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--help`: Show help information and exit.
+Effects:
+- updates `humidity` with `ASSIGN` using `paused`
+
+## msr_cnv
+Description: Executes the msr_cnv operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `efficiency` with `ASSIGN` using `5`
+
+## rst_hop
+Description: Executes the rst_hop operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `psi_reading` with `ASSIGN` using `synced`
+
+## stp_que
+Description: Executes the stp_que operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+Effects:
+- updates `battery_level` with `ASSIGN` using `7`
+
+## lub_sns
+Description: Executes the lub_sns operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `psi_reading` with `ASSIGN` using `queued`
+
+## sel_asm
+Description: Executes the sel_asm operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `efficiency` with `ASSIGN` using `6`
+
+## vfy_prc
+Description: Executes the vfy_prc operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `psi_reading` with `ASSIGN` using `paused`
+
+--- End of documentation for MAN-MOLD-661 ---
+

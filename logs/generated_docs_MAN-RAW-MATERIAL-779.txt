@@ -1,0 +1,28 @@
+--- Documentation for MAN-RAW-MATERIAL-779 (INCOMPLETE) ---
+# Tool Documentation: MAN-RAW-MATERIAL-779
+Description: Manages init configure execute operations.
+
+Command: enb_pm
+Description: Executes the enb_pm operation.
+Warning: this command may change internal state.
+
+Command: cal_vlv
+Description: Executes the cal_vlv operation.
+
+Command: enb_pts
+Description: Executes the enb_pts operation.
+Warning: this command may change internal state.
+
+Command: bps_plt
+Description: Executes the bps_plt operation.
+Warning: this command may change internal state.
+
+Command: torque_mch
+Description: Executes the torque_mch operation.
+
+Command: abt_cmp
+Description: Executes the abt_cmp operation.
+Warning: this command may change internal state.
+
+
+

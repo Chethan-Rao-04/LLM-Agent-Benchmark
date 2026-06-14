@@ -1,0 +1,21 @@
+--- Documentation for MAN-KILN-985 (INCOMPLETE) ---
+# Tool Documentation: MAN-KILN-985
+Description: Manages auth provision deploy operations.
+
+Command: prov_rcp
+Description: Executes the prov_rcp operation.
+Warning: this command may change internal state.
+
+Command: dpl_rcp
+Description: Executes the dpl_rcp operation.
+
+Command: clp_chs
+Description: Executes the clp_chs operation.
+Warning: this command may change internal state.
+
+Command: wld_alm
+Description: Executes the wld_alm operation.
+Warning: this command may change internal state.
+
+
+

@@ -1,0 +1,96 @@
+--- Documentation for MAN-UNIT-417 (CLEAN) ---
+# Tool Documentation: MAN-UNIT-417
+
+Domain: MANUFACTURING
+Description: toggle the virtualized controller configuration.
+
+Supported Commands:
+
+## clp_bld
+Description: Executes the clp_bld operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--interactive`: Prompt for confirmations interactively.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `component_id` with `ASSIGN` using `7`
+
+## sel_nzl
+Description: Executes the sel_nzl operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--dry-run`: Simulate execution without making changes.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--quiet`: Suppress non-essential output.
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `rotation_speed` with `ASSIGN` using `stable`
+
+## rsm_pts
+Description: Executes the rsm_pts operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `rotation_speed` with `ASSIGN` using `stable`
+
+## uld_bld
+Description: Executes the uld_bld operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `component_id` with `ASSIGN` using `1`
+
+## quality-check_hop
+Description: Executes the quality-check_hop operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `humidity` with `ASSIGN` using `2`
+
+## torque_hop
+Description: Executes the torque_hop operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--timeout`: Set a timeout for the operation.
+- `--interactive`: Prompt for confirmations interactively.
+- `--output`: Write output to a file.
+Effects:
+- updates `humidity` with `ASSIGN` using `8`
+
+## exe_cmp
+Description: Executes the exe_cmp operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--debug`: Enable debug output.
+- `--interactive`: Prompt for confirmations interactively.
+- `--output`: Write output to a file.
+Effects:
+- updates `rotation_speed` with `ASSIGN` using `paused`
+
+## package_gnt
+Description: Executes the package_gnt operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `rotation_speed` with `ASSIGN` using `queued`
+
+--- End of documentation for MAN-UNIT-417 ---
+

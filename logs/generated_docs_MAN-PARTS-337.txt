@@ -1,0 +1,67 @@
+--- Documentation for MAN-PARTS-337 (CLEAN) ---
+# Tool Documentation: MAN-PARTS-337
+
+Domain: MANUFACTURING
+Description: Manages auth provision deploy operations.
+
+Supported Commands:
+
+## auth_ctrl
+Description: Executes the auth_ctrl operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `auth_token` with `ASSIGN` using `valid`
+
+## prov_prg_n
+Description: Executes the prov_prg_n operation.
+Preconditions:
+- requires `auth_token` to equal `valid`
+Options:
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `program_status` with `ASSIGN` using `ready`
+
+## dpl_prg_n
+Description: Executes the dpl_prg_n operation.
+Preconditions:
+- requires `program_status` to equal `ready`
+Options:
+- none
+Effects:
+- no state change documented
+
+## wld_cnv
+Description: Executes the wld_cnv operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- no state change documented
+
+## bps_opr_n
+Description: Executes the bps_opr_n operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--help`: Show help information and exit.
+Effects:
+- no state change documented
+
+## bps_prc
+Description: Executes the bps_prc operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--debug`: Enable debug output.
+Effects:
+- no state change documented
+
+--- End of documentation for MAN-PARTS-337 ---
+

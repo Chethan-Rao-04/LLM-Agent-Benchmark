@@ -1,0 +1,74 @@
+--- Documentation for NET-DATAGRAM-951 (CLEAN) ---
+# Tool Documentation: NET-DATAGRAM-951
+
+Domain: NETWORK_INFRA
+Description: Manages diagnose repair verify operations.
+
+Supported Commands:
+
+## diag_lb
+Description: Executes the diag_lb operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `fault_status` with `ASSIGN` using `identified`
+
+## rpr_lb
+Description: Executes the rpr_lb operation.
+Preconditions:
+- requires `fault_status` to equal `identified`
+Options:
+- none
+Effects:
+- updates `load_balancer_health` with `ASSIGN` using `restored`
+
+## vfy_lb
+Description: Executes the vfy_lb operation.
+Preconditions:
+- requires `load_balancer_health` to equal `restored`
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- no state change documented
+
+## bkl_spt
+Description: Executes the bkl_spt operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- no state change documented
+
+## dsc_loc
+Description: Executes the dsc_loc operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+Effects:
+- no state change documented
+
+## con_tpo
+Description: Executes the con_tpo operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+## cap_lb
+Description: Executes the cap_lb operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+--- End of documentation for NET-DATAGRAM-951 ---
+

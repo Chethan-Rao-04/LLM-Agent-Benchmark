@@ -1,0 +1,77 @@
+--- Documentation for MAN-BATCH-462 (CLEAN) ---
+# Tool Documentation: MAN-BATCH-462
+
+Domain: MANUFACTURING
+Description: Manages diagnose repair verify operations.
+
+Supported Commands:
+
+## diag_cmp
+Description: Executes the diag_cmp operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+Effects:
+- updates `fault_status` with `ASSIGN` using `identified`
+
+## rpr_cmp
+Description: Executes the rpr_cmp operation.
+Preconditions:
+- requires `fault_status` to equal `identified`
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `compressor_health` with `ASSIGN` using `restored`
+
+## vfy_cmp
+Description: Executes the vfy_cmp operation.
+Preconditions:
+- requires `compressor_health` to equal `restored`
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- no state change documented
+
+## run_alm
+Description: Executes the run_alm operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+Effects:
+- no state change documented
+
+## lub_act
+Description: Executes the lub_act operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+Effects:
+- no state change documented
+
+## sel_prc
+Description: Executes the sel_prc operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- no state change documented
+
+## prg_kln
+Description: Executes the prg_kln operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- no state change documented
+
+--- End of documentation for MAN-BATCH-462 ---
+

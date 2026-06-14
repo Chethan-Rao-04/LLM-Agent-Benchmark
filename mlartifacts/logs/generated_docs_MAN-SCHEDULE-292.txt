@@ -1,0 +1,113 @@
+--- Documentation for MAN-SCHEDULE-292 (CLEAN) ---
+# Tool Documentation: MAN-SCHEDULE-292
+
+Domain: MANUFACTURING
+Description: pause the primary parts configuration.
+
+Supported Commands:
+
+## rst_pts
+Description: Executes the rst_pts operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `coolant_temp` with `INCREMENT`
+
+## opr_mch
+Description: Executes the opr_mch operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--simulate`: Run in simulation mode.
+- `--interactive`: Prompt for confirmations interactively.
+- `--quiet`: Suppress non-essential output.
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `noise_level` with `ASSIGN` using `paused`
+
+## rbt_ctrl
+Description: Executes the rbt_ctrl operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `noise_level` with `ASSIGN` using `stable`
+
+## tgl_sns
+Description: Executes the tgl_sns operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--dry-run`: Simulate execution without making changes.
+- `--verbose`: Enable verbose logging/output.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `error_count` with `ASSIGN` using `stable`
+
+## quality-check_fix
+Description: Executes the quality-check_fix operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--timeout`: Set a timeout for the operation.
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `noise_level` with `ASSIGN` using `synced`
+
+## aln_jig
+Description: Executes the aln_jig operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--simulate`: Run in simulation mode.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `current` with `ASSIGN` using `1`
+
+## tgl_ctrl
+Description: Executes the tgl_ctrl operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--timeout`: Set a timeout for the operation.
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `current` with `ASSIGN` using `6`
+
+## tgl_cnv
+Description: Executes the tgl_cnv operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--timeout`: Set a timeout for the operation.
+- `--interactive`: Prompt for confirmations interactively.
+- `--verbose`: Enable verbose logging/output.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `coolant_temp` with `ASSIGN` using `6`
+
+## abt_que
+Description: Executes the abt_que operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--retry`: Retry the operation on failure.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `current` with `INCREMENT`
+
+--- End of documentation for MAN-SCHEDULE-292 ---
+

@@ -1,0 +1,203 @@
+package org.benchmark.gen.tool_generator;
+
+import java.util.Map;
+
+/**
+ * Single source of truth for abbreviating command names.
+ *
+ * <p>Every generator calls {@link #abbreviate(String, String)} when creating
+ * a {@code CommandObject} name. Natural-language query generation uses the
+ * original full words directly and never passes through this class.</p>
+ */
+public final class CommandAbbreviator {
+
+    private CommandAbbreviator() {}
+
+    private static final Map<String, String> TABLE = Map.ofEntries(
+            // ── verbs ──
+            Map.entry("initialize", "ini"),
+            Map.entry("enable", "enb"),
+            Map.entry("calibrate", "cal"),
+            Map.entry("inspect", "isp"),
+            Map.entry("operate", "opr"),
+            Map.entry("measure", "msr"),
+            Map.entry("configure", "cfg"),
+            Map.entry("optimize", "opt"),
+            Map.entry("route", "rte"),
+            Map.entry("monitor", "mon"),
+            Map.entry("diagnose", "diag"),
+            Map.entry("repair", "rpr"),
+            Map.entry("verify", "vfy"),
+            Map.entry("authenticate", "auth"),
+            Map.entry("provision", "prov"),
+            Map.entry("deploy", "dpl"),
+            Map.entry("start", "srt"),
+            Map.entry("stop", "stp"),
+            Map.entry("execute", "exe"),
+            Map.entry("pause", "pse"),
+            Map.entry("resume", "rsm"),
+            Map.entry("shutdown", "shd"),
+            Map.entry("restart", "rst"),
+            Map.entry("abort", "abt"),
+            Map.entry("reboot", "rbt"),
+            Map.entry("load", "ld"),
+            Map.entry("unload", "uld"),
+            Map.entry("align", "aln"),
+            Map.entry("bypass", "bps"),
+            Map.entry("clamp", "clp"),
+            Map.entry("disable", "dsb"),
+            Map.entry("lubricate", "lub"),
+            Map.entry("override", "ovr"),
+            Map.entry("purge", "prg"),
+            Map.entry("record", "rec"),
+            Map.entry("seal", "sel"),
+            Map.entry("toggle", "tgl"),
+            Map.entry("weld", "wld"),
+            Map.entry("extrude", "ext"),
+            Map.entry("mold", "mld"),
+            Map.entry("bridge", "brg"),
+            Map.entry("watch", "wtc"),
+            Map.entry("trace", "trc"),
+            Map.entry("capture", "cap"),
+            Map.entry("allow", "alw"),
+            Map.entry("deny", "dny"),
+            Map.entry("block", "blk"),
+            Map.entry("save", "sav"),
+            Map.entry("update", "upd"),
+            Map.entry("setup", "stp_"),
+            Map.entry("ping", "png"),
+            Map.entry("connect", "con"),
+            Map.entry("disconnect", "dsc"),
+            Map.entry("broadcast", "brc"),
+            Map.entry("encrypt", "enc"),
+            Map.entry("decrypt", "dec"),
+            Map.entry("filter", "flt"),
+            Map.entry("forward", "fwd"),
+            Map.entry("handshake", "hsk"),
+            Map.entry("isolate", "iso"),
+            Map.entry("lease", "lse"),
+            Map.entry("propagate", "ppg"),
+            Map.entry("release", "rls"),
+            Map.entry("synchronize", "syn"),
+            Map.entry("tunnel", "tnl"),
+            Map.entry("whitelist", "whl"),
+            Map.entry("blacklist", "bkl"),
+            Map.entry("throttle", "thr"),
+            Map.entry("advertise", "adv"),
+            Map.entry("peer", "per"),
+            // ── nouns ──
+            Map.entry("system", "sys"),
+            Map.entry("conveyor", "cnv"),
+            Map.entry("valve", "vlv"),
+            Map.entry("compressor", "cmp"),
+            Map.entry("turbine", "trb"),
+            Map.entry("router", "rtr"),
+            Map.entry("switch", "swt"),
+            Map.entry("gateway", "gtw"),
+            Map.entry("load_balancer", "lb"),
+            Map.entry("load-balancer", "lb"),
+            Map.entry("controller", "ctrl"),
+            Map.entry("plc", "plc"),
+            Map.entry("scada", "scd"),
+            Map.entry("hmi", "hmi"),
+            Map.entry("server", "srv"),
+            Map.entry("cluster", "clst"),
+            Map.entry("cloud", "cld"),
+            Map.entry("datacenter", "dc"),
+            Map.entry("firmware", "fw"),
+            Map.entry("configuration", "cfgr"),
+            Map.entry("recipe", "rcp"),
+            Map.entry("program", "prg_n"),
+            Map.entry("service", "svc"),
+            Map.entry("container", "ctr"),
+            Map.entry("instance", "inst"),
+            Map.entry("function", "fn"),
+            Map.entry("firewall", "fwl"),
+            Map.entry("safety_interlock", "si"),
+            Map.entry("thermal_protection", "tp"),
+            Map.entry("precision_mode", "pm"),
+            Map.entry("encryption", "enc_n"),
+            Map.entry("authentication", "authn"),
+            Map.entry("alarm", "alm"),
+            Map.entry("process", "prc"),
+            Map.entry("sensor", "sns"),
+            Map.entry("batch", "btc"),
+            Map.entry("parts", "pts"),
+            Map.entry("build", "bld"),
+            Map.entry("schedule", "sch"),
+            Map.entry("line", "ln"),
+            Map.entry("material", "mtl"),
+            Map.entry("machine", "mch"),
+            Map.entry("toolSpec", "tsp"),
+            Map.entry("unit", "unt"),
+            Map.entry("actuator", "act"),
+            Map.entry("dye", "dye"),
+            Map.entry("engine", "eng"),
+            Map.entry("fixture", "fix"),
+            Map.entry("gantry", "gnt"),
+            Map.entry("hopper", "hop"),
+            Map.entry("inventory", "inv"),
+            Map.entry("jig", "jig"),
+            Map.entry("kiln", "kln"),
+            Map.entry("nozzle", "nzl"),
+            Map.entry("operator", "opr_n"),
+            Map.entry("pallet", "plt"),
+            Map.entry("queue", "que"),
+            Map.entry("raw-material", "rm"),
+            Map.entry("spindle", "spd"),
+            Map.entry("assembly", "asm"),
+            Map.entry("chassis", "chs"),
+            Map.entry("workstation", "wks"),
+            Map.entry("generator", "gen"),
+            Map.entry("device", "dev"),
+            Map.entry("module", "mod"),
+            Map.entry("channel", "chn"),
+            Map.entry("config", "cfg_n"),
+            Map.entry("interface", "ifc"),
+            Map.entry("network", "net"),
+            Map.entry("node", "nod"),
+            Map.entry("repeater", "rpt"),
+            Map.entry("location", "loc"),
+            Map.entry("packet", "pkt"),
+            Map.entry("port", "prt"),
+            Map.entry("access-point", "ap"),
+            Map.entry("backbone", "bbn"),
+            Map.entry("client", "cli"),
+            Map.entry("datagram", "dgm"),
+            Map.entry("ethernet", "eth"),
+            Map.entry("host", "hst"),
+            Map.entry("infrastructure", "ifr"),
+            Map.entry("jumper", "jmp"),
+            Map.entry("kernel", "krn"),
+            Map.entry("mainframe", "mf"),
+            Map.entry("nat", "nat"),
+            Map.entry("ontology", "ont"),
+            Map.entry("proxy", "prx"),
+            Map.entry("topology", "tpo"),
+            Map.entry("endpoint", "ep"),
+            Map.entry("vlan", "vln"),
+            Map.entry("subnet", "snt"),
+            Map.entry("switchport", "spt"),
+            Map.entry("trunk", "trk"),
+            Map.entry("uplink", "ulk"),
+            Map.entry("downlink", "dlk")
+    );
+
+    /**
+     * Abbreviates a single word. Returns the original if no mapping exists.
+     */
+    public static String abbr(String word) {
+        return TABLE.getOrDefault(word, word);
+    }
+
+    /**
+     * Builds an abbreviated command name from a full verb and noun.
+     *
+     * @param verb full verb   (e.g. "initialize")
+     * @param noun full noun   (e.g. "system")
+     * @return abbreviated name (e.g. "ini_sys")
+     */
+    public static String commandName(String verb, String noun) {
+        return abbr(verb) + "_" + abbr(noun);
+    }
+}

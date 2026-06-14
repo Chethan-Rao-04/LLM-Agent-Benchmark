@@ -1,0 +1,24 @@
+--- Documentation for MAN-MACHINE-908 (INCOMPLETE) ---
+# Tool Documentation: MAN-MACHINE-908
+Description: operate the legacy workstation configuration.
+
+Command: shd_gen
+Description: Executes the shd_gen operation.
+Warning: this command may change internal state.
+
+Command: run_kln
+Description: Executes the run_kln operation.
+
+Command: exe_nzl
+Description: Executes the exe_nzl operation.
+Warning: this command may change internal state.
+
+Command: prg_cmp
+Description: Executes the prg_cmp operation.
+Warning: this command may change internal state.
+
+Command: isp_spd
+Description: Executes the isp_spd operation.
+
+
+

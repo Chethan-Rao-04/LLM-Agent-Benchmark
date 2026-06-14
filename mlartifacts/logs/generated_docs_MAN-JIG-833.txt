@@ -1,0 +1,78 @@
+--- Documentation for MAN-JIG-833 (CLEAN) ---
+# Tool Documentation: MAN-JIG-833
+
+Domain: MANUFACTURING
+Description: Manages init configure execute operations for manufacturing domain.
+
+Supported Commands:
+
+## ini_sys
+Description: Executes the ini_sys operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `system_status` with `ASSIGN` using `RUNNING`
+
+## enb_tp
+Description: Executes the enb_tp operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+Options:
+- `--retry`: Retry the operation on failure.
+- `--dry-run`: Simulate execution without making changes.
+- `--output`: Write output to a file.
+Effects:
+- updates `thermal_protection` with `ASSIGN` using `active`
+
+## cal_cmp
+Description: Executes the cal_cmp operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+- requires `thermal_protection` to equal `active`
+Options:
+- `--debug`: Enable debug output.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- no state change documented
+
+## exe_mld
+Description: Executes the exe_mld operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `friction` with `INCREMENT`
+
+## prg_que
+Description: Executes the prg_que operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `friction` with `INCREMENT`
+
+## pse_ln
+Description: Executes the pse_ln operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `threshold` with `INCREMENT`
+
+## ext_act
+Description: Executes the ext_act operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `threshold` with `INCREMENT`
+
+--- End of documentation for MAN-JIG-833 ---
+

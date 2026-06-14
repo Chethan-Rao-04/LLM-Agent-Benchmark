@@ -1,0 +1,24 @@
+--- Documentation for MAN-INVENTORY-467 (INCOMPLETE) ---
+# Tool Documentation: MAN-INVENTORY-467
+Description: Manages auth provision deploy operations for manufacturing domain.
+
+Command: prov_prg_n
+Description: Executes the prov_prg_n operation.
+Warning: this command may change internal state.
+
+Command: dpl_prg_n
+Description: Executes the dpl_prg_n operation.
+
+Command: isp_sch
+Description: Executes the isp_sch operation.
+Warning: this command may change internal state.
+
+Command: srt_sns
+Description: Executes the srt_sns operation.
+Warning: this command may change internal state.
+
+Command: dsb_mch
+Description: Executes the dsb_mch operation.
+
+
+

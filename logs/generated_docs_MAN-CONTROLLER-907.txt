@@ -1,0 +1,28 @@
+--- Documentation for MAN-CONTROLLER-907 (INCOMPLETE) ---
+# Tool Documentation: MAN-CONTROLLER-907
+Description: Manages diagnose repair verify operations.
+
+Command: rpr_cmp
+Description: Executes the rpr_cmp operation.
+Warning: this command may change internal state.
+
+Command: vfy_cmp
+Description: Executes the vfy_cmp operation.
+
+Command: ovr_sch
+Description: Executes the ovr_sch operation.
+Warning: this command may change internal state.
+
+Command: rbt_ctrl
+Description: Executes the rbt_ctrl operation.
+Warning: this command may change internal state.
+
+Command: ovr_gen
+Description: Executes the ovr_gen operation.
+
+Command: quality-check_bld
+Description: Executes the quality-check_bld operation.
+Warning: this command may change internal state.
+
+
+

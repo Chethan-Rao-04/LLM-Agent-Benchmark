@@ -1,0 +1,87 @@
+--- Documentation for MAN-ALARM-940 (CLEAN) ---
+# Tool Documentation: MAN-ALARM-940
+
+Domain: MANUFACTURING
+Description: shutdown the legacy toolSpec configuration.
+
+Supported Commands:
+
+## ini_alm
+Description: Executes the ini_alm operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `temperature` with `ASSIGN` using `ready`
+
+## clp_wks
+Description: Executes the clp_wks operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `temperature` with `ASSIGN` using `stable`
+
+## opr_fix
+Description: Executes the opr_fix operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--dry-run`: Simulate execution without making changes.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `temperature` with `ASSIGN` using `queued`
+
+## dsb_tsp
+Description: Executes the dsb_tsp operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--output`: Write output to a file.
+- `--help`: Show help information and exit.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `temperature` with `ASSIGN` using `synced`
+
+## ini_ln
+Description: Executes the ini_ln operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--timeout`: Set a timeout for the operation.
+- `--force`: Force the operation even if warnings are present.
+- `--retry`: Retry the operation on failure.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `temperature` with `ASSIGN` using `queued`
+
+## unset_unt
+Description: Executes the unset_unt operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--timeout`: Set a timeout for the operation.
+- `--version`: Show version information and exit.
+Effects:
+- updates `temperature` with `ASSIGN` using `paused`
+
+## quality-check_gnt
+Description: Executes the quality-check_gnt operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--dry-run`: Simulate execution without making changes.
+- `--output`: Write output to a file.
+- `--version`: Show version information and exit.
+Effects:
+- updates `friction` with `INCREMENT`
+
+--- End of documentation for MAN-ALARM-940 ---
+

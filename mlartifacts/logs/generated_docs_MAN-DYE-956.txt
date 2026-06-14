@@ -1,0 +1,88 @@
+--- Documentation for MAN-DYE-956 (GIBBERISH_NOISE) ---
+NOISY DOC 77a
+# Tool Documentation: MAN-DYE-956
+
+Domain: MANUFACTURING
+Description: Manages auth provision deploy operations. xad12 noise qqq 441
+
+Supported Commands:
+ xad12 noise qqq 441
+## auth_scd
+Description: Executes the auth_scd operation.
+Preconditions: xad12 noise qqq 441
+- none
+Options:
+- none xad12 noise qqq 441
+Effects:
+- updates `auth_token` with `ASSIGN` using `valid`
+ xad12 noise qqq 441
+## prov_rcp
+Description: Executes the prov_rcp operation.
+Preconditions: xad12 noise qqq 441
+- requires `auth_token` to equal `valid`
+Options:
+- `--help`: Show help information and exit. xad12 noise qqq 441
+- `--version`: Show version information and exit.
+Effects:
+- updates `recipe_status` with `ASSIGN` using `ready` xad12 noise qqq 441
+
+## dpl_rcp
+Description: Executes the dpl_rcp operation. xad12 noise qqq 441
+Preconditions:
+- requires `recipe_status` to equal `ready`
+Options: xad12 noise qqq 441
+- `--quiet`: Suppress non-essential output.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects: xad12 noise qqq 441
+- no state change documented
+
+## abt_spd xad12 noise qqq 441
+Description: Executes the abt_spd operation.
+Preconditions:
+- none xad12 noise qqq 441
+Options:
+- `--retry`: Retry the operation on failure.
+- `--force`: Force the operation even if warnings are present. xad12 noise qqq 441
+Effects:
+- no state change documented
+ xad12 noise qqq 441
+## quality-check_inv
+Description: Executes the quality-check_inv operation.
+Preconditions: xad12 noise qqq 441
+- none
+Options:
+- `--quiet`: Suppress non-essential output. xad12 noise qqq 441
+- `--version`: Show version information and exit.
+Effects:
+- no state change documented xad12 noise qqq 441
+
+## srt_que
+Description: Executes the srt_que operation. xad12 noise qqq 441
+Preconditions:
+- none
+Options: xad12 noise qqq 441
+- none
+Effects:
+- no state change documented xad12 noise qqq 441
+
+## lub_ln
+Description: Executes the lub_ln operation. xad12 noise qqq 441
+Preconditions:
+- none
+Options: xad12 noise qqq 441
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- no state change documented xad12 noise qqq 441
+
+## isp_rm
+Description: Executes the isp_rm operation. xad12 noise qqq 441
+Preconditions:
+- none
+Options: xad12 noise qqq 441
+- `--timeout`: Set a timeout for the operation.
+- `--interactive`: Prompt for confirmations interactively.
+Effects: xad12 noise qqq 441
+- no state change documented
+
+--- End of documentation for MAN-DYE-956 --- xad12 noise qqq 441
+

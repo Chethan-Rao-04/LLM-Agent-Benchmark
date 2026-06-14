@@ -1,0 +1,107 @@
+--- Documentation for MAN-MACHINE-228 (CLEAN) ---
+# Tool Documentation: MAN-MACHINE-228
+
+Domain: MANUFACTURING
+Description: inspect the redundant machine configuration.
+
+Supported Commands:
+
+## rec_cmp
+Description: Executes the rec_cmp operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--force`: Force the operation even if warnings are present.
+- `--retry`: Retry the operation on failure.
+- `--quiet`: Suppress non-essential output.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `noise_level` with `INCREMENT`
+
+## uld_eng
+Description: Executes the uld_eng operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `inert_gas_level` with `ASSIGN` using `ready`
+
+## mld_rm
+Description: Executes the mld_rm operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--help`: Show help information and exit.
+- `--timeout`: Set a timeout for the operation.
+- `--output`: Write output to a file.
+Effects:
+- updates `power` with `INCREMENT`
+
+## opr_sch
+Description: Executes the opr_sch operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--output`: Write output to a file.
+Effects:
+- updates `speed` with `ASSIGN` using `5`
+
+## zero-out_ctrl
+Description: Executes the zero-out_ctrl operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--debug`: Enable debug output.
+- `--help`: Show help information and exit.
+- `--timeout`: Set a timeout for the operation.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `inert_gas_level` with `ASSIGN` using `synced`
+
+## prg_hop
+Description: Executes the prg_hop operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+Effects:
+- updates `inert_gas_level` with `ASSIGN` using `stable`
+
+## torque_prc
+Description: Executes the torque_prc operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `power` with `ASSIGN` using `5`
+
+## torque_mtl
+Description: Executes the torque_mtl operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--timeout`: Set a timeout for the operation.
+- `--debug`: Enable debug output.
+Effects:
+- updates `inert_gas_level` with `ASSIGN` using `completed`
+
+## rsm_cnv
+Description: Executes the rsm_cnv operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `inert_gas_level` with `ASSIGN` using `completed`
+
+--- End of documentation for MAN-MACHINE-228 ---
+

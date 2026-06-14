@@ -1,0 +1,81 @@
+--- Documentation for MAN-SCHEDULE-130 (CLEAN) ---
+# Tool Documentation: MAN-SCHEDULE-130
+
+Domain: MANUFACTURING
+Description: Manages diagnose repair verify operations for manufacturing domain.
+
+Supported Commands:
+
+## diag_trb
+Description: Executes the diag_trb operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--dry-run`: Simulate execution without making changes.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `fault_status` with `ASSIGN` using `identified`
+
+## rpr_trb
+Description: Executes the rpr_trb operation.
+Preconditions:
+- requires `fault_status` to equal `identified`
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `turbine_health` with `ASSIGN` using `restored`
+
+## vfy_trb
+Description: Executes the vfy_trb operation.
+Preconditions:
+- requires `turbine_health` to equal `restored`
+Options:
+- `--output`: Write output to a file.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- no state change documented
+
+## rec_bld
+Description: Executes the rec_bld operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+Effects:
+- updates `coolant_temp` with `INCREMENT`
+
+## run_vlv
+Description: Executes the run_vlv operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--output`: Write output to a file.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `power` with `INCREMENT`
+
+## torque_btc
+Description: Executes the torque_btc operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `power` with `INCREMENT`
+
+## opr_hop
+Description: Executes the opr_hop operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--help`: Show help information and exit.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `power` with `INCREMENT`
+
+--- End of documentation for MAN-SCHEDULE-130 ---
+

@@ -1,0 +1,92 @@
+--- Documentation for MAN-SPINDLE-208 (CLEAN) ---
+# Tool Documentation: MAN-SPINDLE-208
+
+Domain: MANUFACTURING
+Description: initialize the virtualized unit configuration.
+
+Supported Commands:
+
+## aln_ctrl
+Description: Executes the aln_ctrl operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `joint_angle` with `ASSIGN` using `completed`
+
+## mld_pts
+Description: Executes the mld_pts operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `joint_angle` with `ASSIGN` using `stable`
+
+## mld_act
+Description: Executes the mld_act operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `joint_angle` with `ASSIGN` using `synced`
+
+## wring_eng
+Description: Executes the wring_eng operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--output`: Write output to a file.
+Effects:
+- updates `joint_angle` with `ASSIGN` using `completed`
+
+## enb_mch
+Description: Executes the enb_mch operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--debug`: Enable debug output.
+- `--interactive`: Prompt for confirmations interactively.
+- `--timeout`: Set a timeout for the operation.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `joint_angle` with `ASSIGN` using `queued`
+
+## zero-out_tsp
+Description: Executes the zero-out_tsp operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `joint_angle` with `ASSIGN` using `synced`
+
+## quality-check_inv
+Description: Executes the quality-check_inv operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `joint_angle` with `ASSIGN` using `synced`
+
+## wring_prc
+Description: Executes the wring_prc operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--help`: Show help information and exit.
+- `--quiet`: Suppress non-essential output.
+- `--simulate`: Run in simulation mode.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `level` with `ASSIGN` using `6`
+
+--- End of documentation for MAN-SPINDLE-208 ---
+

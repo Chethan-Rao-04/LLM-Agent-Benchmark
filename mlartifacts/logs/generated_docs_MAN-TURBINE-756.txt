@@ -1,0 +1,65 @@
+--- Documentation for MAN-TURBINE-756 (CLEAN) ---
+# Tool Documentation: MAN-TURBINE-756
+
+Domain: MANUFACTURING
+Description: Manages auth provision deploy operations.
+
+Supported Commands:
+
+## auth_ctrl
+Description: Executes the auth_ctrl operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `auth_token` with `ASSIGN` using `valid`
+
+## prov_prg_n
+Description: Executes the prov_prg_n operation.
+Preconditions:
+- requires `auth_token` to equal `valid`
+Options:
+- none
+Effects:
+- updates `program_status` with `ASSIGN` using `ready`
+
+## dpl_prg_n
+Description: Executes the dpl_prg_n operation.
+Preconditions:
+- requires `program_status` to equal `ready`
+Options:
+- none
+Effects:
+- no state change documented
+
+## tgl_dye
+Description: Executes the tgl_dye operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+## prg_vlv
+Description: Executes the prg_vlv operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+## lub_act
+Description: Executes the lub_act operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- no state change documented
+
+--- End of documentation for MAN-TURBINE-756 ---
+

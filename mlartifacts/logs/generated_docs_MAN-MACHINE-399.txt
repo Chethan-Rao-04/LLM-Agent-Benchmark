@@ -1,0 +1,94 @@
+--- Documentation for MAN-MACHINE-399 (CLEAN) ---
+# Tool Documentation: MAN-MACHINE-399
+
+Domain: MANUFACTURING
+Description: load the virtualized inventory configuration.
+
+Supported Commands:
+
+## enb_opr_n
+Description: Executes the enb_opr_n operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--retry`: Retry the operation on failure.
+- `--force`: Force the operation even if warnings are present.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `threshold` with `ASSIGN` using `ready`
+
+## wring_gen
+Description: Executes the wring_gen operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `threshold` with `ASSIGN` using `ready`
+
+## run_chs
+Description: Executes the run_chs operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--verbose`: Enable verbose logging/output.
+- `--debug`: Enable debug output.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `vibration` with `INCREMENT`
+
+## sel_prc
+Description: Executes the sel_prc operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--help`: Show help information and exit.
+Effects:
+- updates `threshold` with `ASSIGN` using `ready`
+
+## rec_mch
+Description: Executes the rec_mch operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--quiet`: Suppress non-essential output.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `vibration` with `ASSIGN` using `8`
+
+## ext_que
+Description: Executes the ext_que operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `threshold` with `ASSIGN` using `queued`
+
+## dsb_jig
+Description: Executes the dsb_jig operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `cycle_time` with `ASSIGN` using `3`
+
+## package_mch
+Description: Executes the package_mch operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--version`: Show version information and exit.
+Effects:
+- updates `vibration` with `ASSIGN` using `8`
+
+--- End of documentation for MAN-MACHINE-399 ---
+

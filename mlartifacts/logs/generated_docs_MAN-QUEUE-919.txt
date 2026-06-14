@@ -1,0 +1,94 @@
+--- Documentation for MAN-QUEUE-919 (CLEAN) ---
+# Tool Documentation: MAN-QUEUE-919
+
+Domain: MANUFACTURING
+Description: unload the legacy workstation configuration.
+
+Supported Commands:
+
+## ovr_act
+Description: Executes the ovr_act operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--version`: Show version information and exit.
+Effects:
+- updates `speed` with `ASSIGN` using `completed`
+
+## bps_opr_n
+Description: Executes the bps_opr_n operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--debug`: Enable debug output.
+- `--force`: Force the operation even if warnings are present.
+- `--retry`: Retry the operation on failure.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `voltage` with `INCREMENT`
+
+## rsm_cmp
+Description: Executes the rsm_cmp operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `battery_level` with `ASSIGN` using `3`
+
+## bps_prc
+Description: Executes the bps_prc operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `battery_level` with `INCREMENT`
+
+## wld_spd
+Description: Executes the wld_spd operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+Effects:
+- updates `speed` with `ASSIGN` using `stable`
+
+## rsm_tsp
+Description: Executes the rsm_tsp operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--output`: Write output to a file.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `voltage` with `INCREMENT`
+
+## wring_chs
+Description: Executes the wring_chs operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `voltage` with `INCREMENT`
+
+## run_trb
+Description: Executes the run_trb operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--verbose`: Enable verbose logging/output.
+- `--dry-run`: Simulate execution without making changes.
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `speed` with `ASSIGN` using `queued`
+
+--- End of documentation for MAN-QUEUE-919 ---
+

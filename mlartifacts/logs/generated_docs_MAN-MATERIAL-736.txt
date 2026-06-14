@@ -1,0 +1,91 @@
+--- Documentation for MAN-MATERIAL-736 (CLEAN) ---
+# Tool Documentation: MAN-MATERIAL-736
+
+Domain: MANUFACTURING
+Description: operate the legacy inventory configuration.
+
+Supported Commands:
+
+## unset_fix
+Description: Executes the unset_fix operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `power` with `ASSIGN` using `queued`
+
+## ext_bld
+Description: Executes the ext_bld operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--force`: Force the operation even if warnings are present.
+- `--timeout`: Set a timeout for the operation.
+- `--verbose`: Enable verbose logging/output.
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `air_flow` with `ASSIGN` using `paused`
+
+## dsb_vlv
+Description: Executes the dsb_vlv operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `power` with `ASSIGN` using `synced`
+
+## quality-check_mch
+Description: Executes the quality-check_mch operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `air_flow` with `ASSIGN` using `ready`
+
+## aln_cnv
+Description: Executes the aln_cnv operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--debug`: Enable debug output.
+Effects:
+- updates `efficiency` with `ASSIGN` using `0`
+
+## isp_sch
+Description: Executes the isp_sch operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--interactive`: Prompt for confirmations interactively.
+- `--version`: Show version information and exit.
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `power` with `ASSIGN` using `completed`
+
+## quality-check_chs
+Description: Executes the quality-check_chs operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+Effects:
+- updates `power` with `ASSIGN` using `queued`
+
+## set_unt
+Description: Executes the set_unt operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `error_count` with `ASSIGN` using `8`
+
+--- End of documentation for MAN-MATERIAL-736 ---
+

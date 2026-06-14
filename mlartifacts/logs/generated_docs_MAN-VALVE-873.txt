@@ -1,0 +1,95 @@
+--- Documentation for MAN-VALVE-873 (CLEAN) ---
+# Tool Documentation: MAN-VALVE-873
+
+Domain: MANUFACTURING
+Description: Manages init configure execute operations for manufacturing domain.
+
+Supported Commands:
+
+## ini_sys
+Description: Executes the ini_sys operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `system_status` with `ASSIGN` using `RUNNING`
+
+## enb_tp
+Description: Executes the enb_tp operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+Options:
+- none
+Effects:
+- updates `thermal_protection` with `ASSIGN` using `active`
+
+## isp_trb
+Description: Executes the isp_trb operation.
+Preconditions:
+- requires `thermal_protection` to equal `active`
+- requires `system_status` to equal `RUNNING`
+Options:
+- none
+Effects:
+- no state change documented
+
+## enb_unt
+Description: Executes the enb_unt operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `level` with `INCREMENT`
+
+## opr_dye
+Description: Executes the opr_dye operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--output`: Write output to a file.
+Effects:
+- updates `level` with `INCREMENT`
+
+## stp_dye
+Description: Executes the stp_dye operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--output`: Write output to a file.
+Effects:
+- updates `duration` with `INCREMENT`
+
+## lub_ctrl
+Description: Executes the lub_ctrl operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `level` with `INCREMENT`
+
+## mld_ctrl
+Description: Executes the mld_ctrl operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `level` with `INCREMENT`
+
+## sel_ctrl
+Description: Executes the sel_ctrl operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `duration` with `INCREMENT`
+
+--- End of documentation for MAN-VALVE-873 ---
+

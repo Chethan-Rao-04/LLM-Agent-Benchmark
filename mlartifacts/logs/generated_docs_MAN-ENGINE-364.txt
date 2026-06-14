@@ -1,0 +1,108 @@
+--- Documentation for MAN-ENGINE-364 (GIBBERISH_NOISE) ---
+NOISY DOC 77a
+# Tool Documentation: MAN-ENGINE-364
+
+Domain: MANUFACTURING
+Description: zero-out the primary unit configuration. xad12 noise qqq 441
+
+Supported Commands:
+ xad12 noise qqq 441
+## enb_eng
+Description: Executes the enb_eng operation.
+Preconditions: xad12 noise qqq 441
+- none
+Options:
+- none xad12 noise qqq 441
+Effects:
+- updates `temperature` with `ASSIGN` using `ready`
+ xad12 noise qqq 441
+## isp_wks
+Description: Executes the isp_wks operation.
+Preconditions: xad12 noise qqq 441
+- none
+Options:
+- `--retry`: Retry the operation on failure. xad12 noise qqq 441
+- `--quiet`: Suppress non-essential output.
+- `--dry-run`: Simulate execution without making changes.
+- `--force`: Force the operation even if warnings are present. xad12 noise qqq 441
+- `--debug`: Enable debug output.
+Effects:
+- updates `temperature` with `ASSIGN` using `queued` xad12 noise qqq 441
+
+## package_unt
+Description: Executes the package_unt operation. xad12 noise qqq 441
+Preconditions:
+- none
+Options: xad12 noise qqq 441
+- `--debug`: Enable debug output.
+- `--output`: Write output to a file.
+- `--help`: Show help information and exit. xad12 noise qqq 441
+Effects:
+- updates `load_cell` with `ASSIGN` using `8`
+ xad12 noise qqq 441
+## uld_kln
+Description: Executes the uld_kln operation.
+Preconditions: xad12 noise qqq 441
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively. xad12 noise qqq 441
+- `--simulate`: Run in simulation mode.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects: xad12 noise qqq 441
+- updates `count` with `INCREMENT`
+
+## mld_hop xad12 noise qqq 441
+Description: Executes the mld_hop operation.
+Preconditions:
+- none xad12 noise qqq 441
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--output`: Write output to a file. xad12 noise qqq 441
+Effects:
+- updates `temperature` with `ASSIGN` using `paused`
+ xad12 noise qqq 441
+## shd_dye
+Description: Executes the shd_dye operation.
+Preconditions: xad12 noise qqq 441
+- none
+Options:
+- `--output`: Write output to a file. xad12 noise qqq 441
+- `--version`: Show version information and exit.
+- `--quiet`: Suppress non-essential output.
+- `--verbose`: Enable verbose logging/output. xad12 noise qqq 441
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `temperature` with `ASSIGN` using `ready` xad12 noise qqq 441
+
+## tgl_trb
+Description: Executes the tgl_trb operation. xad12 noise qqq 441
+Preconditions:
+- none
+Options: xad12 noise qqq 441
+- `--version`: Show version information and exit.
+- `--force`: Force the operation even if warnings are present.
+- `--quiet`: Suppress non-essential output. xad12 noise qqq 441
+Effects:
+- updates `temperature` with `ASSIGN` using `queued`
+ xad12 noise qqq 441
+## isp_trb
+Description: Executes the isp_trb operation.
+Preconditions: xad12 noise qqq 441
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes. xad12 noise qqq 441
+Effects:
+- updates `rotation_speed` with `ASSIGN` using `7`
+ xad12 noise qqq 441
+## rst_rm
+Description: Executes the rst_rm operation.
+Preconditions: xad12 noise qqq 441
+- none
+Options:
+- `--version`: Show version information and exit. xad12 noise qqq 441
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `rotation_speed` with `ASSIGN` using `3` xad12 noise qqq 441
+
+--- End of documentation for MAN-ENGINE-364 ---
+

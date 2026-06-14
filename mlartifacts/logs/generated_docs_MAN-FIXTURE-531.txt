@@ -1,0 +1,90 @@
+--- Documentation for MAN-FIXTURE-531 (CLEAN) ---
+# Tool Documentation: MAN-FIXTURE-531
+
+Domain: MANUFACTURING
+Description: clamp the upstream mold configuration.
+
+Supported Commands:
+
+## set_mtl
+Description: Executes the set_mtl operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--version`: Show version information and exit.
+- `--timeout`: Set a timeout for the operation.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `rate` with `ASSIGN` using `ready`
+
+## quality-check_bld
+Description: Executes the quality-check_bld operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--simulate`: Run in simulation mode.
+- `--dry-run`: Simulate execution without making changes.
+- `--help`: Show help information and exit.
+- `--version`: Show version information and exit.
+Effects:
+- updates `temperature` with `ASSIGN` using `3`
+
+## abt_dye
+Description: Executes the abt_dye operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--dry-run`: Simulate execution without making changes.
+- `--help`: Show help information and exit.
+Effects:
+- updates `rate` with `ASSIGN` using `stable`
+
+## aln_fix
+Description: Executes the aln_fix operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--verbose`: Enable verbose logging/output.
+- `--timeout`: Set a timeout for the operation.
+- `--output`: Write output to a file.
+Effects:
+- updates `rate` with `ASSIGN` using `ready`
+
+## uld_que
+Description: Executes the uld_que operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `rate` with `ASSIGN` using `queued`
+
+## rst_alm
+Description: Executes the rst_alm operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--version`: Show version information and exit.
+- `--quiet`: Suppress non-essential output.
+- `--help`: Show help information and exit.
+Effects:
+- updates `pressure` with `INCREMENT`
+
+## isp_rm
+Description: Executes the isp_rm operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--retry`: Retry the operation on failure.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `rate` with `ASSIGN` using `queued`
+
+--- End of documentation for MAN-FIXTURE-531 ---
+

@@ -1,0 +1,80 @@
+--- Documentation for MAN-OPERATOR-146 (GIBBERISH_NOISE) ---
+NOISY DOC 77a
+# Tool Documentation: MAN-OPERATOR-146
+
+Domain: MANUFACTURING
+Description: Manages init configure execute operations for manufacturing domain. xad12 noise qqq 441
+
+Supported Commands:
+ xad12 noise qqq 441
+## ini_sys
+Description: Executes the ini_sys operation.
+Preconditions: xad12 noise qqq 441
+- none
+Options:
+- none xad12 noise qqq 441
+Effects:
+- updates `system_status` with `ASSIGN` using `RUNNING`
+ xad12 noise qqq 441
+## enb_tp
+Description: Executes the enb_tp operation.
+Preconditions: xad12 noise qqq 441
+- requires `system_status` to equal `RUNNING`
+Options:
+- none xad12 noise qqq 441
+Effects:
+- updates `thermal_protection` with `ASSIGN` using `active`
+ xad12 noise qqq 441
+## isp_vlv
+Description: Executes the isp_vlv operation.
+Preconditions: xad12 noise qqq 441
+- requires `system_status` to equal `RUNNING`
+- requires `thermal_protection` to equal `active`
+Options: xad12 noise qqq 441
+- `--output`: Write output to a file.
+- `--verbose`: Enable verbose logging/output.
+- `--debug`: Enable debug output. xad12 noise qqq 441
+Effects:
+- no state change documented
+ xad12 noise qqq 441
+## unset_gen
+Description: Executes the unset_gen operation.
+Preconditions: xad12 noise qqq 441
+- none
+Options:
+- `--timeout`: Set a timeout for the operation. xad12 noise qqq 441
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `position` with `INCREMENT` xad12 noise qqq 441
+
+## zero-out_spd
+Description: Executes the zero-out_spd operation. xad12 noise qqq 441
+Preconditions:
+- none
+Options: xad12 noise qqq 441
+- none
+Effects:
+- updates `position` with `INCREMENT` xad12 noise qqq 441
+
+## torque_prc
+Description: Executes the torque_prc operation. xad12 noise qqq 441
+Preconditions:
+- none
+Options: xad12 noise qqq 441
+- `--timeout`: Set a timeout for the operation.
+- `--retry`: Retry the operation on failure.
+- `--interactive`: Prompt for confirmations interactively. xad12 noise qqq 441
+Effects:
+- updates `power` with `INCREMENT`
+ xad12 noise qqq 441
+## wld_trb
+Description: Executes the wld_trb operation.
+Preconditions: xad12 noise qqq 441
+- none
+Options:
+- none xad12 noise qqq 441
+Effects:
+- updates `position` with `INCREMENT`
+ xad12 noise qqq 441
+--- End of documentation for MAN-OPERATOR-146 ---
+

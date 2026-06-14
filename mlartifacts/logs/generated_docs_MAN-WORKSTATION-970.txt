@@ -1,0 +1,93 @@
+--- Documentation for MAN-WORKSTATION-970 (CLEAN) ---
+# Tool Documentation: MAN-WORKSTATION-970
+
+Domain: MANUFACTURING
+Description: lubricate the upstream operator configuration.
+
+Supported Commands:
+
+## rbt_ctrl
+Description: Executes the rbt_ctrl operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--help`: Show help information and exit.
+Effects:
+- updates `speed` with `ASSIGN` using `3`
+
+## opr_btc
+Description: Executes the opr_btc operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--debug`: Enable debug output.
+Effects:
+- updates `joint_angle` with `ASSIGN` using `synced`
+
+## zero-out_chs
+Description: Executes the zero-out_chs operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `joint_angle` with `ASSIGN` using `ready`
+
+## msr_alm
+Description: Executes the msr_alm operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--version`: Show version information and exit.
+Effects:
+- updates `quality_score` with `INCREMENT`
+
+## wld_trb
+Description: Executes the wld_trb operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--quiet`: Suppress non-essential output.
+- `--debug`: Enable debug output.
+Effects:
+- updates `quality_score` with `INCREMENT`
+
+## rsm_cnv
+Description: Executes the rsm_cnv operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--simulate`: Run in simulation mode.
+- `--force`: Force the operation even if warnings are present.
+- `--version`: Show version information and exit.
+Effects:
+- updates `speed` with `INCREMENT`
+
+## lub_alm
+Description: Executes the lub_alm operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `speed` with `INCREMENT`
+
+## pse_wks
+Description: Executes the pse_wks operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--force`: Force the operation even if warnings are present.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `joint_angle` with `ASSIGN` using `stable`
+
+--- End of documentation for MAN-WORKSTATION-970 ---
+

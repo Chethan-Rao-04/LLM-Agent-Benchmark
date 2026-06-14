@@ -1,0 +1,91 @@
+--- Documentation for NET-LOCATION-674 (CLEAN) ---
+# Tool Documentation: NET-LOCATION-674
+
+Domain: NETWORK_INFRA
+Description: Manages auth provision deploy operations for network infra domain.
+
+Supported Commands:
+
+## auth_clst
+Description: Executes the auth_clst operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--retry`: Retry the operation on failure.
+- `--version`: Show version information and exit.
+Effects:
+- updates `auth_token` with `ASSIGN` using `valid`
+
+## prov_svc
+Description: Executes the prov_svc operation.
+Preconditions:
+- requires `auth_token` to equal `valid`
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--version`: Show version information and exit.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `service_status` with `ASSIGN` using `ready`
+
+## dpl_svc
+Description: Executes the dpl_svc operation.
+Preconditions:
+- requires `service_status` to equal `ready`
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- no state change documented
+
+## bkl_ep
+Description: Executes the bkl_ep operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `collision_count` with `INCREMENT`
+
+## con_snt
+Description: Executes the con_snt operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--dry-run`: Simulate execution without making changes.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `collision_count` with `INCREMENT`
+
+## sav_bbn
+Description: Executes the sav_bbn operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `collision_count` with `INCREMENT`
+
+## tnl_eth
+Description: Executes the tnl_eth operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `collision_count` with `INCREMENT`
+
+## ppg_svc
+Description: Executes the ppg_svc operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `collision_count` with `INCREMENT`
+
+--- End of documentation for NET-LOCATION-674 ---
+

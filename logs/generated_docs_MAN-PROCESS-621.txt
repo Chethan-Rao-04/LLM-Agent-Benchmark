@@ -1,0 +1,75 @@
+--- Documentation for MAN-PROCESS-621 (CLEAN) ---
+# Tool Documentation: MAN-PROCESS-621
+
+Domain: MANUFACTURING
+Description: Manages diagnose repair verify operations.
+
+Supported Commands:
+
+## diag_trb
+Description: Executes the diag_trb operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `fault_status` with `ASSIGN` using `identified`
+
+## rpr_trb
+Description: Executes the rpr_trb operation.
+Preconditions:
+- requires `fault_status` to equal `identified`
+Options:
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `turbine_health` with `ASSIGN` using `restored`
+
+## vfy_trb
+Description: Executes the vfy_trb operation.
+Preconditions:
+- requires `turbine_health` to equal `restored`
+Options:
+- `--help`: Show help information and exit.
+- `--simulate`: Run in simulation mode.
+Effects:
+- no state change documented
+
+## vfy_btc
+Description: Executes the vfy_btc operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+## rbt_opr_n
+Description: Executes the rbt_opr_n operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+## wring_alm
+Description: Executes the wring_alm operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- no state change documented
+
+## lub_pts
+Description: Executes the lub_pts operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--help`: Show help information and exit.
+Effects:
+- no state change documented
+
+--- End of documentation for MAN-PROCESS-621 ---
+

@@ -1,0 +1,77 @@
+--- Documentation for MAN-OPERATOR-801 (GIBBERISH_NOISE) ---
+NOISY DOC 77a
+# Tool Documentation: MAN-OPERATOR-801
+
+Domain: MANUFACTURING
+Description: Manages auth provision deploy operations for manufacturing domain. xad12 noise qqq 441
+
+Supported Commands:
+ xad12 noise qqq 441
+## auth_plc
+Description: Executes the auth_plc operation.
+Preconditions: xad12 noise qqq 441
+- none
+Options:
+- `--timeout`: Set a timeout for the operation. xad12 noise qqq 441
+Effects:
+- updates `auth_token` with `ASSIGN` using `valid`
+ xad12 noise qqq 441
+## prov_prg_n
+Description: Executes the prov_prg_n operation.
+Preconditions: xad12 noise qqq 441
+- requires `auth_token` to equal `valid`
+Options:
+- `--force`: Force the operation even if warnings are present. xad12 noise qqq 441
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `program_status` with `ASSIGN` using `ready` xad12 noise qqq 441
+
+## dpl_prg_n
+Description: Executes the dpl_prg_n operation. xad12 noise qqq 441
+Preconditions:
+- requires `program_status` to equal `ready`
+Options: xad12 noise qqq 441
+- none
+Effects:
+- no state change documented xad12 noise qqq 441
+
+## clp_alm
+Description: Executes the clp_alm operation. xad12 noise qqq 441
+Preconditions:
+- none
+Options: xad12 noise qqq 441
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `vibration` with `INCREMENT` xad12 noise qqq 441
+
+## ovr_alm
+Description: Executes the ovr_alm operation. xad12 noise qqq 441
+Preconditions:
+- none
+Options: xad12 noise qqq 441
+- `--version`: Show version information and exit.
+Effects:
+- updates `vibration` with `INCREMENT` xad12 noise qqq 441
+
+## rst_nzl
+Description: Executes the rst_nzl operation. xad12 noise qqq 441
+Preconditions:
+- none
+Options: xad12 noise qqq 441
+- `--version`: Show version information and exit.
+- `--force`: Force the operation even if warnings are present.
+- `--output`: Write output to a file. xad12 noise qqq 441
+Effects:
+- updates `density` with `INCREMENT`
+ xad12 noise qqq 441
+## ext_opr_n
+Description: Executes the ext_opr_n operation.
+Preconditions: xad12 noise qqq 441
+- none
+Options:
+- `--quiet`: Suppress non-essential output. xad12 noise qqq 441
+Effects:
+- updates `vibration` with `INCREMENT`
+ xad12 noise qqq 441
+--- End of documentation for MAN-OPERATOR-801 ---
+

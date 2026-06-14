@@ -1,0 +1,66 @@
+--- Documentation for MAN-BATCH-626 (CLEAN) ---
+# Tool Documentation: MAN-BATCH-626
+
+Domain: MANUFACTURING
+Description: Manages auth provision deploy operations.
+
+Supported Commands:
+
+## auth_plc
+Description: Executes the auth_plc operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `auth_token` with `ASSIGN` using `valid`
+
+## prov_fw
+Description: Executes the prov_fw operation.
+Preconditions:
+- requires `auth_token` to equal `valid`
+Options:
+- none
+Effects:
+- updates `firmware_status` with `ASSIGN` using `ready`
+
+## dpl_fw
+Description: Executes the dpl_fw operation.
+Preconditions:
+- requires `firmware_status` to equal `ready`
+Options:
+- none
+Effects:
+- no state change documented
+
+## rsm_inv
+Description: Executes the rsm_inv operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+## exe_dye
+Description: Executes the exe_dye operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+Effects:
+- no state change documented
+
+## clp_pts
+Description: Executes the clp_pts operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--help`: Show help information and exit.
+Effects:
+- no state change documented
+
+--- End of documentation for MAN-BATCH-626 ---
+

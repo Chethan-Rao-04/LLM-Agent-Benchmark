@@ -1,0 +1,24 @@
+--- Documentation for MAN-FIXTURE-531 (INCOMPLETE) ---
+# Tool Documentation: MAN-FIXTURE-531
+Description: clamp the upstream mold configuration.
+
+Command: quality-check_bld
+Description: Executes the quality-check_bld operation.
+Warning: this command may change internal state.
+
+Command: abt_dye
+Description: Executes the abt_dye operation.
+
+Command: aln_fix
+Description: Executes the aln_fix operation.
+Warning: this command may change internal state.
+
+Command: rst_alm
+Description: Executes the rst_alm operation.
+Warning: this command may change internal state.
+
+Command: isp_rm
+Description: Executes the isp_rm operation.
+
+
+

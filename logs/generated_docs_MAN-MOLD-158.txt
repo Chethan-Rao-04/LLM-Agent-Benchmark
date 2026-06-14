@@ -1,0 +1,28 @@
+--- Documentation for MAN-MOLD-158 (INCOMPLETE) ---
+# Tool Documentation: MAN-MOLD-158
+Description: clamp the upstream workstation configuration.
+
+Command: rst_dye
+Description: Executes the rst_dye operation.
+Warning: this command may change internal state.
+
+Command: shd_eng
+Description: Executes the shd_eng operation.
+
+Command: tgl_chs
+Description: Executes the tgl_chs operation.
+Warning: this command may change internal state.
+
+Command: ovr_eng
+Description: Executes the ovr_eng operation.
+Warning: this command may change internal state.
+
+Command: aln_bld
+Description: Executes the aln_bld operation.
+
+Command: sel_wks
+Description: Executes the sel_wks operation.
+Warning: this command may change internal state.
+
+
+

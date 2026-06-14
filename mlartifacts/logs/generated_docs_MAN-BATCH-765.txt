@@ -1,0 +1,84 @@
+--- Documentation for MAN-BATCH-765 (CLEAN) ---
+# Tool Documentation: MAN-BATCH-765
+
+Domain: MANUFACTURING
+Description: Manages diagnose repair verify operations.
+
+Supported Commands:
+
+## diag_cmp
+Description: Executes the diag_cmp operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `fault_status` with `ASSIGN` using `identified`
+
+## rpr_cmp
+Description: Executes the rpr_cmp operation.
+Preconditions:
+- requires `fault_status` to equal `identified`
+Options:
+- none
+Effects:
+- updates `compressor_health` with `ASSIGN` using `restored`
+
+## vfy_cmp
+Description: Executes the vfy_cmp operation.
+Preconditions:
+- requires `compressor_health` to equal `restored`
+Options:
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- no state change documented
+
+## pse_ln
+Description: Executes the pse_ln operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+Effects:
+- no state change documented
+
+## sel_gnt
+Description: Executes the sel_gnt operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+Effects:
+- no state change documented
+
+## ini_spd
+Description: Executes the ini_spd operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+## run_jig
+Description: Executes the run_jig operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--version`: Show version information and exit.
+Effects:
+- no state change documented
+
+## uld_act
+Description: Executes the uld_act operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+--- End of documentation for MAN-BATCH-765 ---
+

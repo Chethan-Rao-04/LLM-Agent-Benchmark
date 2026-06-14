@@ -1,0 +1,78 @@
+--- Documentation for NET-ROUTER-589 (CLEAN) ---
+# Tool Documentation: NET-ROUTER-589
+
+Domain: NETWORK_INFRA
+Description: Manages auth provision deploy operations.
+
+Supported Commands:
+
+## auth_clst
+Description: Executes the auth_clst operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--debug`: Enable debug output.
+Effects:
+- updates `auth_token` with `ASSIGN` using `valid`
+
+## prov_inst
+Description: Executes the prov_inst operation.
+Preconditions:
+- requires `auth_token` to equal `valid`
+Options:
+- `--output`: Write output to a file.
+- `--version`: Show version information and exit.
+Effects:
+- updates `instance_status` with `ASSIGN` using `ready`
+
+## dpl_inst
+Description: Executes the dpl_inst operation.
+Preconditions:
+- requires `instance_status` to equal `ready`
+Options:
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- no state change documented
+
+## syn_ont
+Description: Executes the syn_ont operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--output`: Write output to a file.
+Effects:
+- no state change documented
+
+## blk_snt
+Description: Executes the blk_snt operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+Effects:
+- no state change documented
+
+## png_chn
+Description: Executes the png_chn operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- no state change documented
+
+## blk_svc
+Description: Executes the blk_svc operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- no state change documented
+
+--- End of documentation for NET-ROUTER-589 ---
+

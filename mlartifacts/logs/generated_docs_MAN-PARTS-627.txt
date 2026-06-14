@@ -1,0 +1,92 @@
+--- Documentation for MAN-PARTS-627 (CLEAN) ---
+# Tool Documentation: MAN-PARTS-627
+
+Domain: MANUFACTURING
+Description: zero-out the primary queue configuration.
+
+Supported Commands:
+
+## wld_tsp
+Description: Executes the wld_tsp operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--help`: Show help information and exit.
+Effects:
+- updates `level` with `ASSIGN` using `1`
+
+## ovr_pts
+Description: Executes the ovr_pts operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `level` with `INCREMENT`
+
+## rbt_tsp
+Description: Executes the rbt_tsp operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--interactive`: Prompt for confirmations interactively.
+- `--quiet`: Suppress non-essential output.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `coolant_temp` with `ASSIGN` using `queued`
+
+## isp_asm
+Description: Executes the isp_asm operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `status` with `ASSIGN` using `0`
+
+## package_jig
+Description: Executes the package_jig operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `speed` with `INCREMENT`
+
+## rec_asm
+Description: Executes the rec_asm operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--version`: Show version information and exit.
+- `--timeout`: Set a timeout for the operation.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `coolant_temp` with `ASSIGN` using `paused`
+
+## ld_alm
+Description: Executes the ld_alm operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+Effects:
+- updates `coolant_temp` with `ASSIGN` using `paused`
+
+## enb_vlv
+Description: Executes the enb_vlv operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--version`: Show version information and exit.
+Effects:
+- updates `level` with `INCREMENT`
+
+--- End of documentation for MAN-PARTS-627 ---
+

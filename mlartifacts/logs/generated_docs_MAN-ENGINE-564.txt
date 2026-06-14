@@ -1,0 +1,106 @@
+--- Documentation for MAN-ENGINE-564 (CLEAN) ---
+# Tool Documentation: MAN-ENGINE-564
+
+Domain: MANUFACTURING
+Description: override the legacy kiln configuration.
+
+Supported Commands:
+
+## set_hop
+Description: Executes the set_hop operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--verbose`: Enable verbose logging/output.
+- `--quiet`: Suppress non-essential output.
+- `--force`: Force the operation even if warnings are present.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `wear_level` with `ASSIGN` using `ready`
+
+## srt_mld
+Description: Executes the srt_mld operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--version`: Show version information and exit.
+- `--debug`: Enable debug output.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `wear_level` with `ASSIGN` using `paused`
+
+## sel_alm
+Description: Executes the sel_alm operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `coolant_temp` with `INCREMENT`
+
+## rbt_pts
+Description: Executes the rbt_pts operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--dry-run`: Simulate execution without making changes.
+- `--quiet`: Suppress non-essential output.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `wear_level` with `ASSIGN` using `queued`
+
+## exe_sns
+Description: Executes the exe_sns operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--output`: Write output to a file.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `count` with `INCREMENT`
+
+## stp_cmp
+Description: Executes the stp_cmp operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `count` with `INCREMENT`
+
+## isp_pts
+Description: Executes the isp_pts operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `wear_level` with `ASSIGN` using `synced`
+
+## torque_vlv
+Description: Executes the torque_vlv operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--debug`: Enable debug output.
+- `--simulate`: Run in simulation mode.
+- `--version`: Show version information and exit.
+Effects:
+- updates `wear_level` with `ASSIGN` using `completed`
+
+## prg_trb
+Description: Executes the prg_trb operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `wear_level` with `ASSIGN` using `paused`
+
+--- End of documentation for MAN-ENGINE-564 ---
+

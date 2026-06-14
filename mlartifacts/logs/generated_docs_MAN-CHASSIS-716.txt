@@ -1,0 +1,81 @@
+--- Documentation for MAN-CHASSIS-716 (CLEAN) ---
+# Tool Documentation: MAN-CHASSIS-716
+
+Domain: MANUFACTURING
+Description: calibrate the redundant alarm configuration.
+
+Supported Commands:
+
+## aln_rm
+Description: Executes the aln_rm operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--version`: Show version information and exit.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `battery_level` with `ASSIGN` using `queued`
+
+## abt_kln
+Description: Executes the abt_kln operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+Effects:
+- updates `status` with `ASSIGN` using `8`
+
+## wld_opr_n
+Description: Executes the wld_opr_n operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--version`: Show version information and exit.
+- `--quiet`: Suppress non-essential output.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `status` with `ASSIGN` using `7`
+
+## uld_alm
+Description: Executes the uld_alm operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--dry-run`: Simulate execution without making changes.
+- `--verbose`: Enable verbose logging/output.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `battery_level` with `ASSIGN` using `completed`
+
+## sel_inv
+Description: Executes the sel_inv operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `noise_level` with `INCREMENT`
+
+## bps_gen
+Description: Executes the bps_gen operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `status` with `ASSIGN` using `1`
+
+## rbt_mld
+Description: Executes the rbt_mld operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `noise_level` with `ASSIGN` using `7`
+
+--- End of documentation for MAN-CHASSIS-716 ---
+

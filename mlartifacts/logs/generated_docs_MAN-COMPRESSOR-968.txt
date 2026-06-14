@@ -1,0 +1,76 @@
+--- Documentation for MAN-COMPRESSOR-968 (CLEAN) ---
+# Tool Documentation: MAN-COMPRESSOR-968
+
+Domain: MANUFACTURING
+Description: Manages auth provision deploy operations.
+
+Supported Commands:
+
+## auth_plc
+Description: Executes the auth_plc operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `auth_token` with `ASSIGN` using `valid`
+
+## prov_fw
+Description: Executes the prov_fw operation.
+Preconditions:
+- requires `auth_token` to equal `valid`
+Options:
+- `--output`: Write output to a file.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `firmware_status` with `ASSIGN` using `ready`
+
+## dpl_fw
+Description: Executes the dpl_fw operation.
+Preconditions:
+- requires `firmware_status` to equal `ready`
+Options:
+- `--quiet`: Suppress non-essential output.
+Effects:
+- no state change documented
+
+## wld_bld
+Description: Executes the wld_bld operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- no state change documented
+
+## isp_unt
+Description: Executes the isp_unt operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+Effects:
+- no state change documented
+
+## uld_fix
+Description: Executes the uld_fix operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+Effects:
+- no state change documented
+
+## opr_btc
+Description: Executes the opr_btc operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--help`: Show help information and exit.
+Effects:
+- no state change documented
+
+--- End of documentation for MAN-COMPRESSOR-968 ---
+

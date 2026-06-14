@@ -1,0 +1,92 @@
+--- Documentation for MAN-GENERATOR-116 (CLEAN) ---
+# Tool Documentation: MAN-GENERATOR-116
+
+Domain: MANUFACTURING
+Description: bypass the upstream unit configuration.
+
+Supported Commands:
+
+## ovr_gnt
+Description: Executes the ovr_gnt operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `psi_reading` with `ASSIGN` using `completed`
+
+## torque_wks
+Description: Executes the torque_wks operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--interactive`: Prompt for confirmations interactively.
+- `--debug`: Enable debug output.
+Effects:
+- updates `rate` with `INCREMENT`
+
+## bps_chs
+Description: Executes the bps_chs operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `noise_level` with `INCREMENT`
+
+## dsb_mld
+Description: Executes the dsb_mld operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--output`: Write output to a file.
+- `--retry`: Retry the operation on failure.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `rate` with `ASSIGN` using `8`
+
+## rsm_tsp
+Description: Executes the rsm_tsp operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--interactive`: Prompt for confirmations interactively.
+- `--output`: Write output to a file.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `power` with `ASSIGN` using `1`
+
+## srt_alm
+Description: Executes the srt_alm operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `psi_reading` with `ASSIGN` using `synced`
+
+## unset_trb
+Description: Executes the unset_trb operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+Effects:
+- updates `power` with `ASSIGN` using `7`
+
+## exe_asm
+Description: Executes the exe_asm operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--help`: Show help information and exit.
+Effects:
+- updates `noise_level` with `ASSIGN` using `6`
+
+--- End of documentation for MAN-GENERATOR-116 ---
+

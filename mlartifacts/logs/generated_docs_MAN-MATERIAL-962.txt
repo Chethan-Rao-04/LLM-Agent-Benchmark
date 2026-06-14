@@ -1,0 +1,90 @@
+--- Documentation for MAN-MATERIAL-962 (CLEAN) ---
+# Tool Documentation: MAN-MATERIAL-962
+
+Domain: MANUFACTURING
+Description: disable the virtualized alarm configuration.
+
+Supported Commands:
+
+## torque_dye
+Description: Executes the torque_dye operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+Effects:
+- updates `cycle_time` with `INCREMENT`
+
+## ini_bld
+Description: Executes the ini_bld operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `voltage` with `INCREMENT`
+
+## bps_sns
+Description: Executes the bps_sns operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--force`: Force the operation even if warnings are present.
+- `--debug`: Enable debug output.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `efficiency` with `INCREMENT`
+
+## unset_trb
+Description: Executes the unset_trb operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `psi_reading` with `ASSIGN` using `stable`
+
+## tgl_jig
+Description: Executes the tgl_jig operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--quiet`: Suppress non-essential output.
+- `--debug`: Enable debug output.
+Effects:
+- updates `efficiency` with `ASSIGN` using `2`
+
+## pse_jig
+Description: Executes the pse_jig operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+Effects:
+- updates `voltage` with `INCREMENT`
+
+## isp_act
+Description: Executes the isp_act operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--retry`: Retry the operation on failure.
+- `--quiet`: Suppress non-essential output.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `voltage` with `INCREMENT`
+
+## rsm_alm
+Description: Executes the rsm_alm operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+Effects:
+- updates `rotation_speed` with `ASSIGN` using `paused`
+
+--- End of documentation for MAN-MATERIAL-962 ---
+

@@ -1,0 +1,85 @@
+--- Documentation for MAN-ASSEMBLY-275 (CLEAN) ---
+# Tool Documentation: MAN-ASSEMBLY-275
+
+Domain: MANUFACTURING
+Description: load the virtualized conveyor configuration.
+
+Supported Commands:
+
+## rbt_que
+Description: Executes the rbt_que operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--force`: Force the operation even if warnings are present.
+- `--help`: Show help information and exit.
+- `--timeout`: Set a timeout for the operation.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `friction` with `INCREMENT`
+
+## ovr_mch
+Description: Executes the ovr_mch operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--interactive`: Prompt for confirmations interactively.
+- `--debug`: Enable debug output.
+Effects:
+- updates `coolant_temp` with `INCREMENT`
+
+## lub_unt
+Description: Executes the lub_unt operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--output`: Write output to a file.
+- `--quiet`: Suppress non-essential output.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `temperature` with `INCREMENT`
+
+## prg_tsp
+Description: Executes the prg_tsp operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--simulate`: Run in simulation mode.
+- `--debug`: Enable debug output.
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `quality_score` with `ASSIGN` using `completed`
+
+## msr_hop
+Description: Executes the msr_hop operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `quality_score` with `ASSIGN` using `completed`
+
+## quality-check_opr_n
+Description: Executes the quality-check_opr_n operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `quality_score` with `ASSIGN` using `completed`
+
+## lub_que
+Description: Executes the lub_que operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `temperature` with `ASSIGN` using `3`
+
+--- End of documentation for MAN-ASSEMBLY-275 ---
+

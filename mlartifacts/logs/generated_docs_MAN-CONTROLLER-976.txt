@@ -1,0 +1,86 @@
+--- Documentation for MAN-CONTROLLER-976 (CLEAN) ---
+# Tool Documentation: MAN-CONTROLLER-976
+
+Domain: MANUFACTURING
+Description: Manages auth provision deploy operations for manufacturing domain.
+
+Supported Commands:
+
+## auth_scd
+Description: Executes the auth_scd operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `auth_token` with `ASSIGN` using `valid`
+
+## prov_prg_n
+Description: Executes the prov_prg_n operation.
+Preconditions:
+- requires `auth_token` to equal `valid`
+Options:
+- `--version`: Show version information and exit.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--output`: Write output to a file.
+Effects:
+- updates `program_status` with `ASSIGN` using `ready`
+
+## dpl_prg_n
+Description: Executes the dpl_prg_n operation.
+Preconditions:
+- requires `program_status` to equal `ready`
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--version`: Show version information and exit.
+Effects:
+- no state change documented
+
+## clp_plt
+Description: Executes the clp_plt operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `component_id` with `INCREMENT`
+
+## ext_chs
+Description: Executes the ext_chs operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `position` with `INCREMENT`
+
+## cal_unt
+Description: Executes the cal_unt operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `component_id` with `INCREMENT`
+
+## bps_alm
+Description: Executes the bps_alm operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--help`: Show help information and exit.
+Effects:
+- updates `position` with `INCREMENT`
+
+## bps_rm
+Description: Executes the bps_rm operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `component_id` with `INCREMENT`
+
+--- End of documentation for MAN-CONTROLLER-976 ---
+

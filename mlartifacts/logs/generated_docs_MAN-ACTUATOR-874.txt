@@ -1,0 +1,88 @@
+--- Documentation for MAN-ACTUATOR-874 (CLEAN) ---
+# Tool Documentation: MAN-ACTUATOR-874
+
+Domain: MANUFACTURING
+Description: abort the primary raw-material configuration.
+
+Supported Commands:
+
+## torque_fix
+Description: Executes the torque_fix operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--force`: Force the operation even if warnings are present.
+- `--version`: Show version information and exit.
+- `--retry`: Retry the operation on failure.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `efficiency` with `ASSIGN` using `synced`
+
+## unset_chs
+Description: Executes the unset_chs operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--debug`: Enable debug output.
+- `--output`: Write output to a file.
+- `--interactive`: Prompt for confirmations interactively.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `count` with `INCREMENT`
+
+## msr_chs
+Description: Executes the msr_chs operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `level` with `ASSIGN` using `paused`
+
+## aln_gen
+Description: Executes the aln_gen operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `psi_reading` with `INCREMENT`
+
+## ext_mch
+Description: Executes the ext_mch operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--version`: Show version information and exit.
+- `--debug`: Enable debug output.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `component_id` with `INCREMENT`
+
+## shd_jig
+Description: Executes the shd_jig operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--debug`: Enable debug output.
+- `--retry`: Retry the operation on failure.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `psi_reading` with `ASSIGN` using `6`
+
+## shd_opr_n
+Description: Executes the shd_opr_n operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `efficiency` with `ASSIGN` using `stable`
+
+--- End of documentation for MAN-ACTUATOR-874 ---
+

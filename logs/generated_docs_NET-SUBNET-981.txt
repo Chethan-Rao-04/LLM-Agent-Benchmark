@@ -1,0 +1,87 @@
+--- Documentation for NET-SUBNET-981 (CLEAN) ---
+# Tool Documentation: NET-SUBNET-981
+
+Domain: NETWORK_INFRA
+Description: Manages init configure execute operations.
+
+Supported Commands:
+
+## ini_sys
+Description: Executes the ini_sys operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+Effects:
+- updates `system_status` with `ASSIGN` using `RUNNING`
+
+## enb_enc_n
+Description: Executes the enb_enc_n operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+Options:
+- none
+Effects:
+- updates `encryption` with `ASSIGN` using `active`
+
+## opt_rtr
+Description: Executes the opt_rtr operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+- requires `encryption` to equal `active`
+Options:
+- none
+Effects:
+- no state change documented
+
+## png_cfg_n
+Description: Executes the png_cfg_n operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+Effects:
+- no state change documented
+
+## per_lb
+Description: Executes the per_lb operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--simulate`: Run in simulation mode.
+Effects:
+- no state change documented
+
+## cap_eth
+Description: Executes the cap_eth operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- no state change documented
+
+## dsc_spt
+Description: Executes the dsc_spt operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- no state change documented
+
+## dsc_ifc
+Description: Executes the dsc_ifc operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- no state change documented
+
+--- End of documentation for NET-SUBNET-981 ---
+

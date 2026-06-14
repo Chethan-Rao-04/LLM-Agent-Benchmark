@@ -1,0 +1,82 @@
+--- Documentation for MAN-VALVE-595 (CLEAN) ---
+# Tool Documentation: MAN-VALVE-595
+
+Domain: MANUFACTURING
+Description: Manages diagnose repair verify operations.
+
+Supported Commands:
+
+## diag_cnv
+Description: Executes the diag_cnv operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `fault_status` with `ASSIGN` using `identified`
+
+## rpr_cnv
+Description: Executes the rpr_cnv operation.
+Preconditions:
+- requires `fault_status` to equal `identified`
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `conveyor_health` with `ASSIGN` using `restored`
+
+## vfy_cnv
+Description: Executes the vfy_cnv operation.
+Preconditions:
+- requires `conveyor_health` to equal `restored`
+Options:
+- none
+Effects:
+- no state change documented
+
+## run_btc
+Description: Executes the run_btc operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+## aln_rm
+Description: Executes the aln_rm operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+Effects:
+- no state change documented
+
+## unset_trb
+Description: Executes the unset_trb operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+Effects:
+- no state change documented
+
+## ini_ln
+Description: Executes the ini_ln operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- no state change documented
+
+## cal_gen
+Description: Executes the cal_gen operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+--- End of documentation for MAN-VALVE-595 ---
+

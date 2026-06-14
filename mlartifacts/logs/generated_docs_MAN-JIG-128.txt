@@ -1,0 +1,95 @@
+--- Documentation for MAN-JIG-128 (CLEAN) ---
+# Tool Documentation: MAN-JIG-128
+
+Domain: MANUFACTURING
+Description: calibrate the primary unit configuration.
+
+Supported Commands:
+
+## exe_que
+Description: Executes the exe_que operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--output`: Write output to a file.
+- `--dry-run`: Simulate execution without making changes.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `joint_angle` with `ASSIGN` using `5`
+
+## uld_unt
+Description: Executes the uld_unt operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `output_yield` with `ASSIGN` using `queued`
+
+## unset_ctrl
+Description: Executes the unset_ctrl operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `joint_angle` with `ASSIGN` using `0`
+
+## isp_vlv
+Description: Executes the isp_vlv operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `output_yield` with `ASSIGN` using `ready`
+
+## ext_opr_n
+Description: Executes the ext_opr_n operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `joint_angle` with `INCREMENT`
+
+## abt_fix
+Description: Executes the abt_fix operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--simulate`: Run in simulation mode.
+- `--interactive`: Prompt for confirmations interactively.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `vibration` with `INCREMENT`
+
+## wld_vlv
+Description: Executes the wld_vlv operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--version`: Show version information and exit.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `output_yield` with `ASSIGN` using `completed`
+
+## lub_prc
+Description: Executes the lub_prc operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `output_yield` with `ASSIGN` using `synced`
+
+--- End of documentation for MAN-JIG-128 ---
+

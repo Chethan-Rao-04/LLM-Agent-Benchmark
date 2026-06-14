@@ -1,35 +1,24 @@
-This project consists of a benchmark for evaluating llm-based agents as guidance for operating proprietary CLI-tools.
+This project benchmarks LLM agents on single-step tool selection under degraded documentation.
 
-It uses Java and Spring Boot along with tools like `Picoli` (CLI support for Java ) , `LangChain4j` for integration support , and `Spring AI`.
+Core packages:
+- `org.benchmark.app`: entry point and case execution
+- `org.benchmark.config`: Spring configuration properties and infrastructure beans
+- `org.benchmark.exec`: simulator, state management, and effect application
+- `org.benchmark.gen`: synthetic tool, documentation, and user-query generation
+- `org.benchmark.llm`: model client (`LlmClient`)
+- `org.benchmark.tools.server`: benchmark tool service (discovery + execution)
+- `org.benchmark.tools.runtime`: runtime tool callbacks bound to generated cases
+- `org.benchmark.model.enums`: enum types (`Domain`, `DocumentComplexity`, `EffectOp`)
+- `org.benchmark.model.objects`: immutable generated tool specifications
+- `org.benchmark.utils`: utility classes
 
+Main flow:
+1. Generate single-step benchmark cases (`BenchmarkCaseGenerator`).
+2. Build degraded documentation bundles for the target tool and distractors (`DocumentationGenerator`).
+3. Expose discovery utilities and executable benchmark tools through Spring AI tool callbacks.
+4. Let the model inspect documentation, choose a tool, and execute one command with an optional flag.
+5. Run the command in the in-memory simulator and apply its effects to session state.
+6. Score tool choice, command choice, option choice, state accuracy, efficiency, and recovery.
 
-Proposed Components for the Benchmark
-1. The data model
-2. Tool Factory
-2. A Documentation generator( generates tool documentation of varying complexity/ quality of deterioration)
-3. LLM (small sized and open source)
-4. Evaluation toolkit
-
-
-1. The Data Model
-- Tool Specification
-- Tool Complexity
-- Command Dict
-- Command Spec
-- Argument Spec
-- CommandEffect  (Pending)
-- CommandPreConditions (Pending)
-- Tool State Memory (Pending)
-- Domain (new)
-- Tool Description Generator (in Process)
-
-
-
-
-
-
-
--TODO
-Improve  state, effects, arguments  and precondition, incommplete implemetaion )also foe eval
-SOmtines two tools are having same commands, fix this pr add a way to check after llm responds 
-Try to make it converational like a chatbot involving LLM-simulated user
+Current entry point:
+- `org.benchmark.app.BenchmarkRunner`

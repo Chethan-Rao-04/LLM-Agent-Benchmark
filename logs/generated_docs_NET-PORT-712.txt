@@ -1,0 +1,77 @@
+--- Documentation for NET-PORT-712 (CLEAN) ---
+# Tool Documentation: NET-PORT-712
+
+Domain: NETWORK_INFRA
+Description: Manages diagnose repair verify operations.
+
+Supported Commands:
+
+## diag_rtr
+Description: Executes the diag_rtr operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `fault_status` with `ASSIGN` using `identified`
+
+## rpr_rtr
+Description: Executes the rpr_rtr operation.
+Preconditions:
+- requires `fault_status` to equal `identified`
+Options:
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `router_health` with `ASSIGN` using `restored`
+
+## vfy_rtr
+Description: Executes the vfy_rtr operation.
+Preconditions:
+- requires `router_health` to equal `restored`
+Options:
+- `--help`: Show help information and exit.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- no state change documented
+
+## fwd_pkt
+Description: Executes the fwd_pkt operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--help`: Show help information and exit.
+Effects:
+- no state change documented
+
+## map_ep
+Description: Executes the map_ep operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- no state change documented
+
+## ld_nod
+Description: Executes the ld_nod operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--help`: Show help information and exit.
+Effects:
+- no state change documented
+
+## alw_dgm
+Description: Executes the alw_dgm operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+--- End of documentation for NET-PORT-712 ---
+

@@ -1,0 +1,106 @@
+--- Documentation for MAN-TURBINE-289 (CLEAN) ---
+# Tool Documentation: MAN-TURBINE-289
+
+Domain: MANUFACTURING
+Description: initialize the redundant valve configuration.
+
+Supported Commands:
+
+## uld_gnt
+Description: Executes the uld_gnt operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--debug`: Enable debug output.
+- `--dry-run`: Simulate execution without making changes.
+- `--verbose`: Enable verbose logging/output.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `vibration` with `INCREMENT`
+
+## opr_hop
+Description: Executes the opr_hop operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `vibration` with `INCREMENT`
+
+## quality-check_hop
+Description: Executes the quality-check_hop operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `component_id` with `ASSIGN` using `8`
+
+## wring_tsp
+Description: Executes the wring_tsp operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--output`: Write output to a file.
+- `--interactive`: Prompt for confirmations interactively.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `current` with `ASSIGN` using `5`
+
+## srt_chs
+Description: Executes the srt_chs operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--dry-run`: Simulate execution without making changes.
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `output_yield` with `INCREMENT`
+
+## enb_kln
+Description: Executes the enb_kln operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `output_yield` with `ASSIGN` using `0`
+
+## package_vlv
+Description: Executes the package_vlv operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--verbose`: Enable verbose logging/output.
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `coolant_temp` with `ASSIGN` using `completed`
+
+## ext_jig
+Description: Executes the ext_jig operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--debug`: Enable debug output.
+Effects:
+- updates `current` with `INCREMENT`
+
+## ext_kln
+Description: Executes the ext_kln operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `duration` with `ASSIGN` using `ready`
+
+--- End of documentation for MAN-TURBINE-289 ---
+

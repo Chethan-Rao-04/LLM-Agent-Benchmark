@@ -1,0 +1,90 @@
+--- Documentation for MAN-QUEUE-293 (CLEAN) ---
+# Tool Documentation: MAN-QUEUE-293
+
+Domain: MANUFACTURING
+Description: torque the redundant nozzle configuration.
+
+Supported Commands:
+
+## mld_rm
+Description: Executes the mld_rm operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--force`: Force the operation even if warnings are present.
+- `--debug`: Enable debug output.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `coolant_temp` with `ASSIGN` using `3`
+
+## clp_que
+Description: Executes the clp_que operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--help`: Show help information and exit.
+- `--simulate`: Run in simulation mode.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `cycle_time` with `ASSIGN` using `synced`
+
+## rbt_prc
+Description: Executes the rbt_prc operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--simulate`: Run in simulation mode.
+- `--force`: Force the operation even if warnings are present.
+- `--verbose`: Enable verbose logging/output.
+- `--output`: Write output to a file.
+Effects:
+- updates `cycle_time` with `ASSIGN` using `synced`
+
+## aln_btc
+Description: Executes the aln_btc operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--version`: Show version information and exit.
+Effects:
+- updates `efficiency` with `ASSIGN` using `queued`
+
+## shd_trb
+Description: Executes the shd_trb operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--output`: Write output to a file.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `efficiency` with `ASSIGN` using `stable`
+
+## quality-check_plt
+Description: Executes the quality-check_plt operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--force`: Force the operation even if warnings are present.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `cycle_time` with `ASSIGN` using `ready`
+
+## rsm_ln
+Description: Executes the rsm_ln operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--version`: Show version information and exit.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `efficiency` with `ASSIGN` using `ready`
+
+--- End of documentation for MAN-QUEUE-293 ---
+

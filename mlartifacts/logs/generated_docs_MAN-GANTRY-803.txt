@@ -1,0 +1,106 @@
+--- Documentation for MAN-GANTRY-803 (CLEAN) ---
+# Tool Documentation: MAN-GANTRY-803
+
+Domain: MANUFACTURING
+Description: zero-out the primary parts configuration.
+
+Supported Commands:
+
+## stp_eng
+Description: Executes the stp_eng operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `joint_angle` with `ASSIGN` using `paused`
+
+## prg_unt
+Description: Executes the prg_unt operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--retry`: Retry the operation on failure.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `joint_angle` with `ASSIGN` using `stable`
+
+## rec_gnt
+Description: Executes the rec_gnt operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--version`: Show version information and exit.
+Effects:
+- updates `density` with `INCREMENT`
+
+## ld_alm
+Description: Executes the ld_alm operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+Effects:
+- updates `moisture` with `ASSIGN` using `6`
+
+## ld_spd
+Description: Executes the ld_spd operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `joint_angle` with `ASSIGN` using `synced`
+
+## package_vlv
+Description: Executes the package_vlv operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--timeout`: Set a timeout for the operation.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `joint_angle` with `ASSIGN` using `paused`
+
+## aln_alm
+Description: Executes the aln_alm operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--help`: Show help information and exit.
+- `--dry-run`: Simulate execution without making changes.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `moisture` with `INCREMENT`
+
+## mld_sch
+Description: Executes the mld_sch operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--retry`: Retry the operation on failure.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `joint_angle` with `ASSIGN` using `completed`
+
+## shd_vlv
+Description: Executes the shd_vlv operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--force`: Force the operation even if warnings are present.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `joint_angle` with `ASSIGN` using `synced`
+
+--- End of documentation for MAN-GANTRY-803 ---
+

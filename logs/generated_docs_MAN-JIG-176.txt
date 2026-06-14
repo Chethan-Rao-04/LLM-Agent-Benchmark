@@ -1,0 +1,28 @@
+--- Documentation for MAN-JIG-176 (INCOMPLETE) ---
+# Tool Documentation: MAN-JIG-176
+Description: Manages diagnose repair verify operations for manufacturing domain.
+
+Command: rpr_vlv
+Description: Executes the rpr_vlv operation.
+Warning: this command may change internal state.
+
+Command: vfy_vlv
+Description: Executes the vfy_vlv operation.
+
+Command: opr_dye
+Description: Executes the opr_dye operation.
+Warning: this command may change internal state.
+
+Command: bps_jig
+Description: Executes the bps_jig operation.
+Warning: this command may change internal state.
+
+Command: prg_cmp
+Description: Executes the prg_cmp operation.
+
+Command: exe_wks
+Description: Executes the exe_wks operation.
+Warning: this command may change internal state.
+
+
+

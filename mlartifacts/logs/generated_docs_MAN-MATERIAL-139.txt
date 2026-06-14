@@ -1,0 +1,78 @@
+--- Documentation for MAN-MATERIAL-139 (CLEAN) ---
+# Tool Documentation: MAN-MATERIAL-139
+
+Domain: MANUFACTURING
+Description: toggle the redundant process configuration.
+
+Supported Commands:
+
+## set_opr_n
+Description: Executes the set_opr_n operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `rotation_speed` with `ASSIGN` using `synced`
+
+## enb_mtl
+Description: Executes the enb_mtl operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `vibration` with `ASSIGN` using `6`
+
+## ld_cmp
+Description: Executes the ld_cmp operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `rotation_speed` with `ASSIGN` using `queued`
+
+## bps_jig
+Description: Executes the bps_jig operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--help`: Show help information and exit.
+Effects:
+- updates `rotation_speed` with `ASSIGN` using `completed`
+
+## package_mch
+Description: Executes the package_mch operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `component_id` with `INCREMENT`
+
+## opr_spd
+Description: Executes the opr_spd operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--verbose`: Enable verbose logging/output.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `air_flow` with `ASSIGN` using `8`
+
+## vfy_mld
+Description: Executes the vfy_mld operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `rotation_speed` with `ASSIGN` using `synced`
+
+--- End of documentation for MAN-MATERIAL-139 ---
+

@@ -1,0 +1,86 @@
+--- Documentation for MAN-PROCESS-203 (CLEAN) ---
+# Tool Documentation: MAN-PROCESS-203
+
+Domain: MANUFACTURING
+Description: measure the upstream parts configuration.
+
+Supported Commands:
+
+## uld_cmp
+Description: Executes the uld_cmp operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--debug`: Enable debug output.
+- `--force`: Force the operation even if warnings are present.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `position` with `ASSIGN` using `paused`
+
+## srt_bld
+Description: Executes the srt_bld operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--timeout`: Set a timeout for the operation.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--version`: Show version information and exit.
+Effects:
+- updates `current` with `INCREMENT`
+
+## rbt_trb
+Description: Executes the rbt_trb operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+Effects:
+- updates `current` with `INCREMENT`
+
+## exe_dye
+Description: Executes the exe_dye operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+Effects:
+- updates `current` with `ASSIGN` using `4`
+
+## unset_prc
+Description: Executes the unset_prc operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `position` with `ASSIGN` using `stable`
+
+## exe_gen
+Description: Executes the exe_gen operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--force`: Force the operation even if warnings are present.
+- `--debug`: Enable debug output.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `current` with `INCREMENT`
+
+## ini_prc
+Description: Executes the ini_prc operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--verbose`: Enable verbose logging/output.
+- `--version`: Show version information and exit.
+- `--interactive`: Prompt for confirmations interactively.
+- `--output`: Write output to a file.
+Effects:
+- updates `temperature` with `ASSIGN` using `synced`
+
+--- End of documentation for MAN-PROCESS-203 ---
+

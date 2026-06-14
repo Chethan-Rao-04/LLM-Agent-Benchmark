@@ -1,0 +1,74 @@
+--- Documentation for MAN-CONTROLLER-639 (CLEAN) ---
+# Tool Documentation: MAN-CONTROLLER-639
+
+Domain: MANUFACTURING
+Description: Manages auth provision deploy operations.
+
+Supported Commands:
+
+## auth_ctrl
+Description: Executes the auth_ctrl operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `auth_token` with `ASSIGN` using `valid`
+
+## prov_rcp
+Description: Executes the prov_rcp operation.
+Preconditions:
+- requires `auth_token` to equal `valid`
+Options:
+- `--version`: Show version information and exit.
+- `--output`: Write output to a file.
+Effects:
+- updates `recipe_status` with `ASSIGN` using `ready`
+
+## dpl_rcp
+Description: Executes the dpl_rcp operation.
+Preconditions:
+- requires `recipe_status` to equal `ready`
+Options:
+- none
+Effects:
+- no state change documented
+
+## unset_act
+Description: Executes the unset_act operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+## quality-check_vlv
+Description: Executes the quality-check_vlv operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+## mld_plt
+Description: Executes the mld_plt operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+## aln_prc
+Description: Executes the aln_prc operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- no state change documented
+
+--- End of documentation for MAN-CONTROLLER-639 ---
+

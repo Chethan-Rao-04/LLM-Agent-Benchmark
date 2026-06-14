@@ -1,0 +1,101 @@
+--- Documentation for MAN-QUEUE-907 (CLEAN) ---
+# Tool Documentation: MAN-QUEUE-907
+
+Domain: MANUFACTURING
+Description: inspect the legacy actuator configuration.
+
+Supported Commands:
+
+## ini_gnt
+Description: Executes the ini_gnt operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--version`: Show version information and exit.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--force`: Force the operation even if warnings are present.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `power` with `ASSIGN` using `stable`
+
+## rsm_plt
+Description: Executes the rsm_plt operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `status` with `INCREMENT`
+
+## clp_unt
+Description: Executes the clp_unt operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `status` with `INCREMENT`
+
+## lub_ln
+Description: Executes the lub_ln operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `level` with `ASSIGN` using `2`
+
+## run_fix
+Description: Executes the run_fix operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `status` with `INCREMENT`
+
+## tgl_hop
+Description: Executes the tgl_hop operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `air_flow` with `INCREMENT`
+
+## package_asm
+Description: Executes the package_asm operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--timeout`: Set a timeout for the operation.
+- `--verbose`: Enable verbose logging/output.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `level` with `ASSIGN` using `9`
+
+## ld_bld
+Description: Executes the ld_bld operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `power` with `ASSIGN` using `queued`
+
+## cal_btc
+Description: Executes the cal_btc operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--quiet`: Suppress non-essential output.
+- `--output`: Write output to a file.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `air_flow` with `INCREMENT`
+
+--- End of documentation for MAN-QUEUE-907 ---
+

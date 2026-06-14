@@ -1,0 +1,108 @@
+--- Documentation for MAN-SPINDLE-303 (CLEAN) ---
+# Tool Documentation: MAN-SPINDLE-303
+
+Domain: MANUFACTURING
+Description: run the redundant generator configuration.
+
+Supported Commands:
+
+## ld_ln
+Description: Executes the ld_ln operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `humidity` with `ASSIGN` using `queued`
+
+## opr_plt
+Description: Executes the opr_plt operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--debug`: Enable debug output.
+- `--help`: Show help information and exit.
+- `--version`: Show version information and exit.
+- `--output`: Write output to a file.
+Effects:
+- updates `humidity` with `ASSIGN` using `completed`
+
+## opr_alm
+Description: Executes the opr_alm operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `pressure` with `ASSIGN` using `4`
+
+## enb_pts
+Description: Executes the enb_pts operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--retry`: Retry the operation on failure.
+- `--verbose`: Enable verbose logging/output.
+- `--version`: Show version information and exit.
+Effects:
+- updates `humidity` with `ASSIGN` using `paused`
+
+## clp_eng
+Description: Executes the clp_eng operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+Effects:
+- updates `psi_reading` with `ASSIGN` using `synced`
+
+## vfy_unt
+Description: Executes the vfy_unt operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--output`: Write output to a file.
+- `--retry`: Retry the operation on failure.
+- `--dry-run`: Simulate execution without making changes.
+- `--version`: Show version information and exit.
+Effects:
+- updates `humidity` with `ASSIGN` using `paused`
+
+## exe_inv
+Description: Executes the exe_inv operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--help`: Show help information and exit.
+- `--interactive`: Prompt for confirmations interactively.
+- `--debug`: Enable debug output.
+Effects:
+- updates `humidity` with `ASSIGN` using `queued`
+
+## rec_wks
+Description: Executes the rec_wks operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `psi_reading` with `ASSIGN` using `synced`
+
+## srt_jig
+Description: Executes the srt_jig operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--verbose`: Enable verbose logging/output.
+- `--help`: Show help information and exit.
+Effects:
+- updates `humidity` with `ASSIGN` using `ready`
+
+--- End of documentation for MAN-SPINDLE-303 ---
+

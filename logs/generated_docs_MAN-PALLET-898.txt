@@ -1,0 +1,28 @@
+--- Documentation for MAN-PALLET-898 (INCOMPLETE) ---
+# Tool Documentation: MAN-PALLET-898
+Description: enable the virtualized generator configuration.
+
+Command: lub_sns
+Description: Executes the lub_sns operation.
+Warning: this command may change internal state.
+
+Command: ext_pts
+Description: Executes the ext_pts operation.
+
+Command: set_ln
+Description: Executes the set_ln operation.
+Warning: this command may change internal state.
+
+Command: wld_sch
+Description: Executes the wld_sch operation.
+Warning: this command may change internal state.
+
+Command: stp_ln
+Description: Executes the stp_ln operation.
+
+Command: ini_que
+Description: Executes the ini_que operation.
+Warning: this command may change internal state.
+
+
+

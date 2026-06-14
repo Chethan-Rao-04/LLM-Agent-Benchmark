@@ -1,0 +1,87 @@
+--- Documentation for MAN-INVENTORY-899 (CLEAN) ---
+# Tool Documentation: MAN-INVENTORY-899
+
+Domain: MANUFACTURING
+Description: start the redundant pallet configuration.
+
+Supported Commands:
+
+## rec_plt
+Description: Executes the rec_plt operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--debug`: Enable debug output.
+Effects:
+- updates `duration` with `ASSIGN` using `9`
+
+## package_ln
+Description: Executes the package_ln operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--timeout`: Set a timeout for the operation.
+- `--dry-run`: Simulate execution without making changes.
+- `--debug`: Enable debug output.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `density` with `ASSIGN` using `completed`
+
+## rst_trb
+Description: Executes the rst_trb operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--simulate`: Run in simulation mode.
+- `--verbose`: Enable verbose logging/output.
+- `--output`: Write output to a file.
+- `--debug`: Enable debug output.
+Effects:
+- updates `density` with `ASSIGN` using `synced`
+
+## unset_mld
+Description: Executes the unset_mld operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--timeout`: Set a timeout for the operation.
+- `--version`: Show version information and exit.
+- `--debug`: Enable debug output.
+Effects:
+- updates `duration` with `INCREMENT`
+
+## package_spd
+Description: Executes the package_spd operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `status` with `INCREMENT`
+
+## enb_jig
+Description: Executes the enb_jig operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--timeout`: Set a timeout for the operation.
+- `--output`: Write output to a file.
+Effects:
+- updates `density` with `ASSIGN` using `completed`
+
+## exe_eng
+Description: Executes the exe_eng operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `duration` with `INCREMENT`
+
+--- End of documentation for MAN-INVENTORY-899 ---
+

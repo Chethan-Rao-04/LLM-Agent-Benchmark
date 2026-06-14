@@ -1,0 +1,67 @@
+--- Documentation for MAN-QUEUE-695 (CLEAN) ---
+# Tool Documentation: MAN-QUEUE-695
+
+Domain: MANUFACTURING
+Description: Manages init configure execute operations.
+
+Supported Commands:
+
+## ini_sys
+Description: Executes the ini_sys operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `system_status` with `ASSIGN` using `RUNNING`
+
+## enb_pm
+Description: Executes the enb_pm operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `precision_mode` with `ASSIGN` using `active`
+
+## cal_cnv
+Description: Executes the cal_cnv operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+- requires `precision_mode` to equal `active`
+Options:
+- `--retry`: Retry the operation on failure.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- no state change documented
+
+## bps_spd
+Description: Executes the bps_spd operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+## package_cnv
+Description: Executes the package_cnv operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+## shd_act
+Description: Executes the shd_act operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- no state change documented
+
+--- End of documentation for MAN-QUEUE-695 ---
+

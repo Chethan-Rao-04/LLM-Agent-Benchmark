@@ -1,0 +1,88 @@
+--- Documentation for MAN-PROCESS-854 (CLEAN) ---
+# Tool Documentation: MAN-PROCESS-854
+
+Domain: MANUFACTURING
+Description: run the redundant inventory configuration.
+
+Supported Commands:
+
+## rst_cnv
+Description: Executes the rst_cnv operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `vibration` with `ASSIGN` using `paused`
+
+## stp_dye
+Description: Executes the stp_dye operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `lubrication_index` with `ASSIGN` using `ready`
+
+## pse_unt
+Description: Executes the pse_unt operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--help`: Show help information and exit.
+- `--quiet`: Suppress non-essential output.
+- `--output`: Write output to a file.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `lubrication_index` with `ASSIGN` using `queued`
+
+## ovr_vlv
+Description: Executes the ovr_vlv operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `vibration` with `ASSIGN` using `stable`
+
+## uld_plt
+Description: Executes the uld_plt operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `lubrication_index` with `ASSIGN` using `synced`
+
+## shd_ln
+Description: Executes the shd_ln operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `vibration` with `ASSIGN` using `stable`
+
+## aln_mld
+Description: Executes the aln_mld operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+Effects:
+- updates `psi_reading` with `INCREMENT`
+
+## prg_unt
+Description: Executes the prg_unt operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--force`: Force the operation even if warnings are present.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `voltage` with `ASSIGN` using `8`
+
+--- End of documentation for MAN-PROCESS-854 ---
+

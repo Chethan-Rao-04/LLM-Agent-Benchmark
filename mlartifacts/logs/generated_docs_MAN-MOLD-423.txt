@@ -1,0 +1,92 @@
+--- Documentation for MAN-MOLD-423 (CLEAN) ---
+# Tool Documentation: MAN-MOLD-423
+
+Domain: MANUFACTURING
+Description: purge the redundant queue configuration.
+
+Supported Commands:
+
+## stp_gen
+Description: Executes the stp_gen operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `speed` with `ASSIGN` using `queued`
+
+## rec_bld
+Description: Executes the rec_bld operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--timeout`: Set a timeout for the operation.
+- `--output`: Write output to a file.
+- `--force`: Force the operation even if warnings are present.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `joint_angle` with `INCREMENT`
+
+## package_trb
+Description: Executes the package_trb operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+Effects:
+- updates `humidity` with `ASSIGN` using `4`
+
+## rst_alm
+Description: Executes the rst_alm operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `speed` with `ASSIGN` using `paused`
+
+## pse_gnt
+Description: Executes the pse_gnt operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--simulate`: Run in simulation mode.
+- `--output`: Write output to a file.
+Effects:
+- updates `speed` with `ASSIGN` using `queued`
+
+## dsb_act
+Description: Executes the dsb_act operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `speed` with `ASSIGN` using `queued`
+
+## abt_bld
+Description: Executes the abt_bld operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `joint_angle` with `INCREMENT`
+
+## abt_nzl
+Description: Executes the abt_nzl operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--output`: Write output to a file.
+- `--timeout`: Set a timeout for the operation.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--help`: Show help information and exit.
+Effects:
+- updates `current` with `INCREMENT`
+
+--- End of documentation for MAN-MOLD-423 ---
+

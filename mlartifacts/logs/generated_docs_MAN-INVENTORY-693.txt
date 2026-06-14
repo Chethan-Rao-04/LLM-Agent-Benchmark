@@ -1,0 +1,97 @@
+--- Documentation for MAN-INVENTORY-693 (CLEAN) ---
+# Tool Documentation: MAN-INVENTORY-693
+
+Domain: MANUFACTURING
+Description: Manages diagnose repair verify operations for manufacturing domain.
+
+Supported Commands:
+
+## diag_vlv
+Description: Executes the diag_vlv operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `fault_status` with `ASSIGN` using `identified`
+
+## rpr_vlv
+Description: Executes the rpr_vlv operation.
+Preconditions:
+- requires `fault_status` to equal `identified`
+Options:
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `valve_health` with `ASSIGN` using `restored`
+
+## vfy_vlv
+Description: Executes the vfy_vlv operation.
+Preconditions:
+- requires `valve_health` to equal `restored`
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- no state change documented
+
+## uld_gen
+Description: Executes the uld_gen operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `moisture` with `INCREMENT`
+
+## zero-out_mtl
+Description: Executes the zero-out_mtl operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--output`: Write output to a file.
+Effects:
+- updates `moisture` with `INCREMENT`
+
+## wring_dye
+Description: Executes the wring_dye operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `density` with `INCREMENT`
+
+## dsb_alm
+Description: Executes the dsb_alm operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--retry`: Retry the operation on failure.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `density` with `INCREMENT`
+
+## tgl_dye
+Description: Executes the tgl_dye operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `moisture` with `INCREMENT`
+
+## ld_asm
+Description: Executes the ld_asm operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `density` with `INCREMENT`
+
+--- End of documentation for MAN-INVENTORY-693 ---
+

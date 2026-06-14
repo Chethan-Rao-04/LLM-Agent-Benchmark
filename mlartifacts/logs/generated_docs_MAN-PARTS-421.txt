@@ -1,0 +1,105 @@
+--- Documentation for MAN-PARTS-421 (CLEAN) ---
+# Tool Documentation: MAN-PARTS-421
+
+Domain: MANUFACTURING
+Description: extrude the primary alarm configuration.
+
+Supported Commands:
+
+## aln_que
+Description: Executes the aln_que operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `level` with `INCREMENT`
+
+## pse_act
+Description: Executes the pse_act operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `rotation_speed` with `ASSIGN` using `stable`
+
+## ext_rm
+Description: Executes the ext_rm operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--verbose`: Enable verbose logging/output.
+- `--debug`: Enable debug output.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `level` with `ASSIGN` using `4`
+
+## ovr_gnt
+Description: Executes the ovr_gnt operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--simulate`: Run in simulation mode.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `rotation_speed` with `ASSIGN` using `stable`
+
+## sel_que
+Description: Executes the sel_que operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--quiet`: Suppress non-essential output.
+- `--timeout`: Set a timeout for the operation.
+- `--version`: Show version information and exit.
+Effects:
+- updates `rotation_speed` with `ASSIGN` using `ready`
+
+## prg_tsp
+Description: Executes the prg_tsp operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--version`: Show version information and exit.
+- `--timeout`: Set a timeout for the operation.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `rotation_speed` with `ASSIGN` using `queued`
+
+## dsb_eng
+Description: Executes the dsb_eng operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--version`: Show version information and exit.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `rotation_speed` with `ASSIGN` using `paused`
+
+## ini_ctrl
+Description: Executes the ini_ctrl operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `rotation_speed` with `ASSIGN` using `ready`
+
+## pse_jig
+Description: Executes the pse_jig operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `rotation_speed` with `ASSIGN` using `paused`
+
+--- End of documentation for MAN-PARTS-421 ---
+

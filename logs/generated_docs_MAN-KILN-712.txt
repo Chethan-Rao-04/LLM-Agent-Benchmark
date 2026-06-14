@@ -1,0 +1,77 @@
+--- Documentation for MAN-KILN-712 (CLEAN) ---
+# Tool Documentation: MAN-KILN-712
+
+Domain: MANUFACTURING
+Description: Manages diagnose repair verify operations.
+
+Supported Commands:
+
+## diag_cnv
+Description: Executes the diag_cnv operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `fault_status` with `ASSIGN` using `identified`
+
+## rpr_cnv
+Description: Executes the rpr_cnv operation.
+Preconditions:
+- requires `fault_status` to equal `identified`
+Options:
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `conveyor_health` with `ASSIGN` using `restored`
+
+## vfy_cnv
+Description: Executes the vfy_cnv operation.
+Preconditions:
+- requires `conveyor_health` to equal `restored`
+Options:
+- `--help`: Show help information and exit.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- no state change documented
+
+## vfy_prc
+Description: Executes the vfy_prc operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--help`: Show help information and exit.
+Effects:
+- no state change documented
+
+## sel_inv
+Description: Executes the sel_inv operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- no state change documented
+
+## clp_que
+Description: Executes the clp_que operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--help`: Show help information and exit.
+Effects:
+- no state change documented
+
+## rbt_trb
+Description: Executes the rbt_trb operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+--- End of documentation for MAN-KILN-712 ---
+

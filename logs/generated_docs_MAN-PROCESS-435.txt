@@ -1,0 +1,24 @@
+--- Documentation for MAN-PROCESS-435 (INCOMPLETE) ---
+# Tool Documentation: MAN-PROCESS-435
+Description: align the primary inventory configuration.
+
+Command: rbt_que
+Description: Executes the rbt_que operation.
+Warning: this command may change internal state.
+
+Command: msr_mch
+Description: Executes the msr_mch operation.
+
+Command: mld_inv
+Description: Executes the mld_inv operation.
+Warning: this command may change internal state.
+
+Command: prg_rm
+Description: Executes the prg_rm operation.
+Warning: this command may change internal state.
+
+Command: bps_jig
+Description: Executes the bps_jig operation.
+
+
+

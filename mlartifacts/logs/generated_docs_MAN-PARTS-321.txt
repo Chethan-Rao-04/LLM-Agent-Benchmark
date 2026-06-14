@@ -1,0 +1,75 @@
+--- Documentation for MAN-PARTS-321 (CLEAN) ---
+# Tool Documentation: MAN-PARTS-321
+
+Domain: MANUFACTURING
+Description: Manages auth provision deploy operations.
+
+Supported Commands:
+
+## auth_hmi
+Description: Executes the auth_hmi operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+Effects:
+- updates `auth_token` with `ASSIGN` using `valid`
+
+## prov_prg_n
+Description: Executes the prov_prg_n operation.
+Preconditions:
+- requires `auth_token` to equal `valid`
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `program_status` with `ASSIGN` using `ready`
+
+## dpl_prg_n
+Description: Executes the dpl_prg_n operation.
+Preconditions:
+- requires `program_status` to equal `ready`
+Options:
+- `--help`: Show help information and exit.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- no state change documented
+
+## ovr_inv
+Description: Executes the ovr_inv operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+## rst_sns
+Description: Executes the rst_sns operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+Effects:
+- no state change documented
+
+## aln_alm
+Description: Executes the aln_alm operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+Effects:
+- no state change documented
+
+## package_kln
+Description: Executes the package_kln operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+Effects:
+- no state change documented
+
+--- End of documentation for MAN-PARTS-321 ---
+

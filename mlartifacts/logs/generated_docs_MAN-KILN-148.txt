@@ -1,0 +1,77 @@
+--- Documentation for MAN-KILN-148 (CLEAN) ---
+# Tool Documentation: MAN-KILN-148
+
+Domain: MANUFACTURING
+Description: Manages diagnose repair verify operations.
+
+Supported Commands:
+
+## diag_cmp
+Description: Executes the diag_cmp operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `fault_status` with `ASSIGN` using `identified`
+
+## rpr_cmp
+Description: Executes the rpr_cmp operation.
+Preconditions:
+- requires `fault_status` to equal `identified`
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `compressor_health` with `ASSIGN` using `restored`
+
+## vfy_cmp
+Description: Executes the vfy_cmp operation.
+Preconditions:
+- requires `compressor_health` to equal `restored`
+Options:
+- `--help`: Show help information and exit.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- no state change documented
+
+## run_dye
+Description: Executes the run_dye operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+## shd_nzl
+Description: Executes the shd_nzl operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+Effects:
+- no state change documented
+
+## exe_asm
+Description: Executes the exe_asm operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--output`: Write output to a file.
+Effects:
+- no state change documented
+
+## rec_rm
+Description: Executes the rec_rm operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- no state change documented
+
+--- End of documentation for MAN-KILN-148 ---
+

@@ -1,0 +1,97 @@
+--- Documentation for MAN-PALLET-657 (CLEAN) ---
+# Tool Documentation: MAN-PALLET-657
+
+Domain: MANUFACTURING
+Description: initialize the redundant compressor configuration.
+
+Supported Commands:
+
+## vfy_rm
+Description: Executes the vfy_rm operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `position` with `ASSIGN` using `stable`
+
+## rbt_trb
+Description: Executes the rbt_trb operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `position` with `ASSIGN` using `paused`
+
+## srt_dye
+Description: Executes the srt_dye operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--help`: Show help information and exit.
+Effects:
+- updates `position` with `ASSIGN` using `paused`
+
+## rec_cmp
+Description: Executes the rec_cmp operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--timeout`: Set a timeout for the operation.
+- `--debug`: Enable debug output.
+Effects:
+- updates `position` with `ASSIGN` using `paused`
+
+## rsm_plt
+Description: Executes the rsm_plt operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--force`: Force the operation even if warnings are present.
+- `--help`: Show help information and exit.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `position` with `ASSIGN` using `ready`
+
+## srt_prc
+Description: Executes the srt_prc operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--version`: Show version information and exit.
+- `--retry`: Retry the operation on failure.
+- `--output`: Write output to a file.
+Effects:
+- updates `position` with `ASSIGN` using `queued`
+
+## ld_fix
+Description: Executes the ld_fix operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--timeout`: Set a timeout for the operation.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `quality_score` with `ASSIGN` using `synced`
+
+## shd_que
+Description: Executes the shd_que operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--help`: Show help information and exit.
+- `--retry`: Retry the operation on failure.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `quality_score` with `ASSIGN` using `stable`
+
+--- End of documentation for MAN-PALLET-657 ---
+

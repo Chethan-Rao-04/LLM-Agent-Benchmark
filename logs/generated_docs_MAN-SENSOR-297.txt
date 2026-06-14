@@ -1,0 +1,28 @@
+--- Documentation for MAN-SENSOR-297 (INCOMPLETE) ---
+# Tool Documentation: MAN-SENSOR-297
+Description: restart the upstream jig configuration.
+
+Command: wring_bld
+Description: Executes the wring_bld operation.
+Warning: this command may change internal state.
+
+Command: torque_wks
+Description: Executes the torque_wks operation.
+
+Command: ovr_inv
+Description: Executes the ovr_inv operation.
+Warning: this command may change internal state.
+
+Command: shd_ln
+Description: Executes the shd_ln operation.
+Warning: this command may change internal state.
+
+Command: tgl_asm
+Description: Executes the tgl_asm operation.
+
+Command: isp_gnt
+Description: Executes the isp_gnt operation.
+Warning: this command may change internal state.
+
+
+

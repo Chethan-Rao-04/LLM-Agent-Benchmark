@@ -1,0 +1,85 @@
+--- Documentation for MAN-QUEUE-815 (CLEAN) ---
+# Tool Documentation: MAN-QUEUE-815
+
+Domain: MANUFACTURING
+Description: Manages auth provision deploy operations for manufacturing domain.
+
+Supported Commands:
+
+## auth_ctrl
+Description: Executes the auth_ctrl operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `auth_token` with `ASSIGN` using `valid`
+
+## prov_fw
+Description: Executes the prov_fw operation.
+Preconditions:
+- requires `auth_token` to equal `valid`
+Options:
+- none
+Effects:
+- updates `firmware_status` with `ASSIGN` using `ready`
+
+## dpl_fw
+Description: Executes the dpl_fw operation.
+Preconditions:
+- requires `firmware_status` to equal `ready`
+Options:
+- none
+Effects:
+- no state change documented
+
+## rec_btc
+Description: Executes the rec_btc operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--output`: Write output to a file.
+Effects:
+- updates `rotation_speed` with `INCREMENT`
+
+## unset_mch
+Description: Executes the unset_mch operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `rotation_speed` with `INCREMENT`
+
+## recalibrate_ctrl
+Description: Performs controller state synchronization.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--version`: Show version information and exit.
+Effects:
+- updates `auth_token` with `ASSIGN` using `valid`
+
+## stp_bld
+Description: Executes the stp_bld operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `rotation_speed` with `INCREMENT`
+
+## ovr_plt
+Description: Executes the ovr_plt operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `joint_angle` with `INCREMENT`
+
+--- End of documentation for MAN-QUEUE-815 ---
+

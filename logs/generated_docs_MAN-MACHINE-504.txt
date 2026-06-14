@@ -1,0 +1,67 @@
+--- Documentation for MAN-MACHINE-504 (CLEAN) ---
+# Tool Documentation: MAN-MACHINE-504
+
+Domain: MANUFACTURING
+Description: Manages auth provision deploy operations.
+
+Supported Commands:
+
+## auth_scd
+Description: Executes the auth_scd operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `auth_token` with `ASSIGN` using `valid`
+
+## prov_prg_n
+Description: Executes the prov_prg_n operation.
+Preconditions:
+- requires `auth_token` to equal `valid`
+Options:
+- `--version`: Show version information and exit.
+- `--debug`: Enable debug output.
+Effects:
+- updates `program_status` with `ASSIGN` using `ready`
+
+## dpl_prg_n
+Description: Executes the dpl_prg_n operation.
+Preconditions:
+- requires `program_status` to equal `ready`
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- no state change documented
+
+## package_ctrl
+Description: Executes the package_ctrl operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- no state change documented
+
+## rbt_spd
+Description: Executes the rbt_spd operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- no state change documented
+
+## run_dye
+Description: Executes the run_dye operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- no state change documented
+
+--- End of documentation for MAN-MACHINE-504 ---
+

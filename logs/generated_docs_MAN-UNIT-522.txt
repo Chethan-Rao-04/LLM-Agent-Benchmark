@@ -1,0 +1,24 @@
+--- Documentation for MAN-UNIT-522 (INCOMPLETE) ---
+# Tool Documentation: MAN-UNIT-522
+Description: Manages init configure execute operations.
+
+Command: enb_tp
+Description: Executes the enb_tp operation.
+Warning: this command may change internal state.
+
+Command: cal_cnv
+Description: Executes the cal_cnv operation.
+
+Command: abt_gen
+Description: Executes the abt_gen operation.
+Warning: this command may change internal state.
+
+Command: srt_chs
+Description: Executes the srt_chs operation.
+Warning: this command may change internal state.
+
+Command: run_unt
+Description: Executes the run_unt operation.
+
+
+

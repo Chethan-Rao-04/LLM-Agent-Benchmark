@@ -1,0 +1,97 @@
+--- Documentation for MAN-DYE-873 (CLEAN) ---
+# Tool Documentation: MAN-DYE-873
+
+Domain: MANUFACTURING
+Description: quality-check the virtualized build configuration.
+
+Supported Commands:
+
+## stp_ctrl
+Description: Executes the stp_ctrl operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `load_cell` with `ASSIGN` using `paused`
+
+## stp_que
+Description: Executes the stp_que operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--retry`: Retry the operation on failure.
+- `--help`: Show help information and exit.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `load_cell` with `ASSIGN` using `stable`
+
+## enb_fix
+Description: Executes the enb_fix operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `load_cell` with `ASSIGN` using `completed`
+
+## tgl_bld
+Description: Executes the tgl_bld operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+Effects:
+- updates `battery_level` with `INCREMENT`
+
+## sel_kln
+Description: Executes the sel_kln operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--debug`: Enable debug output.
+- `--force`: Force the operation even if warnings are present.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `friction` with `INCREMENT`
+
+## zero-out_gen
+Description: Executes the zero-out_gen operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--simulate`: Run in simulation mode.
+- `--version`: Show version information and exit.
+- `--force`: Force the operation even if warnings are present.
+- `--help`: Show help information and exit.
+Effects:
+- updates `current` with `INCREMENT`
+
+## wring_prc
+Description: Executes the wring_prc operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--help`: Show help information and exit.
+- `--output`: Write output to a file.
+Effects:
+- updates `current` with `ASSIGN` using `1`
+
+## vfy_cmp
+Description: Executes the vfy_cmp operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--output`: Write output to a file.
+- `--version`: Show version information and exit.
+Effects:
+- updates `friction` with `INCREMENT`
+
+--- End of documentation for MAN-DYE-873 ---
+

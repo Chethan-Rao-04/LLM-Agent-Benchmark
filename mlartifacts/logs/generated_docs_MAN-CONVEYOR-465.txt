@@ -1,0 +1,97 @@
+--- Documentation for MAN-CONVEYOR-465 (CLEAN) ---
+# Tool Documentation: MAN-CONVEYOR-465
+
+Domain: MANUFACTURING
+Description: weld the upstream material configuration.
+
+Supported Commands:
+
+## shd_cmp
+Description: Executes the shd_cmp operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `load_cell` with `ASSIGN` using `paused`
+
+## uld_gnt
+Description: Executes the uld_gnt operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--quiet`: Suppress non-essential output.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--version`: Show version information and exit.
+- `--help`: Show help information and exit.
+Effects:
+- updates `load_cell` with `ASSIGN` using `completed`
+
+## opr_chs
+Description: Executes the opr_chs operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--retry`: Retry the operation on failure.
+- `--debug`: Enable debug output.
+Effects:
+- updates `load_cell` with `ASSIGN` using `completed`
+
+## dsb_ctrl
+Description: Executes the dsb_ctrl operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--force`: Force the operation even if warnings are present.
+- `--output`: Write output to a file.
+Effects:
+- updates `voltage` with `ASSIGN` using `0`
+
+## sel_alm
+Description: Executes the sel_alm operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `joint_angle` with `ASSIGN` using `0`
+
+## rst_vlv
+Description: Executes the rst_vlv operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--force`: Force the operation even if warnings are present.
+- `--debug`: Enable debug output.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `component_id` with `ASSIGN` using `ready`
+
+## ld_prc
+Description: Executes the ld_prc operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `load_cell` with `ASSIGN` using `synced`
+
+## vfy_cnv
+Description: Executes the vfy_cnv operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--help`: Show help information and exit.
+- `--version`: Show version information and exit.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `joint_angle` with `ASSIGN` using `8`
+
+--- End of documentation for MAN-CONVEYOR-465 ---
+

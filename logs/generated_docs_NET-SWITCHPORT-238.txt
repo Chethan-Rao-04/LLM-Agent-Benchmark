@@ -1,0 +1,80 @@
+--- Documentation for NET-SWITCHPORT-238 (CLEAN) ---
+# Tool Documentation: NET-SWITCHPORT-238
+
+Domain: NETWORK_INFRA
+Description: broadcast the legacy channel configuration.
+
+Supported Commands:
+
+## alw_rpt
+Description: Executes the alw_rpt operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--debug`: Enable debug output.
+Effects:
+- updates `lease_time` with `ASSIGN` using `queued`
+
+## per_fwl
+Description: Executes the per_fwl operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--version`: Show version information and exit.
+- `--verbose`: Enable verbose logging/output.
+- `--debug`: Enable debug output.
+Effects:
+- updates `lease_time` with `ASSIGN` using `paused`
+
+## rls_snt
+Description: Executes the rls_snt operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+Effects:
+- updates `power_level` with `INCREMENT`
+
+## dsc_srv
+Description: Executes the dsc_srv operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `packet_loss` with `ASSIGN` using `0`
+
+## opt_tpo
+Description: Executes the opt_tpo operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--interactive`: Prompt for confirmations interactively.
+- `--quiet`: Suppress non-essential output.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `power_level` with `INCREMENT`
+
+## adv_svc
+Description: Executes the adv_svc operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+Effects:
+- updates `power_level` with `ASSIGN` using `8`
+
+## hsk_lb
+Description: Executes the hsk_lb operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `power_level` with `ASSIGN` using `8`
+
+--- End of documentation for NET-SWITCHPORT-238 ---
+

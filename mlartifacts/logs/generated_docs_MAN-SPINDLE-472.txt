@@ -1,0 +1,94 @@
+--- Documentation for MAN-SPINDLE-472 (CLEAN) ---
+# Tool Documentation: MAN-SPINDLE-472
+
+Domain: MANUFACTURING
+Description: override the legacy parts configuration.
+
+Supported Commands:
+
+## exe_mtl
+Description: Executes the exe_mtl operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--dry-run`: Simulate execution without making changes.
+- `--quiet`: Suppress non-essential output.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `quality_score` with `ASSIGN` using `0`
+
+## run_chs
+Description: Executes the run_chs operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--quiet`: Suppress non-essential output.
+- `--simulate`: Run in simulation mode.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `efficiency` with `ASSIGN` using `0`
+
+## run_gen
+Description: Executes the run_gen operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `vibration` with `ASSIGN` using `stable`
+
+## ld_mld
+Description: Executes the ld_mld operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--output`: Write output to a file.
+- `--force`: Force the operation even if warnings are present.
+- `--debug`: Enable debug output.
+Effects:
+- updates `vibration` with `ASSIGN` using `synced`
+
+## dsb_mld
+Description: Executes the dsb_mld operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `efficiency` with `INCREMENT`
+
+## torque_jig
+Description: Executes the torque_jig operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `efficiency` with `INCREMENT`
+
+## exe_jig
+Description: Executes the exe_jig operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `vibration` with `ASSIGN` using `synced`
+
+## clp_opr_n
+Description: Executes the clp_opr_n operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `position` with `ASSIGN` using `1`
+
+--- End of documentation for MAN-SPINDLE-472 ---
+

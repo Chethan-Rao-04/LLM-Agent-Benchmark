@@ -1,0 +1,24 @@
+--- Documentation for MAN-CHASSIS-412 (INCOMPLETE) ---
+# Tool Documentation: MAN-CHASSIS-412
+Description: Manages diagnose repair verify operations.
+
+Command: rpr_cmp
+Description: Executes the rpr_cmp operation.
+Warning: this command may change internal state.
+
+Command: vfy_cmp
+Description: Executes the vfy_cmp operation.
+
+Command: rec_hop
+Description: Executes the rec_hop operation.
+Warning: this command may change internal state.
+
+Command: dsb_fix
+Description: Executes the dsb_fix operation.
+Warning: this command may change internal state.
+
+Command: prg_plt
+Description: Executes the prg_plt operation.
+
+
+

@@ -1,0 +1,28 @@
+--- Documentation for MAN-WORKSTATION-397 (INCOMPLETE) ---
+# Tool Documentation: MAN-WORKSTATION-397
+Description: package the virtualized material configuration.
+
+Command: wring_trb
+Description: Executes the wring_trb operation.
+Warning: this command may change internal state.
+
+Command: torque_ctrl
+Description: Executes the torque_ctrl operation.
+
+Command: mld_sns
+Description: Executes the mld_sns operation.
+Warning: this command may change internal state.
+
+Command: shd_asm
+Description: Executes the shd_asm operation.
+Warning: this command may change internal state.
+
+Command: cal_sns
+Description: Executes the cal_sns operation.
+
+Command: abt_asm
+Description: Executes the abt_asm operation.
+Warning: this command may change internal state.
+
+
+

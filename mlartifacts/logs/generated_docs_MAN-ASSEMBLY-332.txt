@@ -1,0 +1,76 @@
+--- Documentation for MAN-ASSEMBLY-332 (CLEAN) ---
+# Tool Documentation: MAN-ASSEMBLY-332
+
+Domain: MANUFACTURING
+Description: Manages auth provision deploy operations.
+
+Supported Commands:
+
+## auth_hmi
+Description: Executes the auth_hmi operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--output`: Write output to a file.
+Effects:
+- updates `auth_token` with `ASSIGN` using `valid`
+
+## prov_cfgr
+Description: Executes the prov_cfgr operation.
+Preconditions:
+- requires `auth_token` to equal `valid`
+Options:
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `configuration_status` with `ASSIGN` using `ready`
+
+## dpl_cfgr
+Description: Executes the dpl_cfgr operation.
+Preconditions:
+- requires `configuration_status` to equal `ready`
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--output`: Write output to a file.
+Effects:
+- no state change documented
+
+## rbt_cnv
+Description: Executes the rbt_cnv operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+## opr_chs
+Description: Executes the opr_chs operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+## exe_cmp
+Description: Executes the exe_cmp operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- no state change documented
+
+## ovr_tsp
+Description: Executes the ovr_tsp operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--version`: Show version information and exit.
+Effects:
+- no state change documented
+
+--- End of documentation for MAN-ASSEMBLY-332 ---
+

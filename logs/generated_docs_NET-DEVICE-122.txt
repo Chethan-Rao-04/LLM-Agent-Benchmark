@@ -1,0 +1,69 @@
+--- Documentation for NET-DEVICE-122 (CLEAN) ---
+# Tool Documentation: NET-DEVICE-122
+
+Domain: NETWORK_INFRA
+Description: Manages init configure execute operations.
+
+Supported Commands:
+
+## ini_sys
+Description: Executes the ini_sys operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `system_status` with `ASSIGN` using `RUNNING`
+
+## enb_authn
+Description: Executes the enb_authn operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `authentication` with `ASSIGN` using `active`
+
+## mon_gtw
+Description: Executes the mon_gtw operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+- requires `authentication` to equal `active`
+Options:
+- `--help`: Show help information and exit.
+Effects:
+- no state change documented
+
+## brg_ifc
+Description: Executes the brg_ifc operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--output`: Write output to a file.
+Effects:
+- no state change documented
+
+## iso_lb
+Description: Executes the iso_lb operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- no state change documented
+
+## tnl_nod
+Description: Executes the tnl_nod operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--output`: Write output to a file.
+Effects:
+- no state change documented
+
+--- End of documentation for NET-DEVICE-122 ---
+

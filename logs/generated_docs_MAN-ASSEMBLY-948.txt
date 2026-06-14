@@ -1,0 +1,24 @@
+--- Documentation for MAN-ASSEMBLY-948 (INCOMPLETE) ---
+# Tool Documentation: MAN-ASSEMBLY-948
+Description: unset the redundant process configuration.
+
+Command: rst_ctrl
+Description: Executes the rst_ctrl operation.
+Warning: this command may change internal state.
+
+Command: lub_que
+Description: Executes the lub_que operation.
+
+Command: cal_sns
+Description: Executes the cal_sns operation.
+Warning: this command may change internal state.
+
+Command: set_wks
+Description: Executes the set_wks operation.
+Warning: this command may change internal state.
+
+Command: enb_ctrl
+Description: Executes the enb_ctrl operation.
+
+
+

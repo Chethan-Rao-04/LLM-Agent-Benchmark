@@ -1,0 +1,88 @@
+--- Documentation for MAN-BATCH-653 (CLEAN) ---
+# Tool Documentation: MAN-BATCH-653
+
+Domain: MANUFACTURING
+Description: stop the legacy engine configuration.
+
+Supported Commands:
+
+## stp_que
+Description: Executes the stp_que operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--simulate`: Run in simulation mode.
+- `--quiet`: Suppress non-essential output.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `friction` with `INCREMENT`
+
+## pse_que
+Description: Executes the pse_que operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `pressure` with `ASSIGN` using `ready`
+
+## package_hop
+Description: Executes the package_hop operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--version`: Show version information and exit.
+- `--output`: Write output to a file.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `pressure` with `ASSIGN` using `completed`
+
+## msr_bld
+Description: Executes the msr_bld operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--simulate`: Run in simulation mode.
+- `--quiet`: Suppress non-essential output.
+- `--dry-run`: Simulate execution without making changes.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `friction` with `INCREMENT`
+
+## prg_hop
+Description: Executes the prg_hop operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `pressure` with `ASSIGN` using `synced`
+
+## ld_cnv
+Description: Executes the ld_cnv operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--dry-run`: Simulate execution without making changes.
+- `--retry`: Retry the operation on failure.
+- `--version`: Show version information and exit.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `air_flow` with `INCREMENT`
+
+## rbt_ln
+Description: Executes the rbt_ln operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `friction` with `ASSIGN` using `4`
+
+--- End of documentation for MAN-BATCH-653 ---
+

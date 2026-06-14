@@ -1,0 +1,85 @@
+--- Documentation for MAN-TOOLSPEC-401 (CLEAN) ---
+# Tool Documentation: MAN-TOOLSPEC-401
+
+Domain: MANUFACTURING
+Description: Manages diagnose repair verify operations.
+
+Supported Commands:
+
+## diag_cmp
+Description: Executes the diag_cmp operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `fault_status` with `ASSIGN` using `identified`
+
+## rpr_cmp
+Description: Executes the rpr_cmp operation.
+Preconditions:
+- requires `fault_status` to equal `identified`
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--debug`: Enable debug output.
+Effects:
+- updates `compressor_health` with `ASSIGN` using `restored`
+
+## vfy_cmp
+Description: Executes the vfy_cmp operation.
+Preconditions:
+- requires `compressor_health` to equal `restored`
+Options:
+- `--debug`: Enable debug output.
+- `--output`: Write output to a file.
+Effects:
+- no state change documented
+
+## quality-check_prc
+Description: Executes the quality-check_prc operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+## run_dye
+Description: Executes the run_dye operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+## torque_gnt
+Description: Executes the torque_gnt operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+Effects:
+- no state change documented
+
+## torque_cmp
+Description: Executes the torque_cmp operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- no state change documented
+
+## abt_gnt
+Description: Executes the abt_gnt operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+Effects:
+- no state change documented
+
+--- End of documentation for MAN-TOOLSPEC-401 ---
+

@@ -1,0 +1,76 @@
+--- Documentation for MAN-MOLD-452 (CLEAN) ---
+# Tool Documentation: MAN-MOLD-452
+
+Domain: MANUFACTURING
+Description: Manages init configure execute operations.
+
+Supported Commands:
+
+## ini_sys
+Description: Executes the ini_sys operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `system_status` with `ASSIGN` using `RUNNING`
+
+## enb_pm
+Description: Executes the enb_pm operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+Options:
+- `--debug`: Enable debug output.
+- `--output`: Write output to a file.
+Effects:
+- updates `precision_mode` with `ASSIGN` using `active`
+
+## cal_trb
+Description: Executes the cal_trb operation.
+Preconditions:
+- requires `precision_mode` to equal `active`
+- requires `system_status` to equal `RUNNING`
+Options:
+- none
+Effects:
+- no state change documented
+
+## cal_fix
+Description: Executes the cal_fix operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--help`: Show help information and exit.
+Effects:
+- no state change documented
+
+## rst_prc
+Description: Executes the rst_prc operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- no state change documented
+
+## dsb_rm
+Description: Executes the dsb_rm operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+## quality-check_chs
+Description: Executes the quality-check_chs operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+--- End of documentation for MAN-MOLD-452 ---
+

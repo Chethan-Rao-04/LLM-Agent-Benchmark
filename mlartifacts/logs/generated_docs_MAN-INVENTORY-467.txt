@@ -1,0 +1,79 @@
+--- Documentation for MAN-INVENTORY-467 (CLEAN) ---
+# Tool Documentation: MAN-INVENTORY-467
+
+Domain: MANUFACTURING
+Description: Manages auth provision deploy operations for manufacturing domain.
+
+Supported Commands:
+
+## auth_hmi
+Description: Executes the auth_hmi operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `auth_token` with `ASSIGN` using `valid`
+
+## prov_prg_n
+Description: Executes the prov_prg_n operation.
+Preconditions:
+- requires `auth_token` to equal `valid`
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--simulate`: Run in simulation mode.
+- `--output`: Write output to a file.
+Effects:
+- updates `program_status` with `ASSIGN` using `ready`
+
+## dpl_prg_n
+Description: Executes the dpl_prg_n operation.
+Preconditions:
+- requires `program_status` to equal `ready`
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--dry-run`: Simulate execution without making changes.
+- `--output`: Write output to a file.
+Effects:
+- no state change documented
+
+## isp_sch
+Description: Executes the isp_sch operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `speed` with `INCREMENT`
+
+## wld_act
+Description: Executes the wld_act operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `current` with `INCREMENT`
+
+## srt_sns
+Description: Executes the srt_sns operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `speed` with `INCREMENT`
+
+## dsb_mch
+Description: Executes the dsb_mch operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `current` with `INCREMENT`
+
+--- End of documentation for MAN-INVENTORY-467 ---
+

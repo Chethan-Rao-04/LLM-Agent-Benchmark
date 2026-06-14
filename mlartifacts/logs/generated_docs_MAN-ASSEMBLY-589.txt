@@ -1,0 +1,82 @@
+--- Documentation for MAN-ASSEMBLY-589 (CLEAN) ---
+# Tool Documentation: MAN-ASSEMBLY-589
+
+Domain: MANUFACTURING
+Description: unset the virtualized machine configuration.
+
+Supported Commands:
+
+## wring_unt
+Description: Executes the wring_unt operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `joint_angle` with `INCREMENT`
+
+## prg_pts
+Description: Executes the prg_pts operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `joint_angle` with `ASSIGN` using `0`
+
+## run_cmp
+Description: Executes the run_cmp operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `lubrication_index` with `ASSIGN` using `stable`
+
+## rsm_pts
+Description: Executes the rsm_pts operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `air_flow` with `ASSIGN` using `paused`
+
+## wring_dye
+Description: Executes the wring_dye operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--interactive`: Prompt for confirmations interactively.
+- `--output`: Write output to a file.
+- `--verbose`: Enable verbose logging/output.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `joint_angle` with `INCREMENT`
+
+## zero-out_fix
+Description: Executes the zero-out_fix operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--version`: Show version information and exit.
+- `--simulate`: Run in simulation mode.
+- `--output`: Write output to a file.
+- `--debug`: Enable debug output.
+Effects:
+- updates `air_flow` with `ASSIGN` using `paused`
+
+## wld_ln
+Description: Executes the wld_ln operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--help`: Show help information and exit.
+Effects:
+- updates `lubrication_index` with `ASSIGN` using `paused`
+
+--- End of documentation for MAN-ASSEMBLY-589 ---
+

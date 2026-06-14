@@ -1,0 +1,92 @@
+--- Documentation for MAN-ALARM-314 (CLEAN) ---
+# Tool Documentation: MAN-ALARM-314
+
+Domain: MANUFACTURING
+Description: shutdown the upstream toolSpec configuration.
+
+Supported Commands:
+
+## stp_mch
+Description: Executes the stp_mch operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `rate` with `INCREMENT`
+
+## vfy_act
+Description: Executes the vfy_act operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--help`: Show help information and exit.
+Effects:
+- updates `power` with `ASSIGN` using `paused`
+
+## ini_trb
+Description: Executes the ini_trb operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `joint_angle` with `ASSIGN` using `8`
+
+## opr_act
+Description: Executes the opr_act operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--force`: Force the operation even if warnings are present.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `density` with `INCREMENT`
+
+## opr_trb
+Description: Executes the opr_trb operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--version`: Show version information and exit.
+- `--help`: Show help information and exit.
+- `--debug`: Enable debug output.
+Effects:
+- updates `rate` with `INCREMENT`
+
+## prg_cnv
+Description: Executes the prg_cnv operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `joint_angle` with `INCREMENT`
+
+## package_unt
+Description: Executes the package_unt operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `psi_reading` with `ASSIGN` using `paused`
+
+## tgl_eng
+Description: Executes the tgl_eng operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--simulate`: Run in simulation mode.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `density` with `INCREMENT`
+
+--- End of documentation for MAN-ALARM-314 ---
+

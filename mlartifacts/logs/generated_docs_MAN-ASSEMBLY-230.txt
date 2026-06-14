@@ -1,0 +1,96 @@
+--- Documentation for MAN-ASSEMBLY-230 (CLEAN) ---
+# Tool Documentation: MAN-ASSEMBLY-230
+
+Domain: MANUFACTURING
+Description: Manages init configure execute operations for manufacturing domain.
+
+Supported Commands:
+
+## ini_sys
+Description: Executes the ini_sys operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `system_status` with `ASSIGN` using `RUNNING`
+
+## enb_si
+Description: Executes the enb_si operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `safety_interlock` with `ASSIGN` using `active`
+
+## opr_cmp
+Description: Executes the opr_cmp operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+- requires `safety_interlock` to equal `active`
+Options:
+- `--debug`: Enable debug output.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- no state change documented
+
+## pse_eng
+Description: Executes the pse_eng operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `battery_level` with `INCREMENT`
+
+## quality-check_pts
+Description: Executes the quality-check_pts operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `pressure` with `INCREMENT`
+
+## uld_plt
+Description: Executes the uld_plt operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+Effects:
+- updates `pressure` with `INCREMENT`
+
+## wld_tsp
+Description: Executes the wld_tsp operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `pressure` with `INCREMENT`
+
+## run_prc
+Description: Executes the run_prc operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `pressure` with `INCREMENT`
+
+## recalibrate_sys
+Description: Performs system state synchronization.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `system_status` with `ASSIGN` using `RUNNING`
+
+--- End of documentation for MAN-ASSEMBLY-230 ---
+

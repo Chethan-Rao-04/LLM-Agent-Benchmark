@@ -1,0 +1,113 @@
+--- Documentation for MAN-MACHINE-573 (CLEAN) ---
+# Tool Documentation: MAN-MACHINE-573
+
+Domain: MANUFACTURING
+Description: lubricate the primary valve configuration.
+
+Supported Commands:
+
+## ext_nzl
+Description: Executes the ext_nzl operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--quiet`: Suppress non-essential output.
+- `--interactive`: Prompt for confirmations interactively.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `pressure` with `ASSIGN` using `completed`
+
+## aln_que
+Description: Executes the aln_que operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `pressure` with `ASSIGN` using `paused`
+
+## wring_eng
+Description: Executes the wring_eng operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--timeout`: Set a timeout for the operation.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `pressure` with `ASSIGN` using `ready`
+
+## tgl_bld
+Description: Executes the tgl_bld operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--dry-run`: Simulate execution without making changes.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `component_id` with `ASSIGN` using `2`
+
+## rbt_chs
+Description: Executes the rbt_chs operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--version`: Show version information and exit.
+- `--verbose`: Enable verbose logging/output.
+- `--simulate`: Run in simulation mode.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `pressure` with `ASSIGN` using `ready`
+
+## cal_cmp
+Description: Executes the cal_cmp operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--timeout`: Set a timeout for the operation.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--version`: Show version information and exit.
+- `--debug`: Enable debug output.
+Effects:
+- updates `cycle_time` with `INCREMENT`
+
+## set_ctrl
+Description: Executes the set_ctrl operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--help`: Show help information and exit.
+- `--version`: Show version information and exit.
+- `--debug`: Enable debug output.
+Effects:
+- updates `pressure` with `ASSIGN` using `ready`
+
+## sel_sns
+Description: Executes the sel_sns operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--verbose`: Enable verbose logging/output.
+- `--dry-run`: Simulate execution without making changes.
+- `--simulate`: Run in simulation mode.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `pressure` with `ASSIGN` using `synced`
+
+## stp_btc
+Description: Executes the stp_btc operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `component_id` with `ASSIGN` using `4`
+
+--- End of documentation for MAN-MACHINE-573 ---
+

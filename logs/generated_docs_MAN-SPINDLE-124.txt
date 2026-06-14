@@ -1,0 +1,65 @@
+--- Documentation for MAN-SPINDLE-124 (CLEAN) ---
+# Tool Documentation: MAN-SPINDLE-124
+
+Domain: MANUFACTURING
+Description: Manages diagnose repair verify operations.
+
+Supported Commands:
+
+## diag_cnv
+Description: Executes the diag_cnv operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `fault_status` with `ASSIGN` using `identified`
+
+## rpr_cnv
+Description: Executes the rpr_cnv operation.
+Preconditions:
+- requires `fault_status` to equal `identified`
+Options:
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `conveyor_health` with `ASSIGN` using `restored`
+
+## vfy_cnv
+Description: Executes the vfy_cnv operation.
+Preconditions:
+- requires `conveyor_health` to equal `restored`
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- no state change documented
+
+## cal_inv
+Description: Executes the cal_inv operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+## opr_btc
+Description: Executes the opr_btc operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+## ini_wks
+Description: Executes the ini_wks operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- no state change documented
+
+--- End of documentation for MAN-SPINDLE-124 ---
+

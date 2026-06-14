@@ -1,0 +1,24 @@
+--- Documentation for MAN-GENERATOR-825 (INCOMPLETE) ---
+# Tool Documentation: MAN-GENERATOR-825
+Description: Manages auth provision deploy operations for manufacturing domain.
+
+Command: prov_prg_n
+Description: Executes the prov_prg_n operation.
+Warning: this command may change internal state.
+
+Command: dpl_prg_n
+Description: Executes the dpl_prg_n operation.
+
+Command: opr_ctrl
+Description: Executes the opr_ctrl operation.
+Warning: this command may change internal state.
+
+Command: abt_fix
+Description: Executes the abt_fix operation.
+Warning: this command may change internal state.
+
+Command: unset_ctrl
+Description: Executes the unset_ctrl operation.
+
+
+

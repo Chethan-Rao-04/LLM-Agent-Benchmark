@@ -1,0 +1,97 @@
+--- Documentation for MAN-WORKSTATION-678 (CLEAN) ---
+# Tool Documentation: MAN-WORKSTATION-678
+
+Domain: MANUFACTURING
+Description: mold the legacy build configuration.
+
+Supported Commands:
+
+## aln_trb
+Description: Executes the aln_trb operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--verbose`: Enable verbose logging/output.
+- `--output`: Write output to a file.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `duration` with `ASSIGN` using `completed`
+
+## prg_spd
+Description: Executes the prg_spd operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `rate` with `INCREMENT`
+
+## uld_unt
+Description: Executes the uld_unt operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--quiet`: Suppress non-essential output.
+- `--output`: Write output to a file.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `rate` with `INCREMENT`
+
+## vfy_chs
+Description: Executes the vfy_chs operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `count` with `ASSIGN` using `6`
+
+## bps_rm
+Description: Executes the bps_rm operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--debug`: Enable debug output.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `duration` with `ASSIGN` using `completed`
+
+## tgl_kln
+Description: Executes the tgl_kln operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--quiet`: Suppress non-essential output.
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `coolant_temp` with `INCREMENT`
+
+## mld_fix
+Description: Executes the mld_fix operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `coolant_temp` with `ASSIGN` using `9`
+
+## clp_gen
+Description: Executes the clp_gen operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--retry`: Retry the operation on failure.
+- `--version`: Show version information and exit.
+Effects:
+- updates `level` with `INCREMENT`
+
+--- End of documentation for MAN-WORKSTATION-678 ---
+

@@ -1,0 +1,68 @@
+--- Documentation for MAN-BUILD-926 (CLEAN) ---
+# Tool Documentation: MAN-BUILD-926
+
+Domain: MANUFACTURING
+Description: Manages init configure execute operations.
+
+Supported Commands:
+
+## ini_sys
+Description: Executes the ini_sys operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--version`: Show version information and exit.
+Effects:
+- updates `system_status` with `ASSIGN` using `RUNNING`
+
+## enb_pm
+Description: Executes the enb_pm operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `precision_mode` with `ASSIGN` using `active`
+
+## isp_cmp
+Description: Executes the isp_cmp operation.
+Preconditions:
+- requires `precision_mode` to equal `active`
+- requires `system_status` to equal `RUNNING`
+Options:
+- `--quiet`: Suppress non-essential output.
+Effects:
+- no state change documented
+
+## isp_alm
+Description: Executes the isp_alm operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+Effects:
+- no state change documented
+
+## ld_jig
+Description: Executes the ld_jig operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--debug`: Enable debug output.
+Effects:
+- no state change documented
+
+## stp_wks
+Description: Executes the stp_wks operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- no state change documented
+
+--- End of documentation for MAN-BUILD-926 ---
+

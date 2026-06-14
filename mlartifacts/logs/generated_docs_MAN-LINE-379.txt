@@ -1,0 +1,98 @@
+--- Documentation for MAN-LINE-379 (CLEAN) ---
+# Tool Documentation: MAN-LINE-379
+
+Domain: MANUFACTURING
+Description: start the primary spindle configuration.
+
+Supported Commands:
+
+## ini_sns
+Description: Executes the ini_sns operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--version`: Show version information and exit.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `duration` with `ASSIGN` using `synced`
+
+## package_gnt
+Description: Executes the package_gnt operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `duration` with `ASSIGN` using `completed`
+
+## stp_mch
+Description: Executes the stp_mch operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--interactive`: Prompt for confirmations interactively.
+- `--version`: Show version information and exit.
+Effects:
+- updates `duration` with `ASSIGN` using `completed`
+
+## srt_trb
+Description: Executes the srt_trb operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--dry-run`: Simulate execution without making changes.
+- `--retry`: Retry the operation on failure.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `duration` with `ASSIGN` using `paused`
+
+## shd_nzl
+Description: Executes the shd_nzl operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--dry-run`: Simulate execution without making changes.
+- `--simulate`: Run in simulation mode.
+- `--version`: Show version information and exit.
+Effects:
+- updates `duration` with `ASSIGN` using `synced`
+
+## abt_gnt
+Description: Executes the abt_gnt operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--quiet`: Suppress non-essential output.
+- `--interactive`: Prompt for confirmations interactively.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `duration` with `ASSIGN` using `completed`
+
+## unset_eng
+Description: Executes the unset_eng operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `pressure` with `ASSIGN` using `7`
+
+## rst_nzl
+Description: Executes the rst_nzl operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--retry`: Retry the operation on failure.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `duration` with `ASSIGN` using `completed`
+
+--- End of documentation for MAN-LINE-379 ---
+

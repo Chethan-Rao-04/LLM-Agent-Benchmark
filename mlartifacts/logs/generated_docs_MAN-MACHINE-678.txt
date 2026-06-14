@@ -1,0 +1,67 @@
+--- Documentation for MAN-MACHINE-678 (CLEAN) ---
+# Tool Documentation: MAN-MACHINE-678
+
+Domain: MANUFACTURING
+Description: Manages auth provision deploy operations.
+
+Supported Commands:
+
+## auth_plc
+Description: Executes the auth_plc operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `auth_token` with `ASSIGN` using `valid`
+
+## prov_prg_n
+Description: Executes the prov_prg_n operation.
+Preconditions:
+- requires `auth_token` to equal `valid`
+Options:
+- `--help`: Show help information and exit.
+Effects:
+- updates `program_status` with `ASSIGN` using `ready`
+
+## dpl_prg_n
+Description: Executes the dpl_prg_n operation.
+Preconditions:
+- requires `program_status` to equal `ready`
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--help`: Show help information and exit.
+Effects:
+- no state change documented
+
+## exe_bld
+Description: Executes the exe_bld operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+Effects:
+- no state change documented
+
+## uld_jig
+Description: Executes the uld_jig operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--simulate`: Run in simulation mode.
+Effects:
+- no state change documented
+
+## rst_act
+Description: Executes the rst_act operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+Effects:
+- no state change documented
+
+--- End of documentation for MAN-MACHINE-678 ---
+

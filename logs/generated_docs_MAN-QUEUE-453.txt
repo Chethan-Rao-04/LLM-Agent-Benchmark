@@ -1,0 +1,24 @@
+--- Documentation for MAN-QUEUE-453 (INCOMPLETE) ---
+# Tool Documentation: MAN-QUEUE-453
+Description: Manages init configure execute operations for manufacturing domain.
+
+Command: enb_pm
+Description: Executes the enb_pm operation.
+Warning: this command may change internal state.
+
+Command: msr_trb
+Description: Executes the msr_trb operation.
+
+Command: shd_mld
+Description: Executes the shd_mld operation.
+Warning: this command may change internal state.
+
+Command: run_prc
+Description: Executes the run_prc operation.
+Warning: this command may change internal state.
+
+Command: abt_wks
+Description: Executes the abt_wks operation.
+
+
+

@@ -1,0 +1,94 @@
+--- Documentation for MAN-VALVE-921 (GIBBERISH_NOISE) ---
+NOISY DOC 77a
+# Tool Documentation: MAN-VALVE-921
+
+Domain: MANUFACTURING
+Description: start the primary assembly configuration. xad12 noise qqq 441
+
+Supported Commands:
+ xad12 noise qqq 441
+## run_jig
+Description: Executes the run_jig operation.
+Preconditions: xad12 noise qqq 441
+- none
+Options:
+- none xad12 noise qqq 441
+Effects:
+- updates `error_count` with `INCREMENT`
+ xad12 noise qqq 441
+## rbt_gnt
+Description: Executes the rbt_gnt operation.
+Preconditions: xad12 noise qqq 441
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding. xad12 noise qqq 441
+- `--interactive`: Prompt for confirmations interactively.
+- `--force`: Force the operation even if warnings are present.
+Effects: xad12 noise qqq 441
+- updates `threshold` with `INCREMENT`
+
+## wld_wks xad12 noise qqq 441
+Description: Executes the wld_wks operation.
+Preconditions:
+- none xad12 noise qqq 441
+Options:
+- `--quiet`: Suppress non-essential output.
+Effects: xad12 noise qqq 441
+- updates `lubrication_index` with `ASSIGN` using `6`
+
+## ini_wks xad12 noise qqq 441
+Description: Executes the ini_wks operation.
+Preconditions:
+- none xad12 noise qqq 441
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--retry`: Retry the operation on failure. xad12 noise qqq 441
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `noise_level` with `ASSIGN` using `completed` xad12 noise qqq 441
+
+## rst_mch
+Description: Executes the rst_mch operation. xad12 noise qqq 441
+Preconditions:
+- none
+Options: xad12 noise qqq 441
+- `--debug`: Enable debug output.
+Effects:
+- updates `voltage` with `ASSIGN` using `6` xad12 noise qqq 441
+
+## package_ln
+Description: Executes the package_ln operation. xad12 noise qqq 441
+Preconditions:
+- none
+Options: xad12 noise qqq 441
+- `--version`: Show version information and exit.
+- `--simulate`: Run in simulation mode.
+- `--help`: Show help information and exit. xad12 noise qqq 441
+Effects:
+- updates `error_count` with `INCREMENT`
+ xad12 noise qqq 441
+## cal_que
+Description: Executes the cal_que operation.
+Preconditions: xad12 noise qqq 441
+- none
+Options:
+- `--verbose`: Enable verbose logging/output. xad12 noise qqq 441
+- `--simulate`: Run in simulation mode.
+- `--interactive`: Prompt for confirmations interactively.
+- `--version`: Show version information and exit. xad12 noise qqq 441
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `noise_level` with `ASSIGN` using `queued` xad12 noise qqq 441
+
+## sel_que
+Description: Executes the sel_que operation. xad12 noise qqq 441
+Preconditions:
+- none
+Options: xad12 noise qqq 441
+- `--quiet`: Suppress non-essential output.
+- `--debug`: Enable debug output.
+Effects: xad12 noise qqq 441
+- updates `noise_level` with `ASSIGN` using `completed`
+
+--- End of documentation for MAN-VALVE-921 --- xad12 noise qqq 441
+

@@ -1,0 +1,28 @@
+--- Documentation for MAN-MATERIAL-627 (INCOMPLETE) ---
+# Tool Documentation: MAN-MATERIAL-627
+Description: Manages init configure execute operations for manufacturing domain.
+
+Command: enb_pm
+Description: Executes the enb_pm operation.
+Warning: this command may change internal state.
+
+Command: opr_vlv
+Description: Executes the opr_vlv operation.
+
+Command: exe_opr_n
+Description: Executes the exe_opr_n operation.
+Warning: this command may change internal state.
+
+Command: vfy_asm
+Description: Executes the vfy_asm operation.
+Warning: this command may change internal state.
+
+Command: tgl_plt
+Description: Executes the tgl_plt operation.
+
+Command: set_que
+Description: Executes the set_que operation.
+Warning: this command may change internal state.
+
+
+

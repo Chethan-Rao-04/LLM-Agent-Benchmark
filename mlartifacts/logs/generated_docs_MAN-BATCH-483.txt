@@ -1,0 +1,85 @@
+--- Documentation for MAN-BATCH-483 (CLEAN) ---
+# Tool Documentation: MAN-BATCH-483
+
+Domain: MANUFACTURING
+Description: stop the primary gantry configuration.
+
+Supported Commands:
+
+## cal_mch
+Description: Executes the cal_mch operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--debug`: Enable debug output.
+- `--simulate`: Run in simulation mode.
+- `--version`: Show version information and exit.
+- `--help`: Show help information and exit.
+Effects:
+- updates `joint_angle` with `ASSIGN` using `5`
+
+## rsm_sch
+Description: Executes the rsm_sch operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--version`: Show version information and exit.
+- `--timeout`: Set a timeout for the operation.
+- `--quiet`: Suppress non-essential output.
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `joint_angle` with `INCREMENT`
+
+## run_bld
+Description: Executes the run_bld operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `output_yield` with `ASSIGN` using `queued`
+
+## cal_gen
+Description: Executes the cal_gen operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `output_yield` with `ASSIGN` using `queued`
+
+## unset_ctrl
+Description: Executes the unset_ctrl operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `joint_angle` with `ASSIGN` using `0`
+
+## isp_vlv
+Description: Executes the isp_vlv operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `output_yield` with `ASSIGN` using `ready`
+
+## ext_opr_n
+Description: Executes the ext_opr_n operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `joint_angle` with `INCREMENT`
+
+--- End of documentation for MAN-BATCH-483 ---
+

@@ -1,0 +1,95 @@
+--- Documentation for MAN-MOLD-403 (CLEAN) ---
+# Tool Documentation: MAN-MOLD-403
+
+Domain: MANUFACTURING
+Description: unset the legacy machine configuration.
+
+Supported Commands:
+
+## vfy_unt
+Description: Executes the vfy_unt operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `noise_level` with `ASSIGN` using `completed`
+
+## enb_cnv
+Description: Executes the enb_cnv operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--quiet`: Suppress non-essential output.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `battery_level` with `ASSIGN` using `completed`
+
+## ovr_sch
+Description: Executes the ovr_sch operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `noise_level` with `ASSIGN` using `queued`
+
+## vfy_btc
+Description: Executes the vfy_btc operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--timeout`: Set a timeout for the operation.
+- `--verbose`: Enable verbose logging/output.
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `quality_score` with `INCREMENT`
+
+## ovr_bld
+Description: Executes the ovr_bld operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `quality_score` with `INCREMENT`
+
+## dsb_ctrl
+Description: Executes the dsb_ctrl operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--help`: Show help information and exit.
+- `--retry`: Retry the operation on failure.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `noise_level` with `ASSIGN` using `ready`
+
+## stp_btc
+Description: Executes the stp_btc operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--help`: Show help information and exit.
+- `--simulate`: Run in simulation mode.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `status` with `INCREMENT`
+
+## bps_que
+Description: Executes the bps_que operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `air_flow` with `ASSIGN` using `6`
+
+--- End of documentation for MAN-MOLD-403 ---
+

@@ -1,0 +1,67 @@
+--- Documentation for MAN-PARTS-203 (CLEAN) ---
+# Tool Documentation: MAN-PARTS-203
+
+Domain: MANUFACTURING
+Description: Manages init configure execute operations.
+
+Supported Commands:
+
+## ini_sys
+Description: Executes the ini_sys operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `system_status` with `ASSIGN` using `RUNNING`
+
+## enb_pm
+Description: Executes the enb_pm operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+Options:
+- none
+Effects:
+- updates `precision_mode` with `ASSIGN` using `active`
+
+## isp_cmp
+Description: Executes the isp_cmp operation.
+Preconditions:
+- requires `precision_mode` to equal `active`
+- requires `system_status` to equal `RUNNING`
+Options:
+- `--version`: Show version information and exit.
+Effects:
+- no state change documented
+
+## opr_gnt
+Description: Executes the opr_gnt operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- no state change documented
+
+## ini_que
+Description: Executes the ini_que operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- no state change documented
+
+## abt_ctrl
+Description: Executes the abt_ctrl operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- no state change documented
+
+--- End of documentation for MAN-PARTS-203 ---
+

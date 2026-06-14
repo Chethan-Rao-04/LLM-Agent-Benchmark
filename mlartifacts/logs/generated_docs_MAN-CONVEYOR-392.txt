@@ -1,0 +1,86 @@
+--- Documentation for MAN-CONVEYOR-392 (CLEAN) ---
+# Tool Documentation: MAN-CONVEYOR-392
+
+Domain: MANUFACTURING
+Description: package the legacy generator configuration.
+
+Supported Commands:
+
+## vfy_opr_n
+Description: Executes the vfy_opr_n operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `friction` with `ASSIGN` using `6`
+
+## ini_gnt
+Description: Executes the ini_gnt operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `quality_score` with `ASSIGN` using `queued`
+
+## lub_sns
+Description: Executes the lub_sns operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--help`: Show help information and exit.
+- `--output`: Write output to a file.
+- `--timeout`: Set a timeout for the operation.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `friction` with `ASSIGN` using `6`
+
+## run_eng
+Description: Executes the run_eng operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `status` with `INCREMENT`
+
+## set_kln
+Description: Executes the set_kln operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `friction` with `ASSIGN` using `0`
+
+## aln_nzl
+Description: Executes the aln_nzl operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--version`: Show version information and exit.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `friction` with `INCREMENT`
+
+## wld_eng
+Description: Executes the wld_eng operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--force`: Force the operation even if warnings are present.
+- `--output`: Write output to a file.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `status` with `INCREMENT`
+
+--- End of documentation for MAN-CONVEYOR-392 ---
+

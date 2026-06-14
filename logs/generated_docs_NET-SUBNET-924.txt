@@ -1,0 +1,83 @@
+--- Documentation for NET-SUBNET-924 (CLEAN) ---
+# Tool Documentation: NET-SUBNET-924
+
+Domain: NETWORK_INFRA
+Description: allow the upstream datagram configuration.
+
+Supported Commands:
+
+## auth_snt
+Description: Executes the auth_snt operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--debug`: Enable debug output.
+Effects:
+- updates `cpu_usage` with `INCREMENT`
+
+## iso_mod
+Description: Executes the iso_mod operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `tx_bytes` with `ASSIGN` using `ready`
+
+## con_snt
+Description: Executes the con_snt operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `tx_bytes` with `ASSIGN` using `stable`
+
+## iso_gtw
+Description: Executes the iso_gtw operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--output`: Write output to a file.
+- `--version`: Show version information and exit.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `cpu_usage` with `ASSIGN` using `3`
+
+## upd_eth
+Description: Executes the upd_eth operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--simulate`: Run in simulation mode.
+- `--quiet`: Suppress non-essential output.
+- `--debug`: Enable debug output.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `power_level` with `ASSIGN` using `synced`
+
+## adv_fwl
+Description: Executes the adv_fwl operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `hop_count` with `INCREMENT`
+
+## per_srv
+Description: Executes the per_srv operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `cpu_usage` with `ASSIGN` using `9`
+
+--- End of documentation for NET-SUBNET-924 ---
+

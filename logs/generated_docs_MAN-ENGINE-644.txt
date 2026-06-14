@@ -1,0 +1,28 @@
+--- Documentation for MAN-ENGINE-644 (INCOMPLETE) ---
+# Tool Documentation: MAN-ENGINE-644
+Description: shutdown the upstream operator configuration.
+
+Command: rec_btc
+Description: Executes the rec_btc operation.
+Warning: this command may change internal state.
+
+Command: ext_gnt
+Description: Executes the ext_gnt operation.
+
+Command: tgl_dye
+Description: Executes the tgl_dye operation.
+Warning: this command may change internal state.
+
+Command: set_dye
+Description: Executes the set_dye operation.
+Warning: this command may change internal state.
+
+Command: ini_sns
+Description: Executes the ini_sns operation.
+
+Command: msr_fix
+Description: Executes the msr_fix operation.
+Warning: this command may change internal state.
+
+
+

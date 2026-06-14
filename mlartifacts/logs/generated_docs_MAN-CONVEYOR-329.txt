@@ -1,0 +1,66 @@
+--- Documentation for MAN-CONVEYOR-329 (CLEAN) ---
+# Tool Documentation: MAN-CONVEYOR-329
+
+Domain: MANUFACTURING
+Description: Manages init configure execute operations.
+
+Supported Commands:
+
+## ini_sys
+Description: Executes the ini_sys operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `system_status` with `ASSIGN` using `RUNNING`
+
+## enb_si
+Description: Executes the enb_si operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+Options:
+- none
+Effects:
+- updates `safety_interlock` with `ASSIGN` using `active`
+
+## cal_trb
+Description: Executes the cal_trb operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+- requires `safety_interlock` to equal `active`
+Options:
+- none
+Effects:
+- no state change documented
+
+## rst_ctrl
+Description: Executes the rst_ctrl operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+## rst_vlv
+Description: Executes the rst_vlv operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+## pse_kln
+Description: Executes the pse_kln operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- no state change documented
+
+--- End of documentation for MAN-CONVEYOR-329 ---
+

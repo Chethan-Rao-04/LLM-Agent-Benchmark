@@ -1,0 +1,76 @@
+--- Documentation for NET-JUMPER-228 (CLEAN) ---
+# Tool Documentation: NET-JUMPER-228
+
+Domain: NETWORK_INFRA
+Description: Manages auth provision deploy operations for network infra domain.
+
+Supported Commands:
+
+## auth_dc
+Description: Executes the auth_dc operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `auth_token` with `ASSIGN` using `valid`
+
+## prov_inst
+Description: Executes the prov_inst operation.
+Preconditions:
+- requires `auth_token` to equal `valid`
+Options:
+- `--help`: Show help information and exit.
+Effects:
+- updates `instance_status` with `ASSIGN` using `ready`
+
+## dpl_inst
+Description: Executes the dpl_inst operation.
+Preconditions:
+- requires `instance_status` to equal `ready`
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--retry`: Retry the operation on failure.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- no state change documented
+
+## dsc_lb
+Description: Executes the dsc_lb operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `interface_name` with `INCREMENT`
+
+## per_chn
+Description: Executes the per_chn operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+Effects:
+- updates `throughput` with `INCREMENT`
+
+## con_ep
+Description: Executes the con_ep operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `interface_name` with `INCREMENT`
+
+## rte_vln
+Description: Executes the rte_vln operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `throughput` with `INCREMENT`
+
+--- End of documentation for NET-JUMPER-228 ---
+

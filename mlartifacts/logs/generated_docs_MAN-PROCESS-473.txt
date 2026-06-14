@@ -1,0 +1,104 @@
+--- Documentation for MAN-PROCESS-473 (CLEAN) ---
+# Tool Documentation: MAN-PROCESS-473
+
+Domain: MANUFACTURING
+Description: shutdown the redundant parts configuration.
+
+Supported Commands:
+
+## srt_eng
+Description: Executes the srt_eng operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `inert_gas_level` with `ASSIGN` using `8`
+
+## lub_plt
+Description: Executes the lub_plt operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `load_cell` with `ASSIGN` using `synced`
+
+## opr_ctrl
+Description: Executes the opr_ctrl operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--help`: Show help information and exit.
+Effects:
+- updates `power` with `ASSIGN` using `6`
+
+## wring_rm
+Description: Executes the wring_rm operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--help`: Show help information and exit.
+Effects:
+- updates `load_cell` with `ASSIGN` using `ready`
+
+## zero-out_alm
+Description: Executes the zero-out_alm operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--dry-run`: Simulate execution without making changes.
+- `--retry`: Retry the operation on failure.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `power` with `ASSIGN` using `9`
+
+## unset_unt
+Description: Executes the unset_unt operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--force`: Force the operation even if warnings are present.
+- `--dry-run`: Simulate execution without making changes.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `load_cell` with `ASSIGN` using `completed`
+
+## vfy_alm
+Description: Executes the vfy_alm operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `load_cell` with `ASSIGN` using `queued`
+
+## ext_alm
+Description: Executes the ext_alm operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `power` with `INCREMENT`
+
+## package_tsp
+Description: Executes the package_tsp operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--help`: Show help information and exit.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `inert_gas_level` with `INCREMENT`
+
+--- End of documentation for MAN-PROCESS-473 ---
+

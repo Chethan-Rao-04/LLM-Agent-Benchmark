@@ -1,0 +1,88 @@
+--- Documentation for NET-NAT-836 (CLEAN) ---
+# Tool Documentation: NET-NAT-836
+
+Domain: NETWORK_INFRA
+Description: encrypt the primary client configuration.
+
+Supported Commands:
+
+## blk_prt
+Description: Executes the blk_prt operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--output`: Write output to a file.
+Effects:
+- updates `throughput` with `ASSIGN` using `0`
+
+## dsc_chn
+Description: Executes the dsc_chn operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--debug`: Enable debug output.
+- `--verbose`: Enable verbose logging/output.
+- `--force`: Force the operation even if warnings are present.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `session_id` with `ASSIGN` using `completed`
+
+## whl_brg
+Description: Executes the whl_brg operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--output`: Write output to a file.
+- `--timeout`: Set a timeout for the operation.
+- `--interactive`: Prompt for confirmations interactively.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `cpu_usage` with `ASSIGN` using `4`
+
+## thr_ont
+Description: Executes the thr_ont operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+Effects:
+- updates `throughput` with `ASSIGN` using `9`
+
+## trc_mf
+Description: Executes the trc_mf operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--interactive`: Prompt for confirmations interactively.
+- `--retry`: Retry the operation on failure.
+- `--debug`: Enable debug output.
+Effects:
+- updates `throughput` with `ASSIGN` using `2`
+
+## sav_nod
+Description: Executes the sav_nod operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--timeout`: Set a timeout for the operation.
+- `--output`: Write output to a file.
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `session_id` with `ASSIGN` using `stable`
+
+## dsc_loc
+Description: Executes the dsc_loc operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+Effects:
+- updates `throughput` with `INCREMENT`
+
+--- End of documentation for NET-NAT-836 ---
+

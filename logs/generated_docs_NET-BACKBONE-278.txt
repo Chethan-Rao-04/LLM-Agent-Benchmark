@@ -1,0 +1,86 @@
+--- Documentation for NET-BACKBONE-278 (CLEAN) ---
+# Tool Documentation: NET-BACKBONE-278
+
+Domain: NETWORK_INFRA
+Description: Manages auth provision deploy operations for network infra domain.
+
+Supported Commands:
+
+## auth_srv
+Description: Executes the auth_srv operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `auth_token` with `ASSIGN` using `valid`
+
+## prov_svc
+Description: Executes the prov_svc operation.
+Preconditions:
+- requires `auth_token` to equal `valid`
+Options:
+- none
+Effects:
+- updates `service_status` with `ASSIGN` using `ready`
+
+## dpl_svc
+Description: Executes the dpl_svc operation.
+Preconditions:
+- requires `service_status` to equal `ready`
+Options:
+- `--debug`: Enable debug output.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- no state change documented
+
+## cfg_vln
+Description: Executes the cfg_vln operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `dns_server` with `INCREMENT`
+
+## whl_cli
+Description: Executes the whl_cli operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--debug`: Enable debug output.
+Effects:
+- updates `memory_usage` with `INCREMENT`
+
+## alw_nod
+Description: Executes the alw_nod operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `memory_usage` with `INCREMENT`
+
+## dny_nod
+Description: Executes the dny_nod operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `memory_usage` with `INCREMENT`
+
+## alw_svc
+Description: Executes the alw_svc operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--version`: Show version information and exit.
+Effects:
+- updates `dns_server` with `INCREMENT`
+
+--- End of documentation for NET-BACKBONE-278 ---
+

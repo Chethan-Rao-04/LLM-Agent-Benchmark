@@ -1,0 +1,93 @@
+--- Documentation for MAN-TOOLSPEC-998 (CLEAN) ---
+# Tool Documentation: MAN-TOOLSPEC-998
+
+Domain: MANUFACTURING
+Description: wring the primary turbine configuration.
+
+Supported Commands:
+
+## rec_wks
+Description: Executes the rec_wks operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--interactive`: Prompt for confirmations interactively.
+- `--debug`: Enable debug output.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `power` with `ASSIGN` using `stable`
+
+## shd_wks
+Description: Executes the shd_wks operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--debug`: Enable debug output.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `power` with `ASSIGN` using `queued`
+
+## vfy_nzl
+Description: Executes the vfy_nzl operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--dry-run`: Simulate execution without making changes.
+- `--help`: Show help information and exit.
+- `--quiet`: Suppress non-essential output.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `vibration` with `INCREMENT`
+
+## srt_dye
+Description: Executes the srt_dye operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--dry-run`: Simulate execution without making changes.
+- `--output`: Write output to a file.
+- `--version`: Show version information and exit.
+Effects:
+- updates `density` with `ASSIGN` using `ready`
+
+## uld_prc
+Description: Executes the uld_prc operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--verbose`: Enable verbose logging/output.
+- `--dry-run`: Simulate execution without making changes.
+- `--debug`: Enable debug output.
+Effects:
+- updates `torque` with `ASSIGN` using `8`
+
+## wld_que
+Description: Executes the wld_que operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--timeout`: Set a timeout for the operation.
+- `--output`: Write output to a file.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `density` with `ASSIGN` using `synced`
+
+## set_plt
+Description: Executes the set_plt operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--help`: Show help information and exit.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `vibration` with `INCREMENT`
+
+--- End of documentation for MAN-TOOLSPEC-998 ---
+

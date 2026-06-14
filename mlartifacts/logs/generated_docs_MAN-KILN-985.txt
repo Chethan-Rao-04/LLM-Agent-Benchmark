@@ -1,0 +1,65 @@
+--- Documentation for MAN-KILN-985 (CLEAN) ---
+# Tool Documentation: MAN-KILN-985
+
+Domain: MANUFACTURING
+Description: Manages auth provision deploy operations.
+
+Supported Commands:
+
+## auth_scd
+Description: Executes the auth_scd operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `auth_token` with `ASSIGN` using `valid`
+
+## prov_rcp
+Description: Executes the prov_rcp operation.
+Preconditions:
+- requires `auth_token` to equal `valid`
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `recipe_status` with `ASSIGN` using `ready`
+
+## dpl_rcp
+Description: Executes the dpl_rcp operation.
+Preconditions:
+- requires `recipe_status` to equal `ready`
+Options:
+- none
+Effects:
+- no state change documented
+
+## clp_chs
+Description: Executes the clp_chs operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+## pse_nzl
+Description: Executes the pse_nzl operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+Effects:
+- no state change documented
+
+## wld_alm
+Description: Executes the wld_alm operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+Effects:
+- no state change documented
+
+--- End of documentation for MAN-KILN-985 ---
+

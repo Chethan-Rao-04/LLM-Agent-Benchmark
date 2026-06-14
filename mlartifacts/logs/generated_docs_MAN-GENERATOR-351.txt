@@ -1,0 +1,92 @@
+--- Documentation for MAN-GENERATOR-351 (CLEAN) ---
+# Tool Documentation: MAN-GENERATOR-351
+
+Domain: MANUFACTURING
+Description: package the legacy alarm configuration.
+
+Supported Commands:
+
+## dsb_vlv
+Description: Executes the dsb_vlv operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `efficiency` with `ASSIGN` using `ready`
+
+## uld_ctrl
+Description: Executes the uld_ctrl operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `battery_level` with `ASSIGN` using `6`
+
+## package_mch
+Description: Executes the package_mch operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+Effects:
+- updates `efficiency` with `ASSIGN` using `stable`
+
+## wring_alm
+Description: Executes the wring_alm operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+Effects:
+- updates `efficiency` with `ASSIGN` using `ready`
+
+## pse_sns
+Description: Executes the pse_sns operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--timeout`: Set a timeout for the operation.
+- `--quiet`: Suppress non-essential output.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `efficiency` with `ASSIGN` using `completed`
+
+## tgl_spd
+Description: Executes the tgl_spd operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `battery_level` with `INCREMENT`
+
+## mld_wks
+Description: Executes the mld_wks operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--interactive`: Prompt for confirmations interactively.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `threshold` with `ASSIGN` using `3`
+
+## rst_dye
+Description: Executes the rst_dye operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--output`: Write output to a file.
+- `--simulate`: Run in simulation mode.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `efficiency` with `ASSIGN` using `queued`
+
+--- End of documentation for MAN-GENERATOR-351 ---
+

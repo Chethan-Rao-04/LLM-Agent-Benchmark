@@ -1,0 +1,115 @@
+--- Documentation for MAN-MATERIAL-205 (CLEAN) ---
+# Tool Documentation: MAN-MATERIAL-205
+
+Domain: MANUFACTURING
+Description: override the virtualized hopper configuration.
+
+Supported Commands:
+
+## isp_tsp
+Description: Executes the isp_tsp operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--retry`: Retry the operation on failure.
+- `--verbose`: Enable verbose logging/output.
+- `--dry-run`: Simulate execution without making changes.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `threshold` with `ASSIGN` using `9`
+
+## ini_sns
+Description: Executes the ini_sns operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--version`: Show version information and exit.
+- `--force`: Force the operation even if warnings are present.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `speed` with `ASSIGN` using `4`
+
+## opr_btc
+Description: Executes the opr_btc operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `friction` with `ASSIGN` using `queued`
+
+## unset_gnt
+Description: Executes the unset_gnt operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--force`: Force the operation even if warnings are present.
+- `--dry-run`: Simulate execution without making changes.
+- `--help`: Show help information and exit.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `speed` with `ASSIGN` using `7`
+
+## exe_ln
+Description: Executes the exe_ln operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--output`: Write output to a file.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `friction` with `ASSIGN` using `ready`
+
+## rbt_jig
+Description: Executes the rbt_jig operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `speed` with `INCREMENT`
+
+## zero-out_cnv
+Description: Executes the zero-out_cnv operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--retry`: Retry the operation on failure.
+- `--version`: Show version information and exit.
+- `--output`: Write output to a file.
+Effects:
+- updates `density` with `ASSIGN` using `8`
+
+## torque_plt
+Description: Executes the torque_plt operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--output`: Write output to a file.
+- `--interactive`: Prompt for confirmations interactively.
+- `--dry-run`: Simulate execution without making changes.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `friction` with `ASSIGN` using `paused`
+
+## prg_cmp
+Description: Executes the prg_cmp operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--retry`: Retry the operation on failure.
+- `--verbose`: Enable verbose logging/output.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `friction` with `ASSIGN` using `synced`
+
+--- End of documentation for MAN-MATERIAL-205 ---
+

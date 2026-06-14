@@ -1,0 +1,24 @@
+--- Documentation for MAN-GANTRY-652 (INCOMPLETE) ---
+# Tool Documentation: MAN-GANTRY-652
+Description: load the primary assembly configuration.
+
+Command: cal_kln
+Description: Executes the cal_kln operation.
+Warning: this command may change internal state.
+
+Command: rec_plt
+Description: Executes the rec_plt operation.
+
+Command: tgl_mld
+Description: Executes the tgl_mld operation.
+Warning: this command may change internal state.
+
+Command: uld_prc
+Description: Executes the uld_prc operation.
+Warning: this command may change internal state.
+
+Command: dsb_btc
+Description: Executes the dsb_btc operation.
+
+
+

@@ -1,0 +1,86 @@
+--- Documentation for MAN-CONTROLLER-213 (CLEAN) ---
+# Tool Documentation: MAN-CONTROLLER-213
+
+Domain: MANUFACTURING
+Description: Manages init configure execute operations.
+
+Supported Commands:
+
+## ini_sys
+Description: Executes the ini_sys operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `system_status` with `ASSIGN` using `RUNNING`
+
+## enb_tp
+Description: Executes the enb_tp operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `thermal_protection` with `ASSIGN` using `active`
+
+## opr_cnv
+Description: Executes the opr_cnv operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+- requires `thermal_protection` to equal `active`
+Options:
+- `--version`: Show version information and exit.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- no state change documented
+
+## run_cnv
+Description: Executes the run_cnv operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+Effects:
+- no state change documented
+
+## zero-out_tsp
+Description: Executes the zero-out_tsp operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--output`: Write output to a file.
+Effects:
+- no state change documented
+
+## torque_btc
+Description: Executes the torque_btc operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+## srt_alm
+Description: Executes the srt_alm operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- no state change documented
+
+## stp_bld
+Description: Executes the stp_bld operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+--- End of documentation for MAN-CONTROLLER-213 ---
+

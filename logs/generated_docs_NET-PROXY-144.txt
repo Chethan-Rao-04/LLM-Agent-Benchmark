@@ -1,0 +1,97 @@
+--- Documentation for NET-PROXY-144 (CLEAN) ---
+# Tool Documentation: NET-PROXY-144
+
+Domain: NETWORK_INFRA
+Description: Manages init configure execute operations for network infra domain.
+
+Supported Commands:
+
+## ini_sys
+Description: Executes the ini_sys operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `system_status` with `ASSIGN` using `RUNNING`
+
+## enb_enc_n
+Description: Executes the enb_enc_n operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--help`: Show help information and exit.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `encryption` with `ASSIGN` using `active`
+
+## mon_lb
+Description: Executes the mon_lb operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+- requires `encryption` to equal `active`
+Options:
+- `--debug`: Enable debug output.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- no state change documented
+
+## fwd_dev
+Description: Executes the fwd_dev operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--help`: Show help information and exit.
+Effects:
+- updates `noise_floor` with `INCREMENT`
+
+## syn_spt
+Description: Executes the syn_spt operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `noise_floor` with `INCREMENT`
+
+## trc_ep
+Description: Executes the trc_ep operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `noise_floor` with `INCREMENT`
+
+## swt_ifc
+Description: Executes the swt_ifc operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--debug`: Enable debug output.
+Effects:
+- updates `noise_floor` with `INCREMENT`
+
+## tnl_srv
+Description: Executes the tnl_srv operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `noise_floor` with `INCREMENT`
+
+## fwd_bbn
+Description: Executes the fwd_bbn operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `noise_floor` with `INCREMENT`
+
+--- End of documentation for NET-PROXY-144 ---
+

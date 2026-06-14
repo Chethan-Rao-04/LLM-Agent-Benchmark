@@ -1,0 +1,93 @@
+--- Documentation for MAN-MATERIAL-284 (CLEAN) ---
+# Tool Documentation: MAN-MATERIAL-284
+
+Domain: MANUFACTURING
+Description: restart the legacy schedule configuration.
+
+Supported Commands:
+
+## cal_kln
+Description: Executes the cal_kln operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `friction` with `ASSIGN` using `7`
+
+## run_tsp
+Description: Executes the run_tsp operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `wear_level` with `ASSIGN` using `7`
+
+## run_sns
+Description: Executes the run_sns operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--help`: Show help information and exit.
+Effects:
+- updates `friction` with `ASSIGN` using `5`
+
+## prg_nzl
+Description: Executes the prg_nzl operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--help`: Show help information and exit.
+- `--version`: Show version information and exit.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `wear_level` with `INCREMENT`
+
+## cal_opr_n
+Description: Executes the cal_opr_n operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--interactive`: Prompt for confirmations interactively.
+- `--output`: Write output to a file.
+- `--help`: Show help information and exit.
+Effects:
+- updates `friction` with `ASSIGN` using `1`
+
+## vfy_sns
+Description: Executes the vfy_sns operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `level` with `INCREMENT`
+
+## ini_trb
+Description: Executes the ini_trb operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--timeout`: Set a timeout for the operation.
+- `--debug`: Enable debug output.
+- `--output`: Write output to a file.
+Effects:
+- updates `friction` with `INCREMENT`
+
+## exe_mld
+Description: Executes the exe_mld operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `wear_level` with `ASSIGN` using `7`
+
+--- End of documentation for MAN-MATERIAL-284 ---
+

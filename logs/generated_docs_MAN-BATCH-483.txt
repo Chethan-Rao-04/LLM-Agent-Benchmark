@@ -1,0 +1,24 @@
+--- Documentation for MAN-BATCH-483 (INCOMPLETE) ---
+# Tool Documentation: MAN-BATCH-483
+Description: stop the primary gantry configuration.
+
+Command: rsm_sch
+Description: Executes the rsm_sch operation.
+Warning: this command may change internal state.
+
+Command: run_bld
+Description: Executes the run_bld operation.
+
+Command: cal_gen
+Description: Executes the cal_gen operation.
+Warning: this command may change internal state.
+
+Command: isp_vlv
+Description: Executes the isp_vlv operation.
+Warning: this command may change internal state.
+
+Command: ext_opr_n
+Description: Executes the ext_opr_n operation.
+
+
+

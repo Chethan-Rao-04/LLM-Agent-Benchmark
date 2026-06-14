@@ -1,0 +1,74 @@
+--- Documentation for MAN-RAW-MATERIAL-728 (CLEAN) ---
+# Tool Documentation: MAN-RAW-MATERIAL-728
+
+Domain: MANUFACTURING
+Description: Manages auth provision deploy operations.
+
+Supported Commands:
+
+## auth_scd
+Description: Executes the auth_scd operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `auth_token` with `ASSIGN` using `valid`
+
+## prov_prg_n
+Description: Executes the prov_prg_n operation.
+Preconditions:
+- requires `auth_token` to equal `valid`
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `program_status` with `ASSIGN` using `ready`
+
+## dpl_prg_n
+Description: Executes the dpl_prg_n operation.
+Preconditions:
+- requires `program_status` to equal `ready`
+Options:
+- `--help`: Show help information and exit.
+Effects:
+- no state change documented
+
+## rst_hop
+Description: Executes the rst_hop operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+## shd_ctrl
+Description: Executes the shd_ctrl operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- no state change documented
+
+## dsb_sns
+Description: Executes the dsb_sns operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+## cal_nzl
+Description: Executes the cal_nzl operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+--- End of documentation for MAN-RAW-MATERIAL-728 ---
+

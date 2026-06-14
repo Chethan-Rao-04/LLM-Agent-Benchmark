@@ -1,0 +1,75 @@
+--- Documentation for NET-BACKBONE-166 (CLEAN) ---
+# Tool Documentation: NET-BACKBONE-166
+
+Domain: NETWORK_INFRA
+Description: Manages diagnose repair verify operations.
+
+Supported Commands:
+
+## diag_fwl
+Description: Executes the diag_fwl operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `fault_status` with `ASSIGN` using `identified`
+
+## rpr_fwl
+Description: Executes the rpr_fwl operation.
+Preconditions:
+- requires `fault_status` to equal `identified`
+Options:
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `firewall_health` with `ASSIGN` using `restored`
+
+## vfy_fwl
+Description: Executes the vfy_fwl operation.
+Preconditions:
+- requires `firewall_health` to equal `restored`
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--retry`: Retry the operation on failure.
+Effects:
+- no state change documented
+
+## stp__ulk
+Description: Executes the stp__ulk operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- no state change documented
+
+## brg_krn
+Description: Executes the brg_krn operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- no state change documented
+
+## cap_ep
+Description: Executes the cap_ep operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+## tnl_net
+Description: Executes the tnl_net operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- no state change documented
+
+--- End of documentation for NET-BACKBONE-166 ---
+

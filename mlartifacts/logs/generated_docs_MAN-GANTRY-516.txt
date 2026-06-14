@@ -1,0 +1,102 @@
+--- Documentation for MAN-GANTRY-516 (CLEAN) ---
+# Tool Documentation: MAN-GANTRY-516
+
+Domain: MANUFACTURING
+Description: Manages auth provision deploy operations for manufacturing domain.
+
+Supported Commands:
+
+## auth_ctrl
+Description: Executes the auth_ctrl operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `auth_token` with `ASSIGN` using `valid`
+
+## prov_fw
+Description: Executes the prov_fw operation.
+Preconditions:
+- requires `auth_token` to equal `valid`
+Options:
+- none
+Effects:
+- updates `firmware_status` with `ASSIGN` using `ready`
+
+## dpl_fw
+Description: Executes the dpl_fw operation.
+Preconditions:
+- requires `firmware_status` to equal `ready`
+Options:
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- no state change documented
+
+## restore_ctrl
+Description: Runs auxiliary controller routine.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `auth_token` with `ASSIGN` using `valid`
+
+## ext_asm
+Description: Executes the ext_asm operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+Effects:
+- updates `humidity` with `INCREMENT`
+
+## opr_sch
+Description: Executes the opr_sch operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `torque` with `INCREMENT`
+
+## quality-check_pts
+Description: Executes the quality-check_pts operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `humidity` with `INCREMENT`
+
+## rsm_gnt
+Description: Executes the rsm_gnt operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `torque` with `INCREMENT`
+
+## ld_cmp
+Description: Executes the ld_cmp operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--simulate`: Run in simulation mode.
+- `--debug`: Enable debug output.
+Effects:
+- updates `torque` with `INCREMENT`
+
+## torque_sch
+Description: Executes the torque_sch operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `humidity` with `INCREMENT`
+
+--- End of documentation for MAN-GANTRY-516 ---
+

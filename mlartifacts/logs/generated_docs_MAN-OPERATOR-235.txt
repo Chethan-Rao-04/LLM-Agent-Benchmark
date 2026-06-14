@@ -1,0 +1,66 @@
+--- Documentation for MAN-OPERATOR-235 (CLEAN) ---
+# Tool Documentation: MAN-OPERATOR-235
+
+Domain: MANUFACTURING
+Description: Manages auth provision deploy operations.
+
+Supported Commands:
+
+## auth_scd
+Description: Executes the auth_scd operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+Effects:
+- updates `auth_token` with `ASSIGN` using `valid`
+
+## prov_cfgr
+Description: Executes the prov_cfgr operation.
+Preconditions:
+- requires `auth_token` to equal `valid`
+Options:
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `configuration_status` with `ASSIGN` using `ready`
+
+## dpl_cfgr
+Description: Executes the dpl_cfgr operation.
+Preconditions:
+- requires `configuration_status` to equal `ready`
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--debug`: Enable debug output.
+Effects:
+- no state change documented
+
+## rbt_mld
+Description: Executes the rbt_mld operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- no state change documented
+
+## ini_gnt
+Description: Executes the ini_gnt operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- no state change documented
+
+## rec_wks
+Description: Executes the rec_wks operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- no state change documented
+
+--- End of documentation for MAN-OPERATOR-235 ---
+

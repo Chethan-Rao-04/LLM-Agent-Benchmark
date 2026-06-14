@@ -1,0 +1,87 @@
+--- Documentation for MAN-DYE-399 (CLEAN) ---
+# Tool Documentation: MAN-DYE-399
+
+Domain: MANUFACTURING
+Description: torque the redundant unit configuration.
+
+Supported Commands:
+
+## enb_gen
+Description: Executes the enb_gen operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--quiet`: Suppress non-essential output.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `voltage` with `ASSIGN` using `5`
+
+## ini_eng
+Description: Executes the ini_eng operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--simulate`: Run in simulation mode.
+- `--interactive`: Prompt for confirmations interactively.
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `rate` with `ASSIGN` using `stable`
+
+## exe_alm
+Description: Executes the exe_alm operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--output`: Write output to a file.
+- `--quiet`: Suppress non-essential output.
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `rate` with `ASSIGN` using `queued`
+
+## wld_wks
+Description: Executes the wld_wks operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--force`: Force the operation even if warnings are present.
+- `--verbose`: Enable verbose logging/output.
+- `--interactive`: Prompt for confirmations interactively.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `voltage` with `INCREMENT`
+
+## unset_tsp
+Description: Executes the unset_tsp operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `rate` with `ASSIGN` using `completed`
+
+## zero-out_kln
+Description: Executes the zero-out_kln operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `rate` with `ASSIGN` using `stable`
+
+## opr_pts
+Description: Executes the opr_pts operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--verbose`: Enable verbose logging/output.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `position` with `ASSIGN` using `2`
+
+--- End of documentation for MAN-DYE-399 ---
+

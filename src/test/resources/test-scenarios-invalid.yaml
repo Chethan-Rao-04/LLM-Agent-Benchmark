@@ -1,0 +1,3 @@
+scenarios:
+  - pattern: broken_scenario
+    steps: "not-a-list"

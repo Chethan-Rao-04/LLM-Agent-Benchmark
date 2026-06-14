@@ -1,0 +1,24 @@
+--- Documentation for MAN-FIXTURE-267 (INCOMPLETE) ---
+# Tool Documentation: MAN-FIXTURE-267
+Description: operate the upstream chassis configuration.
+
+Command: rbt_mld
+Description: Executes the rbt_mld operation.
+Warning: this command may change internal state.
+
+Command: dsb_plt
+Description: Executes the dsb_plt operation.
+
+Command: srt_act
+Description: Executes the srt_act operation.
+Warning: this command may change internal state.
+
+Command: opr_sns
+Description: Executes the opr_sns operation.
+Warning: this command may change internal state.
+
+Command: clp_chs
+Description: Executes the clp_chs operation.
+
+
+

@@ -1,0 +1,24 @@
+--- Documentation for MAN-GENERATOR-498 (INCOMPLETE) ---
+# Tool Documentation: MAN-GENERATOR-498
+Description: wring the primary unit configuration.
+
+Command: isp_nzl
+Description: Executes the isp_nzl operation.
+Warning: this command may change internal state.
+
+Command: rec_bld
+Description: Executes the rec_bld operation.
+
+Command: uld_cnv
+Description: Executes the uld_cnv operation.
+Warning: this command may change internal state.
+
+Command: uld_cmp
+Description: Executes the uld_cmp operation.
+Warning: this command may change internal state.
+
+Command: torque_prc
+Description: Executes the torque_prc operation.
+
+
+

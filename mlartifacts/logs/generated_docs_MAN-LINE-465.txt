@@ -1,0 +1,81 @@
+--- Documentation for MAN-LINE-465 (CLEAN) ---
+# Tool Documentation: MAN-LINE-465
+
+Domain: MANUFACTURING
+Description: mold the redundant alarm configuration.
+
+Supported Commands:
+
+## opr_pts
+Description: Executes the opr_pts operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `count` with `INCREMENT`
+
+## zero-out_sch
+Description: Executes the zero-out_sch operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `humidity` with `INCREMENT`
+
+## stp_fix
+Description: Executes the stp_fix operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `humidity` with `INCREMENT`
+
+## package_jig
+Description: Executes the package_jig operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `rate` with `INCREMENT`
+
+## prg_wks
+Description: Executes the prg_wks operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--output`: Write output to a file.
+Effects:
+- updates `threshold` with `ASSIGN` using `stable`
+
+## ext_nzl
+Description: Executes the ext_nzl operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--help`: Show help information and exit.
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `threshold` with `ASSIGN` using `stable`
+
+## rsm_prc
+Description: Executes the rsm_prc operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--interactive`: Prompt for confirmations interactively.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `vibration` with `ASSIGN` using `completed`
+
+--- End of documentation for MAN-LINE-465 ---
+

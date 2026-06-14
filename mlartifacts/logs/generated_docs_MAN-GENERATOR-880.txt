@@ -1,0 +1,95 @@
+--- Documentation for MAN-GENERATOR-880 (CLEAN) ---
+# Tool Documentation: MAN-GENERATOR-880
+
+Domain: MANUFACTURING
+Description: Manages diagnose repair verify operations for manufacturing domain.
+
+Supported Commands:
+
+## diag_vlv
+Description: Executes the diag_vlv operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+Effects:
+- updates `fault_status` with `ASSIGN` using `identified`
+
+## rpr_vlv
+Description: Executes the rpr_vlv operation.
+Preconditions:
+- requires `fault_status` to equal `identified`
+Options:
+- `--version`: Show version information and exit.
+Effects:
+- updates `valve_health` with `ASSIGN` using `restored`
+
+## vfy_vlv
+Description: Executes the vfy_vlv operation.
+Preconditions:
+- requires `valve_health` to equal `restored`
+Options:
+- none
+Effects:
+- no state change documented
+
+## sel_vlv
+Description: Executes the sel_vlv operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--help`: Show help information and exit.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `voltage` with `INCREMENT`
+
+## isp_trb
+Description: Executes the isp_trb operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `moisture` with `INCREMENT`
+
+## sel_nzl
+Description: Executes the sel_nzl operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `voltage` with `INCREMENT`
+
+## pse_sns
+Description: Executes the pse_sns operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `voltage` with `INCREMENT`
+
+## wld_sns
+Description: Executes the wld_sns operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `moisture` with `INCREMENT`
+
+## clp_gen
+Description: Executes the clp_gen operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+Effects:
+- updates `voltage` with `INCREMENT`
+
+--- End of documentation for MAN-GENERATOR-880 ---
+

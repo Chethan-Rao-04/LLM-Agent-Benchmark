@@ -1,0 +1,77 @@
+--- Documentation for MAN-MACHINE-466 (CLEAN) ---
+# Tool Documentation: MAN-MACHINE-466
+
+Domain: MANUFACTURING
+Description: Manages init configure execute operations.
+
+Supported Commands:
+
+## ini_sys
+Description: Executes the ini_sys operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `system_status` with `ASSIGN` using `RUNNING`
+
+## enb_pm
+Description: Executes the enb_pm operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+Options:
+- none
+Effects:
+- updates `precision_mode` with `ASSIGN` using `active`
+
+## opr_cmp
+Description: Executes the opr_cmp operation.
+Preconditions:
+- requires `precision_mode` to equal `active`
+- requires `system_status` to equal `RUNNING`
+Options:
+- `--version`: Show version information and exit.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- no state change documented
+
+## wring_pts
+Description: Executes the wring_pts operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- no state change documented
+
+## ld_bld
+Description: Executes the ld_bld operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+Effects:
+- no state change documented
+
+## uld_spd
+Description: Executes the uld_spd operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--simulate`: Run in simulation mode.
+Effects:
+- no state change documented
+
+## clp_pts
+Description: Executes the clp_pts operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+--- End of documentation for MAN-MACHINE-466 ---
+

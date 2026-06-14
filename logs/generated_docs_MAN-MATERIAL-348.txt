@@ -1,0 +1,101 @@
+--- Documentation for MAN-MATERIAL-348 (CLEAN) ---
+# Tool Documentation: MAN-MATERIAL-348
+
+Domain: MANUFACTURING
+Description: Manages diagnose repair verify operations for manufacturing domain.
+
+Supported Commands:
+
+## diag_trb
+Description: Executes the diag_trb operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `fault_status` with `ASSIGN` using `identified`
+
+## rpr_trb
+Description: Executes the rpr_trb operation.
+Preconditions:
+- requires `fault_status` to equal `identified`
+Options:
+- `--output`: Write output to a file.
+- `--version`: Show version information and exit.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `turbine_health` with `ASSIGN` using `restored`
+
+## vfy_trb
+Description: Executes the vfy_trb operation.
+Preconditions:
+- requires `turbine_health` to equal `restored`
+Options:
+- none
+Effects:
+- no state change documented
+
+## ovr_plt
+Description: Executes the ovr_plt operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `quality_score` with `INCREMENT`
+
+## ext_vlv
+Description: Executes the ext_vlv operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--simulate`: Run in simulation mode.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `quality_score` with `INCREMENT`
+
+## bps_asm
+Description: Executes the bps_asm operation.
+Preconditions:
+- none
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--quiet`: Suppress non-essential output.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `quality_score` with `INCREMENT`
+
+## srt_rm
+Description: Executes the srt_rm operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--help`: Show help information and exit.
+- `--output`: Write output to a file.
+Effects:
+- updates `cycle_time` with `INCREMENT`
+
+## rec_mch
+Description: Executes the rec_mch operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+Effects:
+- updates `quality_score` with `INCREMENT`
+
+## ovr_gen
+Description: Executes the ovr_gen operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--retry`: Retry the operation on failure.
+- `--help`: Show help information and exit.
+Effects:
+- updates `quality_score` with `INCREMENT`
+
+--- End of documentation for MAN-MATERIAL-348 ---
+

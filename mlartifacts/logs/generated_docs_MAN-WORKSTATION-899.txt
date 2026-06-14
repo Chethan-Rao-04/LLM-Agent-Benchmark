@@ -1,0 +1,91 @@
+--- Documentation for MAN-WORKSTATION-899 (CLEAN) ---
+# Tool Documentation: MAN-WORKSTATION-899
+
+Domain: MANUFACTURING
+Description: override the virtualized alarm configuration.
+
+Supported Commands:
+
+## run_pts
+Description: Executes the run_pts operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `cycle_time` with `ASSIGN` using `completed`
+
+## rst_kln
+Description: Executes the rst_kln operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+- `--interactive`: Prompt for confirmations interactively.
+- `--timeout`: Set a timeout for the operation.
+- `--quiet`: Suppress non-essential output.
+- `--output`: Write output to a file.
+Effects:
+- updates `component_id` with `INCREMENT`
+
+## clp_que
+Description: Executes the clp_que operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--version`: Show version information and exit.
+- `--timeout`: Set a timeout for the operation.
+- `--help`: Show help information and exit.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `component_id` with `INCREMENT`
+
+## clp_ctrl
+Description: Executes the clp_ctrl operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--verbose`: Enable verbose logging/output.
+- `--force`: Force the operation even if warnings are present.
+- `--output`: Write output to a file.
+Effects:
+- updates `error_count` with `ASSIGN` using `1`
+
+## ext_gnt
+Description: Executes the ext_gnt operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `component_id` with `ASSIGN` using `8`
+
+## ld_cmp
+Description: Executes the ld_cmp operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--timeout`: Set a timeout for the operation.
+- `--dry-run`: Simulate execution without making changes.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `component_id` with `ASSIGN` using `8`
+
+## run_unt
+Description: Executes the run_unt operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--version`: Show version information and exit.
+- `--verbose`: Enable verbose logging/output.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `cycle_time` with `ASSIGN` using `queued`
+
+--- End of documentation for MAN-WORKSTATION-899 ---
+

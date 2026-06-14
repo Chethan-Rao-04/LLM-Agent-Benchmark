@@ -1,0 +1,28 @@
+--- Documentation for MAN-LINE-612 (INCOMPLETE) ---
+# Tool Documentation: MAN-LINE-612
+Description: pause the redundant raw-material configuration.
+
+Command: tgl_gnt
+Description: Executes the tgl_gnt operation.
+Warning: this command may change internal state.
+
+Command: run_inv
+Description: Executes the run_inv operation.
+
+Command: aln_mld
+Description: Executes the aln_mld operation.
+Warning: this command may change internal state.
+
+Command: sel_opr_n
+Description: Executes the sel_opr_n operation.
+Warning: this command may change internal state.
+
+Command: dsb_bld
+Description: Executes the dsb_bld operation.
+
+Command: prg_jig
+Description: Executes the prg_jig operation.
+Warning: this command may change internal state.
+
+
+

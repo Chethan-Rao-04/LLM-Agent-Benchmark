@@ -1,0 +1,68 @@
+--- Documentation for MAN-FIXTURE-791 (CLEAN) ---
+# Tool Documentation: MAN-FIXTURE-791
+
+Domain: MANUFACTURING
+Description: Manages diagnose repair verify operations.
+
+Supported Commands:
+
+## diag_trb
+Description: Executes the diag_trb operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `fault_status` with `ASSIGN` using `identified`
+
+## rpr_trb
+Description: Executes the rpr_trb operation.
+Preconditions:
+- requires `fault_status` to equal `identified`
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--output`: Write output to a file.
+Effects:
+- updates `turbine_health` with `ASSIGN` using `restored`
+
+## vfy_trb
+Description: Executes the vfy_trb operation.
+Preconditions:
+- requires `turbine_health` to equal `restored`
+Options:
+- `--timeout`: Set a timeout for the operation.
+- `--version`: Show version information and exit.
+Effects:
+- no state change documented
+
+## uld_alm
+Description: Executes the uld_alm operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+Effects:
+- no state change documented
+
+## msr_gnt
+Description: Executes the msr_gnt operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+## cal_fix
+Description: Executes the cal_fix operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--retry`: Retry the operation on failure.
+Effects:
+- no state change documented
+
+--- End of documentation for MAN-FIXTURE-791 ---
+

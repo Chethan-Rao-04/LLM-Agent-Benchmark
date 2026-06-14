@@ -1,0 +1,24 @@
+--- Documentation for MAN-ASSEMBLY-508 (INCOMPLETE) ---
+# Tool Documentation: MAN-ASSEMBLY-508
+Description: lubricate the upstream material configuration.
+
+Command: rec_nzl
+Description: Executes the rec_nzl operation.
+Warning: this command may change internal state.
+
+Command: ini_eng
+Description: Executes the ini_eng operation.
+
+Command: set_mch
+Description: Executes the set_mch operation.
+Warning: this command may change internal state.
+
+Command: tgl_mtl
+Description: Executes the tgl_mtl operation.
+Warning: this command may change internal state.
+
+Command: rec_eng
+Description: Executes the rec_eng operation.
+
+
+

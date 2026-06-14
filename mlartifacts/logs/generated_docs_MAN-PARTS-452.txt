@@ -1,0 +1,84 @@
+--- Documentation for MAN-PARTS-452 (CLEAN) ---
+# Tool Documentation: MAN-PARTS-452
+
+Domain: MANUFACTURING
+Description: operate the redundant chassis configuration.
+
+Supported Commands:
+
+## unset_gen
+Description: Executes the unset_gen operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `vibration` with `ASSIGN` using `9`
+
+## run_hop
+Description: Executes the run_hop operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--help`: Show help information and exit.
+Effects:
+- updates `joint_angle` with `ASSIGN` using `paused`
+
+## shd_opr_n
+Description: Executes the shd_opr_n operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `joint_angle` with `ASSIGN` using `synced`
+
+## tgl_sns
+Description: Executes the tgl_sns operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--timeout`: Set a timeout for the operation.
+- `--dry-run`: Simulate execution without making changes.
+- `--debug`: Enable debug output.
+Effects:
+- updates `joint_angle` with `ASSIGN` using `synced`
+
+## bps_eng
+Description: Executes the bps_eng operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--interactive`: Prompt for confirmations interactively.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `duration` with `INCREMENT`
+
+## lub_mld
+Description: Executes the lub_mld operation.
+Preconditions:
+- none
+Options:
+- `--debug`: Enable debug output.
+- `--version`: Show version information and exit.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--help`: Show help information and exit.
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `temperature` with `INCREMENT`
+
+## clp_ctrl
+Description: Executes the clp_ctrl operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--debug`: Enable debug output.
+Effects:
+- updates `temperature` with `INCREMENT`
+
+--- End of documentation for MAN-PARTS-452 ---
+

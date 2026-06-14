@@ -1,0 +1,28 @@
+--- Documentation for MAN-GENERATOR-429 (INCOMPLETE) ---
+# Tool Documentation: MAN-GENERATOR-429
+Description: verify the virtualized schedule configuration.
+
+Command: ovr_cmp
+Description: Executes the ovr_cmp operation.
+Warning: this command may change internal state.
+
+Command: cal_cnv
+Description: Executes the cal_cnv operation.
+
+Command: srt_ctrl
+Description: Executes the srt_ctrl operation.
+Warning: this command may change internal state.
+
+Command: set_fix
+Description: Executes the set_fix operation.
+Warning: this command may change internal state.
+
+Command: tgl_rm
+Description: Executes the tgl_rm operation.
+
+Command: clp_que
+Description: Executes the clp_que operation.
+Warning: this command may change internal state.
+
+
+

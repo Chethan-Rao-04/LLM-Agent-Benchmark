@@ -1,0 +1,78 @@
+--- Documentation for MAN-LINE-765 (CLEAN) ---
+# Tool Documentation: MAN-LINE-765
+
+Domain: MANUFACTURING
+Description: Manages init configure execute operations.
+
+Supported Commands:
+
+## ini_sys
+Description: Executes the ini_sys operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `system_status` with `ASSIGN` using `RUNNING`
+
+## enb_si
+Description: Executes the enb_si operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+Options:
+- none
+Effects:
+- updates `safety_interlock` with `ASSIGN` using `active`
+
+## isp_vlv
+Description: Executes the isp_vlv operation.
+Preconditions:
+- requires `system_status` to equal `RUNNING`
+- requires `safety_interlock` to equal `active`
+Options:
+- `--debug`: Enable debug output.
+- `--output`: Write output to a file.
+Effects:
+- no state change documented
+
+## lub_gen
+Description: Executes the lub_gen operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- no state change documented
+
+## opr_nzl
+Description: Executes the opr_nzl operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--simulate`: Run in simulation mode.
+Effects:
+- no state change documented
+
+## dsb_act
+Description: Executes the dsb_act operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- no state change documented
+
+## zero-out_bld
+Description: Executes the zero-out_bld operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- no state change documented
+
+--- End of documentation for MAN-LINE-765 ---
+

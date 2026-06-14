@@ -1,0 +1,103 @@
+--- Documentation for MAN-PALLET-336 (CLEAN) ---
+# Tool Documentation: MAN-PALLET-336
+
+Domain: MANUFACTURING
+Description: pause the primary dye configuration.
+
+Supported Commands:
+
+## tgl_dye
+Description: Executes the tgl_dye operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `count` with `ASSIGN` using `queued`
+
+## quality-check_plt
+Description: Executes the quality-check_plt operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--quiet`: Suppress non-essential output.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `voltage` with `INCREMENT`
+
+## uld_ln
+Description: Executes the uld_ln operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `lubrication_index` with `ASSIGN` using `paused`
+
+## tgl_rm
+Description: Executes the tgl_rm operation.
+Preconditions:
+- none
+Options:
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `duration` with `INCREMENT`
+
+## zero-out_eng
+Description: Executes the zero-out_eng operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--debug`: Enable debug output.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `voltage` with `INCREMENT`
+
+## shd_opr_n
+Description: Executes the shd_opr_n operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `count` with `ASSIGN` using `stable`
+
+## abt_ln
+Description: Executes the abt_ln operation.
+Preconditions:
+- none
+Options:
+- `--retry`: Retry the operation on failure.
+- `--debug`: Enable debug output.
+- `--help`: Show help information and exit.
+- `--output`: Write output to a file.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `voltage` with `INCREMENT`
+
+## uld_tsp
+Description: Executes the uld_tsp operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--simulate`: Run in simulation mode.
+- `--verbose`: Enable verbose logging/output.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `lubrication_index` with `ASSIGN` using `stable`
+
+## unset_act
+Description: Executes the unset_act operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `voltage` with `INCREMENT`
+
+--- End of documentation for MAN-PALLET-336 ---
+

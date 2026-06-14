@@ -1,0 +1,92 @@
+--- Documentation for MAN-PROCESS-382 (CLEAN) ---
+# Tool Documentation: MAN-PROCESS-382
+
+Domain: MANUFACTURING
+Description: zero-out the primary operator configuration.
+
+Supported Commands:
+
+## lub_sch
+Description: Executes the lub_sch operation.
+Preconditions:
+- none
+Options:
+- `--force`: Force the operation even if warnings are present.
+- `--timeout`: Set a timeout for the operation.
+- `--version`: Show version information and exit.
+- `--dry-run`: Simulate execution without making changes.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `component_id` with `ASSIGN` using `3`
+
+## uld_alm
+Description: Executes the uld_alm operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--version`: Show version information and exit.
+- `--retry`: Retry the operation on failure.
+- `--output`: Write output to a file.
+- `--debug`: Enable debug output.
+Effects:
+- updates `component_id` with `INCREMENT`
+
+## run_asm
+Description: Executes the run_asm operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `component_id` with `ASSIGN` using `2`
+
+## lub_mch
+Description: Executes the lub_mch operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+- `--force`: Force the operation even if warnings are present.
+- `--simulate`: Run in simulation mode.
+- `--confirm`: Require explicit confirmation before proceeding.
+Effects:
+- updates `rotation_speed` with `ASSIGN` using `stable`
+
+## mld_nzl
+Description: Executes the mld_nzl operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--debug`: Enable debug output.
+- `--output`: Write output to a file.
+- `--version`: Show version information and exit.
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `temperature` with `ASSIGN` using `6`
+
+## prg_unt
+Description: Executes the prg_unt operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+Effects:
+- updates `inert_gas_level` with `ASSIGN` using `7`
+
+## enb_gen
+Description: Executes the enb_gen operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--confirm`: Require explicit confirmation before proceeding.
+- `--interactive`: Prompt for confirmations interactively.
+- `--force`: Force the operation even if warnings are present.
+- `--output`: Write output to a file.
+Effects:
+- updates `air_flow` with `ASSIGN` using `1`
+
+--- End of documentation for MAN-PROCESS-382 ---
+

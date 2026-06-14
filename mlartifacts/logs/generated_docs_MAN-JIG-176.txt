@@ -1,0 +1,84 @@
+--- Documentation for MAN-JIG-176 (CLEAN) ---
+# Tool Documentation: MAN-JIG-176
+
+Domain: MANUFACTURING
+Description: Manages diagnose repair verify operations for manufacturing domain.
+
+Supported Commands:
+
+## diag_vlv
+Description: Executes the diag_vlv operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `fault_status` with `ASSIGN` using `identified`
+
+## rpr_vlv
+Description: Executes the rpr_vlv operation.
+Preconditions:
+- requires `fault_status` to equal `identified`
+Options:
+- `--quiet`: Suppress non-essential output.
+Effects:
+- updates `valve_health` with `ASSIGN` using `restored`
+
+## vfy_vlv
+Description: Executes the vfy_vlv operation.
+Preconditions:
+- requires `valve_health` to equal `restored`
+Options:
+- `--quiet`: Suppress non-essential output.
+Effects:
+- no state change documented
+
+## opr_dye
+Description: Executes the opr_dye operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `noise_level` with `INCREMENT`
+
+## zero-out_mld
+Description: Executes the zero-out_mld operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+- `--timeout`: Set a timeout for the operation.
+- `--retry`: Retry the operation on failure.
+Effects:
+- updates `temperature` with `INCREMENT`
+
+## bps_jig
+Description: Executes the bps_jig operation.
+Preconditions:
+- none
+Options:
+- `--help`: Show help information and exit.
+Effects:
+- updates `temperature` with `INCREMENT`
+
+## prg_cmp
+Description: Executes the prg_cmp operation.
+Preconditions:
+- none
+Options:
+- `--verbose`: Enable verbose logging/output.
+Effects:
+- updates `noise_level` with `INCREMENT`
+
+## exe_wks
+Description: Executes the exe_wks operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+Effects:
+- updates `noise_level` with `INCREMENT`
+
+--- End of documentation for MAN-JIG-176 ---
+

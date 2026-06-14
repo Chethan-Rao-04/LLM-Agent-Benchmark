@@ -1,0 +1,21 @@
+--- Documentation for MAN-ALARM-834 (INCOMPLETE) ---
+# Tool Documentation: MAN-ALARM-834
+Description: Manages diagnose repair verify operations.
+
+Command: rpr_vlv
+Description: Executes the rpr_vlv operation.
+Warning: this command may change internal state.
+
+Command: vfy_vlv
+Description: Executes the vfy_vlv operation.
+
+Command: opr_spd
+Description: Executes the opr_spd operation.
+Warning: this command may change internal state.
+
+Command: abt_eng
+Description: Executes the abt_eng operation.
+Warning: this command may change internal state.
+
+
+

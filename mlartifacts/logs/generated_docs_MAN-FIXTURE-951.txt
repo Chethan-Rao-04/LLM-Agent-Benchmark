@@ -1,0 +1,100 @@
+--- Documentation for MAN-FIXTURE-951 (GIBBERISH_NOISE) ---
+NOISY DOC 77a
+# Tool Documentation: MAN-FIXTURE-951
+
+Domain: MANUFACTURING
+Description: enable the legacy toolSpec configuration. xad12 noise qqq 441
+
+Supported Commands:
+ xad12 noise qqq 441
+## vfy_mch
+Description: Executes the vfy_mch operation.
+Preconditions: xad12 noise qqq 441
+- none
+Options:
+- `--verbose`: Enable verbose logging/output. xad12 noise qqq 441
+- `--dry-run`: Simulate execution without making changes.
+- `--simulate`: Run in simulation mode.
+- `--timeout`: Set a timeout for the operation. xad12 noise qqq 441
+Effects:
+- updates `efficiency` with `ASSIGN` using `completed`
+ xad12 noise qqq 441
+## quality-check_ctrl
+Description: Executes the quality-check_ctrl operation.
+Preconditions: xad12 noise qqq 441
+- none
+Options:
+- none xad12 noise qqq 441
+Effects:
+- updates `efficiency` with `ASSIGN` using `paused`
+ xad12 noise qqq 441
+## package_asm
+Description: Executes the package_asm operation.
+Preconditions: xad12 noise qqq 441
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes. xad12 noise qqq 441
+Effects:
+- updates `efficiency` with `ASSIGN` using `queued`
+ xad12 noise qqq 441
+## exe_pts
+Description: Executes the exe_pts operation.
+Preconditions: xad12 noise qqq 441
+- none
+Options:
+- `--simulate`: Run in simulation mode. xad12 noise qqq 441
+Effects:
+- updates `psi_reading` with `ASSIGN` using `8`
+ xad12 noise qqq 441
+## clp_gen
+Description: Executes the clp_gen operation.
+Preconditions: xad12 noise qqq 441
+- none
+Options:
+- `--timeout`: Set a timeout for the operation. xad12 noise qqq 441
+- `--version`: Show version information and exit.
+- `--force`: Force the operation even if warnings are present.
+Effects: xad12 noise qqq 441
+- updates `power` with `INCREMENT`
+
+## uld_ctrl xad12 noise qqq 441
+Description: Executes the uld_ctrl operation.
+Preconditions:
+- none xad12 noise qqq 441
+Options:
+- none
+Effects: xad12 noise qqq 441
+- updates `psi_reading` with `INCREMENT`
+
+## lub_gnt xad12 noise qqq 441
+Description: Executes the lub_gnt operation.
+Preconditions:
+- none xad12 noise qqq 441
+Options:
+- `--help`: Show help information and exit.
+- `--quiet`: Suppress non-essential output. xad12 noise qqq 441
+Effects:
+- updates `output_yield` with `ASSIGN` using `synced`
+ xad12 noise qqq 441
+## wring_opr_n
+Description: Executes the wring_opr_n operation.
+Preconditions: xad12 noise qqq 441
+- none
+Options:
+- none xad12 noise qqq 441
+Effects:
+- updates `output_yield` with `ASSIGN` using `queued`
+ xad12 noise qqq 441
+## uld_rm
+Description: Executes the uld_rm operation.
+Preconditions: xad12 noise qqq 441
+- none
+Options:
+- `--simulate`: Run in simulation mode. xad12 noise qqq 441
+- `--verbose`: Enable verbose logging/output.
+- `--help`: Show help information and exit.
+Effects: xad12 noise qqq 441
+- updates `efficiency` with `ASSIGN` using `completed`
+
+--- End of documentation for MAN-FIXTURE-951 --- xad12 noise qqq 441
+

@@ -1,0 +1,98 @@
+--- Documentation for MAN-CHASSIS-709 (CLEAN) ---
+# Tool Documentation: MAN-CHASSIS-709
+
+Domain: MANUFACTURING
+Description: mold the virtualized kiln configuration.
+
+Supported Commands:
+
+## quality-check_kln
+Description: Executes the quality-check_kln operation.
+Preconditions:
+- none
+Options:
+- `--output`: Write output to a file.
+- `--dry-run`: Simulate execution without making changes.
+- `--force`: Force the operation even if warnings are present.
+- `--timeout`: Set a timeout for the operation.
+Effects:
+- updates `rate` with `ASSIGN` using `queued`
+
+## abt_gnt
+Description: Executes the abt_gnt operation.
+Preconditions:
+- none
+Options:
+- none
+Effects:
+- updates `rate` with `ASSIGN` using `queued`
+
+## dsb_pts
+Description: Executes the dsb_pts operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--help`: Show help information and exit.
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `threshold` with `INCREMENT`
+
+## isp_chs
+Description: Executes the isp_chs operation.
+Preconditions:
+- none
+Options:
+- `--interactive`: Prompt for confirmations interactively.
+Effects:
+- updates `rate` with `ASSIGN` using `completed`
+
+## rst_plt
+Description: Executes the rst_plt operation.
+Preconditions:
+- none
+Options:
+- `--simulate`: Run in simulation mode.
+- `--force`: Force the operation even if warnings are present.
+Effects:
+- updates `threshold` with `ASSIGN` using `3`
+
+## vfy_sch
+Description: Executes the vfy_sch operation.
+Preconditions:
+- none
+Options:
+- `--quiet`: Suppress non-essential output.
+- `--interactive`: Prompt for confirmations interactively.
+- `--dry-run`: Simulate execution without making changes.
+Effects:
+- updates `threshold` with `INCREMENT`
+
+## rbt_rm
+Description: Executes the rbt_rm operation.
+Preconditions:
+- none
+Options:
+- `--version`: Show version information and exit.
+- `--retry`: Retry the operation on failure.
+- `--timeout`: Set a timeout for the operation.
+- `--force`: Force the operation even if warnings are present.
+- `--simulate`: Run in simulation mode.
+Effects:
+- updates `status` with `ASSIGN` using `7`
+
+## tgl_sch
+Description: Executes the tgl_sch operation.
+Preconditions:
+- none
+Options:
+- `--dry-run`: Simulate execution without making changes.
+- `--interactive`: Prompt for confirmations interactively.
+- `--retry`: Retry the operation on failure.
+- `--version`: Show version information and exit.
+- `--help`: Show help information and exit.
+Effects:
+- updates `rate` with `ASSIGN` using `paused`
+
+--- End of documentation for MAN-CHASSIS-709 ---
+
