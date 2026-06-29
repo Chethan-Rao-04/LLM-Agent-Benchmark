@@ -3,7 +3,6 @@ package org.benchmark.gen.tool_generator;
 import org.benchmark.model.enums.Domain;
 import org.benchmark.model.objects.OptionEntity;
 
-import java.util.Arrays;
 import java.util.Random;
 import java.util.List;
 
@@ -26,14 +25,7 @@ public class CommandDict {
         this.random = random;
     }
 
-    public static final List<Domain> DOMAINS = List.of(
-            Domain.MANUFACTURING, Domain.NETWORK_INFRA
-    );
-
-    // --------------------------------------------------------------------------------------
-    // Manufacturing
-
-    public static final List<String> VERBS_MAN = Arrays.asList(
+    private static final List<String> VERBS_MAN = List.of(
             "start", "stop", "execute", "pause", "resume", "shutdown", "restart",
             "abort", "reboot", "calibrate", "measure", "inspect", "run",
             "load", "unload", "operate", "set", "unset", "align", "bypass",
@@ -42,7 +34,7 @@ public class CommandDict {
             "verify", "weld", "zero-out", "torque", "wring", "extrude", "mold"
     );
 
-    public static final List<String> NOUNS_MAN = Arrays.asList(
+    private static final List<String> NOUNS_MAN = List.of(
             "alarm", "process", "sensor", "batch", "parts", "build", "schedule",
             "line", "material", "machine", "toolSpec", "unit", "controller",
             "actuator", "conveyor", "dye", "engine", "fixture", "gantry",
@@ -51,7 +43,7 @@ public class CommandDict {
             "chassis", "workstation", "compressor", "generator", "turbine"
     );
 
-    public static final List<String> STATE_VARS_MAN = Arrays.asList(
+    private static final List<String> STATE_VARS_MAN = List.of(
             "status", "temperature", "pressure", "speed", "voltage", "current",
             "duration", "component_id", "threshold", "count", "rate", "position",
             "level", "power", "error_count", "air_flow", "battery_level",
@@ -61,10 +53,7 @@ public class CommandDict {
             "wear_level", "lubrication_index", "coolant_temp", "psi_reading"
     );
 
-    // --------------------------------------------------------------------------------------
-    // Network Infra
-
-    public static final List<String> VERBS_NET = Arrays.asList(
+    private static final List<String> VERBS_NET = List.of(
             "route", "switch", "bridge", "watch", "trace", "capture",
             "allow", "deny", "block", "save", "load", "update", "setup",
             "ping", "connect", "disconnect", "authenticate", "broadcast",
@@ -74,7 +63,7 @@ public class CommandDict {
             "advertise", "peer", "inspect"
     );
 
-    public static final List<String> NOUNS_NET = Arrays.asList(
+    private static final List<String> NOUNS_NET = List.of(
             "device", "module", "channel", "config", "interface", "network",
             "node", "router", "repeater", "location", "firewall", "packet", "port", "service",
             "access-point", "backbone", "bridge", "client", "datagram", "ethernet",
@@ -83,7 +72,7 @@ public class CommandDict {
             "vlan", "subnet", "switchport", "trunk", "uplink", "downlink"
     );
 
-    public static final List<String> STATE_VARS_NET = Arrays.asList(
+    private static final List<String> STATE_VARS_NET = List.of(
             "latency", "throughput", "status_code", "ip_address", "subnet_mask",
             "gateway", "port_no", "mac_address", "interface_name", "bandwidth",
             "packet_loss", "protocol_type", "session_id", "dns_server", "vlan_id", "route_metric",
@@ -93,37 +82,8 @@ public class CommandDict {
             "connection_count", "drop_rate", "latency_jitter", "power_level"
     );
 
-    // --------------------------------------------------------------------------------------
-    // Capability flags — boolean-style state vars that make sense with enabled/disabled
-
-    public static final List<String> CAPABILITY_VARS_MAN = Arrays.asList(
-            "safety_interlock", "auto_lubrication", "thermal_protection",
-            "vibration_damping", "emergency_stop_override", "precision_mode"
-    );
-
-    public static final List<String> CAPABILITY_VARS_NET = Arrays.asList(
-            "encryption", "firewall", "load_balancing",
-            "redundancy", "traffic_shaping", "authentication"
-    );
-
-    /**
-     * Returns a random capability variable for the given domain.
-     * These are boolean-style flags suitable for enabled/disabled semantics.
-     */
-    public String getRandomCapabilityVariable(Domain domain) {
-        return switch (domain) {
-            case MANUFACTURING -> pickOne(CAPABILITY_VARS_MAN);
-            case NETWORK_INFRA -> pickOne(CAPABILITY_VARS_NET);
-        };
-    }
-
-    // --------------------------------------------------------------------------------------
-    // Common Options
-
-    public static final List<String> COMMON_OPTS = Arrays.asList(
-            "help", "version", "verbose", "quiet",
-            "debug", "dry-run", "simulate", "output", "timeout", "retry", "interactive",
-            "confirm", "force"
+    private static final List<String> COMMON_OPTS = List.of(
+            "verbose", "quiet", "debug", "confirm", "force"
     );
 
 
@@ -168,54 +128,27 @@ public class CommandDict {
     }
 
 
-    // --------------------------------------------------------------------------------------
-    // OPTIONS
-
     /**
-     * Returns a random common option specification.
+     * Returns a random common option specification with explicit requiredness.
      *
+     * @param required whether the generated option should be required at runtime
      * @return random option spec
      */
-    public OptionEntity getRandomCommonOptionSpec() {
+    public OptionEntity getRandomCommonOptionSpec(boolean required) {
         String optionNameFromDict = pickOne(COMMON_OPTS);
-        return new OptionEntity("--" + optionNameFromDict, getCommonFlagDescription(optionNameFromDict));
-    }
-
-    /**
-     * Converts an option specification into a natural-language hint.
-     *
-     * @param optionSpec option to describe
-     * @return hint text, or {@code null} when option is missing/empty
-     */
-    public static String hintFromOptionSpec(OptionEntity optionSpec) {
-        if (optionSpec == null || optionSpec.description() == null) {
-            return null;
-        }
-        String desc = optionSpec.description().trim();
-        return desc.isEmpty() ? null : desc;
+        return new OptionEntity("--" + optionNameFromDict, getCommonFlagDescription(optionNameFromDict), required);
     }
 
     private static String getCommonFlagDescription(String optionNameFromDict) {
         return switch (optionNameFromDict) {
-            case "help" -> "Show help information and exit.";
-            case "version" -> "Show version information and exit.";
-            case "verbose" -> "Enable verbose logging/output.";
-            case "quiet" -> "Suppress non-essential output.";
-            case "debug" -> "Enable debug output.";
-            case "dry-run" -> "Simulate execution without making changes.";
-            case "simulate" -> "Run in simulation mode.";
-            case "output" -> "Write output to a file.";
-            case "timeout" -> "Set a timeout for the operation.";
-            case "retry" -> "Retry the operation on failure.";
-            case "interactive" -> "Prompt for confirmations interactively.";
-            case "confirm" -> "Require explicit confirmation before proceeding.";
-            case "force" -> "Force the operation even if warnings are present.";
+            case "verbose" -> "Execute with detailed status output.";
+            case "quiet" -> "Execute with minimal status output.";
+            case "debug" -> "Execute with diagnostic status output.";
+            case "confirm" -> "Confirm that the command should be applied.";
+            case "force" -> "Apply the command using the force execution mode.";
             default -> "Enable " + optionNameFromDict + " mode.";
         };
     }
-
-    // --------------------------------------------------------------------------------------
-    // STATE
 
     /**
      * Returns a random state variable name for the given domain.

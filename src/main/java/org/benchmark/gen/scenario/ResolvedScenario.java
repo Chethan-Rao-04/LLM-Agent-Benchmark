@@ -23,6 +23,9 @@ public record ResolvedScenario(
         Map<String, String> cumulativeExpectedState,
         Map<String, String> resolvedPoolValues
 ) {
+    /**
+     * Freezes the resolved scenario payload so later generators and scorers work from immutable state.
+     */
     public ResolvedScenario {
         steps = List.copyOf(steps);
         cumulativeExpectedState = Map.copyOf(cumulativeExpectedState);

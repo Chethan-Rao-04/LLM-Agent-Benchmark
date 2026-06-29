@@ -19,9 +19,8 @@ public class BenchmarkProperties {
 
     private int iterations;
     private int distractorCount;
-    private int maxRetries;
-    private int maxExecutionsPerAttempt = 8;
-    private int maxHistoryChars = 2000;
+    private int maxExecutionSteps;
+    private int maxExecutionsPerAttempt = 1;
     private int maxRepeatedCommandFailuresPerAttempt = 1;
     private double temperature;
     private int timeoutSeconds;
@@ -30,7 +29,6 @@ public class BenchmarkProperties {
     private DocumentComplexity documentComplexity = DocumentComplexity.CLEAN;
     private boolean trapCommand = false;
     private final LlmProperties llm = new LlmProperties();
-    private final LangfuseProperties langfuse = new LangfuseProperties();
     private final PromptProperties prompt = new PromptProperties();
 
     /**
@@ -46,24 +44,12 @@ public class BenchmarkProperties {
     }
 
     /**
-     * Langfuse connection settings used for tracing and benchmark scores.
-     */
-    @Getter
-    @Setter
-    public static class LangfuseProperties {
-        private boolean enabled;
-        private boolean createScores = true;
-        private String baseUrl;
-        private String publicKey;
-        private String secretKey;
-    }
-
-    /**
      * Prompt templates used during benchmark execution.
      */
     @Getter
     @Setter
     public static class PromptProperties {
         private String baseSystemPrompt;
+        private String attemptGuardrails;
     }
 }

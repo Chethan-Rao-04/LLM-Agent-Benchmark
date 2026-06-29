@@ -16,6 +16,9 @@ public record ScenarioStep(
         Map<String, String> precondition,
         Map<String, String> effect
 ) {
+    /**
+     * Normalizes optional precondition and effect maps into immutable empty maps when absent.
+     */
     public ScenarioStep {
         precondition = precondition == null ? Map.of() : Map.copyOf(precondition);
         effect = effect == null ? Map.of() : Map.copyOf(effect);

@@ -5,6 +5,12 @@ package org.benchmark.llm;
  */
 public class LlmToolCallbackException extends LlmClientException {
 
+    /**
+     * Creates an exception for tool-callback mismatches surfaced by Spring AI.
+     *
+     * @param message failure summary for benchmark retry logic
+     * @param cause underlying callback resolution exception
+     */
     public LlmToolCallbackException(String message, Throwable cause) {
         super(message, cause);
     }

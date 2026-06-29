@@ -21,6 +21,11 @@ public class ScenarioResolver {
 
     private final Random random;
 
+    /**
+     * Creates the resolver that picks concrete pool values for each scenario variable.
+     *
+     * @param random shared random source
+     */
     public ScenarioResolver(Random random) {
         this.random = random;
     }

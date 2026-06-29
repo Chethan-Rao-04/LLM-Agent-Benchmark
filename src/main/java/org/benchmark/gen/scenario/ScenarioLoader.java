@@ -16,14 +16,27 @@ public class ScenarioLoader {
 
     private final List<ScenarioPattern> patterns;
 
+    /**
+     * Loads scenario patterns from the default classpath resource.
+     */
     public ScenarioLoader() {
         this("scenarios.yaml");
     }
 
+    /**
+     * Loads scenario patterns from a specific classpath resource.
+     *
+     * @param resourcePath classpath-relative scenario file path
+     */
     public ScenarioLoader(String resourcePath) {
         this.patterns = load(resourcePath);
     }
 
+    /**
+     * Returns the validated scenario templates available to the generator pipeline.
+     *
+     * @return immutable list of scenario patterns
+     */
     public List<ScenarioPattern> getPatterns() {
         return patterns;
     }

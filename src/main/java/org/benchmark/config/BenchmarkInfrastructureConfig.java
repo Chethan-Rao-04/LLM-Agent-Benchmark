@@ -1,14 +1,21 @@
 package org.benchmark.config;
 
+import io.micrometer.observation.ObservationRegistry;
+import org.benchmark.llm.BenchmarkGuardrailPromptAdvisor;
+import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.model.NoopApiKey;
 import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.ai.openai.api.OpenAiApi;
+import org.springframework.ai.retry.TransientAiException;
 import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
+import org.springframework.retry.support.RetryTemplate;
+import org.springframework.retry.support.RetryTemplateBuilder;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
@@ -20,9 +27,17 @@ import java.net.http.HttpClient;
 
 /**
  * Spring-managed infrastructure shared across benchmark execution.
+ *
+ * <p>This configuration owns the boundary to the OpenAI-compatible endpoint so the rest
+ * of the codebase can depend on stable Spring AI abstractions instead of transport details.</p>
  */
 @Configuration
 public class BenchmarkInfrastructureConfig {
+
+    @Bean
+    public ObservationRegistry observationRegistry() {
+        return ObservationRegistry.create();
+    }
 
     /**
      * Creates the shared chat model used by the benchmark runner.
@@ -32,10 +47,11 @@ public class BenchmarkInfrastructureConfig {
      * OpenAI-compatible endpoint and optional Basic Auth wiring.</p>
      *
      * @param properties benchmark configuration properties
+     * @param retryTemplate retry policy applied to transient model failures
      * @return configured chat model
      */
     @Bean
-    public ChatModel chatModel(BenchmarkProperties properties) {
+    public ChatModel chatModel(BenchmarkProperties properties, RetryTemplate retryTemplate) {
         MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
         if (hasBasicAuth(properties)) {
             headers.add(HttpHeaders.AUTHORIZATION, basicAuthHeaderValue(properties));
@@ -59,6 +75,55 @@ public class BenchmarkInfrastructureConfig {
         return OpenAiChatModel.builder()
                 .openAiApi(api)
                 .defaultOptions(defaultOptions)
+                .retryTemplate(retryTemplate)
+                .build();
+    }
+
+    /**
+     * Builds the retry policy used for transient Spring AI transport failures.
+     *
+     * @param maxAttempts maximum number of attempts before surfacing the failure
+     * @param initialInterval initial retry delay in milliseconds
+     * @param multiplier exponential backoff multiplier
+     * @param maxInterval upper bound for retry delay in milliseconds
+     * @return retry template shared by the chat model
+     */
+    @Bean
+    public RetryTemplate retryTemplate(
+            @Value("${spring.ai.retry.max-attempts:5}") int maxAttempts,
+            @Value("${spring.ai.retry.backoff.initial-interval:2000}") long initialInterval,
+            @Value("${spring.ai.retry.backoff.multiplier:2.0}") double multiplier,
+            @Value("${spring.ai.retry.backoff.max-interval:10000}") long maxInterval) {
+        return new RetryTemplateBuilder()
+                .maxAttempts(maxAttempts)
+                .exponentialBackoff(initialInterval, multiplier, maxInterval)
+                .retryOn(TransientAiException.class)
+                .build();
+    }
+
+    /**
+     * Creates a reusable {@link ChatClient.Builder} so advisor wiring can be composed explicitly.
+     *
+     * @param chatModel benchmark chat model
+     * @return chat client builder
+     */
+    @Bean
+    public ChatClient.Builder chatClientBuilder(ChatModel chatModel) {
+        return ChatClient.builder(chatModel);
+    }
+
+    /**
+     * Creates the shared chat client with benchmark guardrails attached as a default advisor.
+     *
+     * @param chatClientBuilder base builder for the configured chat model
+     * @param promptAdvisor advisor that appends runtime guardrails to the prompt
+     * @return chat client used by the benchmark LLM wrapper
+     */
+    @Bean
+    public ChatClient chatClient(ChatClient.Builder chatClientBuilder,
+                                 BenchmarkGuardrailPromptAdvisor promptAdvisor) {
+        return chatClientBuilder.clone()
+                .defaultAdvisors(promptAdvisor)
                 .build();
     }
 

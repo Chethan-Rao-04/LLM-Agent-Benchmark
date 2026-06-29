@@ -4,14 +4,12 @@ import org.benchmark.gen.BenchmarkCaseGenerator;
 import org.benchmark.model.objects.ToolObject;
 import org.springframework.stereotype.Component;
 
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 
 /**
  * Stores all mutable benchmark session data in one place.
@@ -34,6 +32,17 @@ public class SessionStateManager {
     public record ExecutionRecord(String toolName, String commandName, String option, boolean success, String message) {
     }
 
+    /**
+     * Captures one command request rejected before simulator execution.
+     *
+     * @param toolName tool requested by the agent
+     * @param commandName command requested by the agent
+     * @param option selected option, or empty when none was used
+     * @param message rejection reason returned to the agent
+     */
+    public record CommandRejectionRecord(String toolName, String commandName, String option, String message) {
+    }
+
     private final Map<String, SessionData> sessions = new ConcurrentHashMap<>();
 
     /**
@@ -46,14 +55,14 @@ public class SessionStateManager {
     public void initializeSession(String sessionId,
                                   BenchmarkCaseGenerator.BenchmarkCase benchmarkCase,
                                   List<ToolObject> tools) {
-        SessionData data = getOrCreateSession(sessionId);
+        SessionData data = sessions.computeIfAbsent(sessionId, ignored -> new SessionData());
         synchronized (data) {
             data.benchmarkCase = benchmarkCase;
             data.environments.clear();
             data.executionLog.clear();
-            data.documentedTools.clear();
-            data.discoveryCalls.set(0);
-            data.attemptStartIndex.set(0);
+            data.commandRejectionLog.clear();
+            data.attemptStartIndex = 0;
+            data.attemptExecutionConsumed = false;
 
             if (tools != null) {
                 for (ToolObject tool : tools) {
@@ -77,12 +86,39 @@ public class SessionStateManager {
     }
 
     /**
+     * Returns the benchmark case for a session and fails fast when the session is missing or incomplete.
+     *
+     * @param sessionId benchmark session identifier
+     * @return benchmark case bound to the session
+     * @throws IllegalArgumentException when the session has not been initialized with a benchmark case
+     */
+    public BenchmarkCaseGenerator.BenchmarkCase requireBenchmarkCase(String sessionId) {
+        SessionData data = requireSessionData(sessionId);
+        synchronized (data) {
+            if (data.benchmarkCase == null) {
+                throw new IllegalArgumentException("Unknown benchmark session: " + sessionId);
+            }
+            return data.benchmarkCase;
+        }
+    }
+
+    /**
      * Appends one execution record to the session log.
      */
     public void recordExecution(String sessionId, ExecutionRecord record) {
-        SessionData data = getOrCreateSession(sessionId);
+        SessionData data = requireSessionData(sessionId);
         synchronized (data) {
             data.executionLog.add(record);
+        }
+    }
+
+    /**
+     * Appends one rejected command request to the session log.
+     */
+    public void recordCommandRejection(String sessionId, CommandRejectionRecord record) {
+        SessionData data = requireSessionData(sessionId);
+        synchronized (data) {
+            data.commandRejectionLog.add(record);
         }
     }
 
@@ -90,22 +126,35 @@ public class SessionStateManager {
      * Marks the beginning of one LLM attempt so per-attempt safeguards can inspect only
      * the executions generated within the current turn.
      */
-    public void startAttempt(String sessionId, int attempt) {
-        SessionData data = getOrCreateSession(sessionId);
+    public void startAttempt(String sessionId) {
+        SessionData data = requireSessionData(sessionId);
         synchronized (data) {
-            data.attemptStartIndex.set(data.executionLog.size());
+            data.attemptStartIndex = data.executionLog.size();
+            data.attemptExecutionConsumed = false;
         }
     }
 
     /**
-     * Returns the executions recorded since the start of the current attempt.
+     * Returns whether the current attempt has already consumed its one real execution.
      */
-    public List<ExecutionRecord> currentAttemptExecutions(String sessionId) {
+    public boolean attemptExecutionConsumed(String sessionId) {
         SessionData data = sessions.get(sessionId);
         if (data == null) {
-            return List.of();
+            return false;
         }
-        return executionLogFromIndex(sessionId, data.attemptStartIndex.get());
+        synchronized (data) {
+            return data.attemptExecutionConsumed;
+        }
+    }
+
+    /**
+     * Marks that the current attempt already reached the simulator once.
+     */
+    public void markAttemptExecutionConsumed(String sessionId) {
+        SessionData data = requireSessionData(sessionId);
+        synchronized (data) {
+            data.attemptExecutionConsumed = true;
+        }
     }
 
     /**
@@ -117,7 +166,7 @@ public class SessionStateManager {
             return 0;
         }
         synchronized (data) {
-            return Math.max(0, data.executionLog.size() - data.attemptStartIndex.get());
+            return Math.max(0, data.executionLog.size() - data.attemptStartIndex);
         }
     }
 
@@ -125,13 +174,19 @@ public class SessionStateManager {
      * Counts how many times the same tool/command/option already failed in the current attempt.
      */
     public long repeatedFailuresInCurrentAttempt(String sessionId, String toolName, String commandName, String option) {
-        String normalizedOption = option == null ? "" : option.trim();
-        return currentAttemptExecutions(sessionId).stream()
-                .filter(record -> !record.success())
-                .filter(record -> record.toolName().equalsIgnoreCase(toolName))
-                .filter(record -> record.commandName().equalsIgnoreCase(commandName))
-                .filter(record -> record.option().equalsIgnoreCase(normalizedOption))
-                .count();
+        SessionData data = sessions.get(sessionId);
+        if (data == null) {
+            return 0;
+        }
+        String normalizedOption = CommandOptionNormalizer.normalize(option);
+        synchronized (data) {
+            return data.executionLog.subList(data.attemptStartIndex, data.executionLog.size()).stream()
+                    .filter(record -> !record.success())
+                    .filter(record -> record.toolName().equalsIgnoreCase(toolName))
+                    .filter(record -> record.commandName().equalsIgnoreCase(commandName))
+                    .filter(record -> record.option().equalsIgnoreCase(normalizedOption))
+                    .count();
+        }
     }
 
     /**
@@ -160,85 +215,68 @@ public class SessionStateManager {
     }
 
     /**
-     * Marks that the agent used discovery or documentation tools in this session.
+     * Returns the command rejection log for a session.
      */
-    public void recordDiscovery(String sessionId) {
-        getOrCreateSession(sessionId).discoveryCalls.incrementAndGet();
-    }
-
-    /**
-     * Records that the agent read the documentation for a specific tool.
-     */
-    public void recordDocumentationRead(String sessionId, String toolName) {
-        SessionData data = getOrCreateSession(sessionId);
-        synchronized (data) {
-            data.documentedTools.add(toolName.toUpperCase());
-        }
-    }
-
-    /**
-     * Returns the set of tool names whose documentation was read in this session.
-     */
-    public Set<String> documentedTools(String sessionId) {
+    public List<CommandRejectionRecord> commandRejectionLog(String sessionId) {
         SessionData data = sessions.get(sessionId);
         if (data == null) {
-            return Set.of();
+            return List.of();
         }
         synchronized (data) {
-            return Set.copyOf(data.documentedTools);
+            return List.copyOf(data.commandRejectionLog);
         }
     }
 
     /**
-     * Returns whether the agent used discovery or documentation tools.
+     * Returns a stable snapshot of rejected command requests from a specific index onward.
      */
-    public boolean discoveryUsed(String sessionId) {
-        return discoveryCount(sessionId) > 0;
-    }
-
-    /**
-     * Returns how many MCP discovery calls were made in this session.
-     */
-    public int discoveryCount(String sessionId) {
-        SessionData data = sessions.get(sessionId);
-        return data == null ? 0 : data.discoveryCalls.get();
-    }
-
-    /**
-     * Returns the environment for one tool in one session.
-     */
-    public ToolEnvironment getEnvironment(String sessionId, String toolName) {
-        SessionData data = sessions.get(sessionId);
-        if (data == null) {
-            return null;
+    public List<CommandRejectionRecord> commandRejectionLogFromIndex(String sessionId, int startIndex) {
+        List<CommandRejectionRecord> snapshot = commandRejectionLog(sessionId);
+        if (snapshot.isEmpty()) {
+            return List.of();
         }
-        synchronized (data) {
-            return data.environments.get(toolName);
-        }
+        int safeStartIndex = Math.max(0, Math.min(startIndex, snapshot.size()));
+        return List.copyOf(snapshot.subList(safeStartIndex, snapshot.size()));
     }
 
     /**
      * Updates one state value inside a tool environment.
      */
     public void updateToolState(String sessionId, String toolName, String variable, String value) {
-        ToolEnvironment environment = getOrCreateEnv(sessionId, toolName);
-        environment.set(variable, value);
+        SessionData data = requireSessionData(sessionId);
+        synchronized (data) {
+            data.environments
+                    .computeIfAbsent(toolName, ignored -> new ToolEnvironment(null))
+                    .set(variable, value);
+        }
     }
 
     /**
      * Reads one state value from a tool environment.
      */
     public String getToolState(String sessionId, String toolName, String variable) {
-        ToolEnvironment environment = getEnvironment(sessionId, toolName);
-        return environment == null ? null : environment.get(variable);
+        SessionData data = sessions.get(sessionId);
+        if (data == null) {
+            return null;
+        }
+        synchronized (data) {
+            ToolEnvironment environment = data.environments.get(toolName);
+            return environment == null ? null : environment.get(variable);
+        }
     }
 
     /**
      * Returns a snapshot of one tool's current state.
      */
     public Map<String, String> getToolStateSnapshot(String sessionId, String toolName) {
-        ToolEnvironment environment = getEnvironment(sessionId, toolName);
-        return environment == null ? Map.of() : environment.snapshot();
+        SessionData data = sessions.get(sessionId);
+        if (data == null) {
+            return Map.of();
+        }
+        synchronized (data) {
+            ToolEnvironment environment = data.environments.get(toolName);
+            return environment == null ? Map.of() : environment.snapshot();
+        }
     }
 
     /**
@@ -273,15 +311,27 @@ public class SessionStateManager {
         sessions.remove(sessionId);
     }
 
-    private ToolEnvironment getOrCreateEnv(String sessionId, String toolName) {
-        SessionData data = getOrCreateSession(sessionId);
+    /**
+     * Executes an action while holding the per-session monitor so multiple reads and writes see consistent state.
+     *
+     * @param sessionId benchmark session identifier
+     * @param action callback to run while the session is locked
+     * @param <T> result type returned by the callback
+     * @return callback result
+     */
+    public <T> T withSessionLock(String sessionId, Supplier<T> action) {
+        SessionData data = requireSessionData(sessionId);
         synchronized (data) {
-            return data.environments.computeIfAbsent(toolName, ignored -> new ToolEnvironment(null));
+            return action.get();
         }
     }
 
-    private SessionData getOrCreateSession(String sessionId) {
-        return sessions.computeIfAbsent(sessionId, ignored -> new SessionData());
+    private SessionData requireSessionData(String sessionId) {
+        SessionData data = sessions.get(sessionId);
+        if (data == null) {
+            throw new IllegalArgumentException("Unknown benchmark session: " + sessionId);
+        }
+        return data;
     }
 
     /**
@@ -291,8 +341,8 @@ public class SessionStateManager {
         private BenchmarkCaseGenerator.BenchmarkCase benchmarkCase;
         private final Map<String, ToolEnvironment> environments = new LinkedHashMap<>();
         private final List<ExecutionRecord> executionLog = new ArrayList<>();
-        private final Set<String> documentedTools = new HashSet<>();
-        private final AtomicInteger discoveryCalls = new AtomicInteger();
-        private final AtomicInteger attemptStartIndex = new AtomicInteger();
+        private final List<CommandRejectionRecord> commandRejectionLog = new ArrayList<>();
+        private int attemptStartIndex;
+        private boolean attemptExecutionConsumed;
     }
 }

@@ -1,6 +1,3 @@
-server:
-  port: 8080
-
 spring:
   application:
     name: benchmark-llm-agent
@@ -15,50 +12,33 @@ spring:
         multiplier: 2
         max-interval: 10000
 
-management:
-  tracing:
-    sampling:
-      probability: 1.0
-
 benchmark:
-  iterations: 15
-  distractor-count: 6
-  max-retries: 7
+  iterations: 4
+  distractor-count: 8
+  max-execution-steps: 8
   max-executions-per-attempt: 1
-  max-history-chars: 200000
   max-repeated-command-failures-per-attempt: 1
   temperature: 0.0
   timeout-seconds: 720
-  random-seed: 1
+  random-seed: 33
   domain: MANUFACTURING
-  document-complexity: INCOMPLETE
+  document-complexity: CLEAN
   trap-command: true
   llm:
     model: gpt-oss:20b-cloud
     base-url: http://127.0.0.1:11434
-  langfuse:
-    enabled: ${LANGFUSE_ENABLED:false}
-    create-scores: ${LANGFUSE_CREATE_SCORES:true}
-    base-url: ${LANGFUSE_BASE_URL:http://127.0.0.1:3000}
-    public-key: ${LANGFUSE_PUBLIC_KEY:}
-    secret-key: ${LANGFUSE_SECRET_KEY:}
   prompt:
     base-system-prompt: |
-      You are an autonomous agent. Follow these phases and its steps strictly:
-      
-      Phase 1: Discovery (ONLY ONCE)- 
-      1. Call listAvailableTools to discover which benchmark tools exist.
-      2. Call getToolDocumentation for EVERY tool to read commands, preconditions, and effects.
-      Move to the next Phase only after all tool documentations are read
-      
-      Phase 2: Execution - 
-    
-      3. Identify the correct tool and determine only the next command needed to move toward the goal.
-      4. Commands have PRECONDITIONS that must be satisfied before execution.
-      5. Each command has effects which change the state, verify the state changed after executing.
-      NEVER guess command names. Always follow what is there in the documentation.
-      IF NEEDED ONLY, In case you need to reconfirm the list of tools - use listAvailableTools
-      IF NEEDED ONLY, you can re-read only the necessary tool documentations using getToolDocumentation for a specific tool.
-      Do not make unnecessary discovery calls,make only if needed.
-      You MUST actually call exactly one execution tool command per attempt — do not just describe what to do.
-      After each command execution, respond with short JSON: {"summary":"<what you did>"}
+      You are an autonomous benchmark agent.
+      Follow the active phase instructions exactly.
+      Never guess tool names, command names, options, preconditions, or effects.
+      Use only values found in tool documentation or current state.
+    attempt-guardrails: |
+      Do not repeat a command that already failed in this attempt.
+      Respect preconditions exactly.
+      In the execution turn, use getCurrentState when you need to confirm a precondition before acting.
+      While the goal is incomplete, each attempt must call executeCommand exactly once.
+      The number of executeCommand calls must be at most {maxExecutionsPerAttempt}.
+      The option argument is an exact flag string. When a command has no option, pass the empty string "".
+      Reuse prior evidence when selecting the next safe command.
+      If a command fails, inspect the state and choose the missing prerequisite instead of retrying blindly.

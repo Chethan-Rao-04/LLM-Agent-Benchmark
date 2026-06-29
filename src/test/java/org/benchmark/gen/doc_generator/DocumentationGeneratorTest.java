@@ -1,5 +1,7 @@
 package org.benchmark.gen.doc_generator;
 
+import org.benchmark.gen.BenchmarkCaseGenerator;
+import org.benchmark.gen.tool_generator.CommandAbbreviator;
 import org.benchmark.model.enums.DocumentComplexity;
 import org.benchmark.model.enums.Domain;
 import org.benchmark.model.enums.EffectOp;
@@ -34,7 +36,7 @@ class DocumentationGeneratorTest {
                 List.of(
                         new CommandObject(
                                 "start_process",
-                                List.of(new OptionEntity("--verbose", "Enable verbose logging")),
+                                List.of(new OptionEntity("--verbose", "Enable verbose logging", true)),
                                 "Start the manufacturing process",
                                 List.of(new EffectObject("counter", EffectOp.INCREMENT, null)),
                                 Map.of()
@@ -76,6 +78,7 @@ class DocumentationGeneratorTest {
     void cleanDocContainsOptions() {
         String doc = generator.generateDocumentation(testTool, DocumentComplexity.CLEAN);
         assertTrue(doc.contains("--verbose"));
+        assertTrue(doc.contains("required"));
     }
 
     @Test
@@ -120,6 +123,20 @@ class DocumentationGeneratorTest {
     void incompleteDocMarksThatDetailsAreOmitted() {
         String incomplete = generator.generateDocumentation(testTool, DocumentComplexity.INCOMPLETE);
         assertTrue(incomplete.contains("partial") || incomplete.contains("not documented"));
+    }
+
+    @Test
+    void targetDocumentationUsesSemanticDescriptions() {
+        BenchmarkCaseGenerator benchmarkGenerator = new BenchmarkCaseGenerator(DocumentComplexity.CLEAN, 42L);
+        BenchmarkCaseGenerator.BenchmarkCase benchmarkCase =
+                benchmarkGenerator.generateCases(1, 2, Domain.MANUFACTURING).getFirst();
+
+        for (var step : benchmarkCase.spec().capabilitySteps()) {
+            String commandName = CommandAbbreviator.commandName(step.verb(), step.noun());
+            assertTrue(benchmarkCase.caseManual().contains("## " + commandName));
+            assertFalse(benchmarkCase.caseManual().contains(
+                    "Description: Executes the " + commandName + " operation."));
+        }
     }
 
 }

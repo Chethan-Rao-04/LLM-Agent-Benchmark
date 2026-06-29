@@ -1,6 +1,7 @@
 <configuration>
 
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <property name="benchmarkRunId" value="${mdc:benchmarkRunId:-bootstrap}"/>
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
@@ -8,12 +9,20 @@
         </encoder>
     </appender>
 
-    <appender name="EVENTS_FILE" class="ch.qos.logback.core.FileAppender">
-        <file>benchmark_run_events.jsonl</file>
-        <append>true</append>
-        <encoder>
-            <pattern>%msg%n</pattern>
-        </encoder>
+    <appender name="EVENTS_FILE" class="ch.qos.logback.classic.sift.SiftingAppender">
+        <discriminator>
+            <key>benchmarkRunId</key>
+            <defaultValue>bootstrap</defaultValue>
+        </discriminator>
+        <sift>
+            <appender name="EVENTS_FILE_${benchmarkRunId}" class="ch.qos.logback.core.FileAppender">
+                <file>logs/benchmark-run-${benchmarkRunId}.jsonl</file>
+                <append>true</append>
+                <encoder>
+                    <pattern>%msg%n</pattern>
+                </encoder>
+            </appender>
+        </sift>
     </appender>
 
     <logger name="BENCHMARK_EVENTS" level="INFO" additivity="false">

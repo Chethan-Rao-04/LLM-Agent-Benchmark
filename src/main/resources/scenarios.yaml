@@ -12,6 +12,7 @@ scenarios:
       - verb: "{action}"
         noun: "{target}"
         precondition: { system_status: RUNNING, "{capability}": active }
+        effect: { "{target}_operation": completed }
     pools:
       capability:
         MANUFACTURING: [safety_interlock, thermal_protection, precision_mode]
@@ -36,6 +37,7 @@ scenarios:
       - verb: verify
         noun: "{component}"
         precondition: { "{component}_health": restored }
+        effect: { "{component}_service": verified }
     pools:
       component:
         MANUFACTURING: [conveyor, valve, compressor, turbine]
@@ -54,6 +56,7 @@ scenarios:
       - verb: deploy
         noun: "{resource}"
         precondition: { "{resource}_status": ready }
+        effect: { "{resource}_deployment": deployed }
     pools:
       system:
         MANUFACTURING: [controller, plc, scada, hmi]
@@ -79,6 +82,7 @@ scenarios:
       - verb: verify
         noun: "{target}"
         precondition: { "{target}_status": configured }
+        effect: { "{target}_readiness": verified }
     pools:
       system:
         MANUFACTURING: [controller, plc, scada, hmi]
@@ -104,6 +108,7 @@ scenarios:
       - verb: verify
         noun: "{component}"
         precondition: { "{component}_health": restored }
+        effect: { "{component}_service": verified }
     pools:
       component:
         MANUFACTURING: [conveyor, valve, compressor, turbine]

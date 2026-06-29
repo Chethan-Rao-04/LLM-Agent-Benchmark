@@ -30,7 +30,7 @@ public class ToolEnvironment {
     /**
      * Sets a state variable. Passing {@code null} removes the current value.
      */
-    public synchronized void set(String variable, String value) {
+    public void set(String variable, String value) {
         declaredKeys.add(variable);
         if (value == null) {
             values.remove(variable);
@@ -42,14 +42,14 @@ public class ToolEnvironment {
     /**
      * Reads a state variable. Returns {@code null} when the variable is unset.
      */
-    public synchronized String get(String variable) {
+    public String get(String variable) {
         return values.get(variable);
     }
 
     /**
      * Returns a point-in-time copy of all declared and runtime state values.
      */
-    public synchronized Map<String, String> snapshot() {
+    public Map<String, String> snapshot() {
         Map<String, String> snapshot = new LinkedHashMap<>();
         for (String key : declaredKeys) {
             snapshot.put(key, values.get(key));

@@ -19,6 +19,15 @@ public record CommandObject(String name,
                             List<EffectObject> commandEffectObjects,
                             Map<String, String> preconditions,
                             List<EffectObject> documentedEffects) {
+    /**
+     * Creates a command whose documentation should mirror its real effects.
+     *
+     * @param name command identifier
+     * @param commandOptions supported options
+     * @param description user-facing command description
+     * @param commandEffectObjects real state mutations applied on success
+     * @param preconditions state entries required before execution
+     */
     public CommandObject(String name,
                          List<OptionEntity> commandOptions,
                          String description,
@@ -27,6 +36,9 @@ public record CommandObject(String name,
         this(name, commandOptions, description, commandEffectObjects, preconditions, null);
     }
 
+    /**
+     * Normalizes optional preconditions so simulator code can treat missing maps as empty state constraints.
+     */
     public CommandObject {
         preconditions = preconditions == null ? Map.of() : Map.copyOf(preconditions);
     }

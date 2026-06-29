@@ -20,6 +20,9 @@ public record ScenarioPattern(
         List<ScenarioStep> steps,
         Map<String, Map<String, List<String>>> pools
 ) {
+    /**
+     * Freezes the parsed scenario template so later resolution cannot mutate the YAML-backed structure.
+     */
     public ScenarioPattern {
         steps = List.copyOf(steps);
         pools = pools == null ? Map.of() : Map.copyOf(pools);

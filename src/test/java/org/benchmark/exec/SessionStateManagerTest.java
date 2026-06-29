@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class SessionStateManagerTest {
 
     @Test
-    void recordsDiscoveryAndExecutionsSafelyAcrossConcurrentCallbacks() throws Exception {
+    void recordsExecutionsSafelyAcrossConcurrentCallbacks() throws Exception {
         SessionStateManager stateManager = new SessionStateManager();
         String sessionId = "concurrent-session";
         String toolName = "TEST-TOOL-001";
@@ -34,7 +34,6 @@ class SessionStateManagerTest {
         int taskCount = 500;
         var tasks = IntStream.range(0, taskCount)
                 .mapToObj(index -> (Callable<Void>) () -> {
-                    stateManager.recordDiscovery(sessionId);
                     stateManager.recordExecution(sessionId,
                             new ExecutionRecord(toolName, "cmd_" + index, "", true, "OK"));
                     stateManager.updateToolState(sessionId, toolName, "status", "value_" + index);
@@ -51,7 +50,6 @@ class SessionStateManagerTest {
         }
 
         assertTrue(executor.awaitTermination(5, TimeUnit.SECONDS));
-        assertEquals(taskCount, stateManager.discoveryCount(sessionId));
         assertEquals(taskCount, stateManager.executionLog(sessionId).size());
         assertTrue(stateManager.getToolState(sessionId, toolName, "status").startsWith("value_"));
     }

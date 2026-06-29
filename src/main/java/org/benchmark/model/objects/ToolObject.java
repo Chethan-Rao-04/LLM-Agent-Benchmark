@@ -11,7 +11,7 @@ import java.util.Map;
  * @param description natural-language tool description
  * @param domain tool domain
  * @param commands commands supported by this tool
- * @param stateVariables state variable schema (name → type)
+ * @param stateVariables state variable schema keyed by variable name
  */
 public record ToolObject(String name,
                          String description,

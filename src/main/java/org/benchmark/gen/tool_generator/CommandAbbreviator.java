@@ -5,7 +5,7 @@ import java.util.Map;
 /**
  * Single source of truth for abbreviating command names.
  *
- * <p>Every generator calls {@link #abbreviate(String, String)} when creating
+ * <p>Every generator calls {@link #commandName(String, String)} when creating
  * a {@code CommandObject} name. Natural-language query generation uses the
  * original full words directly and never passes through this class.</p>
  */
@@ -14,7 +14,6 @@ public final class CommandAbbreviator {
     private CommandAbbreviator() {}
 
     private static final Map<String, String> TABLE = Map.ofEntries(
-            // ── verbs ──
             Map.entry("initialize", "ini"),
             Map.entry("enable", "enb"),
             Map.entry("calibrate", "cal"),
@@ -85,7 +84,6 @@ public final class CommandAbbreviator {
             Map.entry("throttle", "thr"),
             Map.entry("advertise", "adv"),
             Map.entry("peer", "per"),
-            // ── nouns ──
             Map.entry("system", "sys"),
             Map.entry("conveyor", "cnv"),
             Map.entry("valve", "vlv"),

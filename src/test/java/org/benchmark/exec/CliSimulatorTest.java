@@ -130,6 +130,49 @@ class CliSimulatorTest {
     }
 
     @Test
+    void executeTreatsLegacyNoneMarkerAsEmptyOption() {
+        ToolObject tool = new ToolObject(
+                TOOL_NAME,
+                "Test tool",
+                Domain.MANUFACTURING,
+                List.of(new CommandObject(
+                        "start_process",
+                        List.of(new OptionEntity("--verbose", "Enable verbose")),
+                        "Start the process",
+                        List.of(),
+                        Map.of()
+                )),
+                Map.of("counter", "int", "label", "string")
+        );
+
+        CliSimulator.ExecutionResult result = simulator.execute(tool, "start_process", "<none>", stateManager, SESSION_ID);
+
+        assertTrue(result.success());
+    }
+
+    @Test
+    void executeFailsWhenRequiredOptionIsMissing() {
+        ToolObject tool = new ToolObject(
+                TOOL_NAME,
+                "Test tool",
+                Domain.MANUFACTURING,
+                List.of(new CommandObject(
+                        "start_process",
+                        List.of(new OptionEntity("--confirm", "Confirm execution", true)),
+                        "Start the process",
+                        List.of(),
+                        Map.of()
+                )),
+                Map.of("counter", "int", "label", "string")
+        );
+
+        CliSimulator.ExecutionResult result = simulator.execute(tool, "start_process", "", stateManager, SESSION_ID);
+
+        assertFalse(result.success());
+        assertTrue(result.stderr().contains("Missing required option --confirm"));
+    }
+
+    @Test
     void executeFailsWhenCommandIsUnknown() {
         ToolObject tool = new ToolObject(
                 TOOL_NAME,

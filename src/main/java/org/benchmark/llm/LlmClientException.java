@@ -5,6 +5,12 @@ package org.benchmark.llm;
  */
 public class LlmClientException extends RuntimeException {
 
+    /**
+     * Creates a benchmark-specific wrapper around lower-level model invocation failures.
+     *
+     * @param message high-level failure summary for benchmark code
+     * @param cause underlying transport or provider exception
+     */
     public LlmClientException(String message, Throwable cause) {
         super(message, cause);
     }

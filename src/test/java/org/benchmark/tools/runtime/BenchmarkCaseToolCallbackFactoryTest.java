@@ -1,22 +1,18 @@
 package org.benchmark.tools.runtime;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.benchmark.app.BenchmarkEventLogger;
-import org.benchmark.tools.server.BenchmarkToolService;
-import org.benchmark.app.BenchmarkScorer;
-import org.benchmark.config.BenchmarkProperties;
-import org.benchmark.exec.CliSimulator;
-import org.benchmark.exec.SessionStateManager;
+import org.benchmark.gen.BenchmarkCaseGenerator;
+import org.benchmark.model.enums.DocumentComplexity;
 import org.benchmark.model.enums.Domain;
-import org.benchmark.model.objects.CommandObject;
-import org.benchmark.model.objects.OptionEntity;
-import org.benchmark.model.objects.ToolObject;
+import org.benchmark.tools.server.BenchmarkToolService;
 import org.junit.jupiter.api.Test;
+import org.springframework.ai.tool.ToolCallbackProvider;
 
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests the execution callback descriptions exposed to the agent.
@@ -24,35 +20,35 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 class BenchmarkCaseToolCallbackFactoryTest {
 
     @Test
-    void descriptionDoesNotLeakCommandsOrOptions() {
+    void executionPhaseExposesOnlyStateAndCommandCallbacks() {
         BenchmarkCaseToolCallbackFactory factory = new BenchmarkCaseToolCallbackFactory(createServer());
-        ToolObject tool = new ToolObject(
-                "MAN-TEST-001",
-                "Test tool",
-                Domain.MANUFACTURING,
-                List.of(new CommandObject(
-                        "load_chassis",
-                        List.of(new OptionEntity("--dry-run", "Simulate execution")),
-                        "Load a chassis",
-                        List.of(),
-                        Map.of()
-                )),
-                Map.of("status", "string")
-        );
+        BenchmarkCaseGenerator.BenchmarkCase benchmarkCase = new BenchmarkCaseGenerator(
+                DocumentComplexity.CLEAN,
+                7L
+        ).generateCases(1, 1, Domain.MANUFACTURING).getFirst();
 
-        String description = factory.buildDescription(tool);
+        ToolCallbackProvider executionCallbacks = factory.createExecution("session-1");
 
-        assertFalse(description.contains("load_chassis"));
-        assertFalse(description.contains("--dry-run"));
+        Set<String> executionNames = callbackNames(executionCallbacks);
+
+        assertTrue(executionNames.contains("getCurrentState"));
+        assertTrue(executionNames.contains("executeCommand"));
+        assertFalse(executionNames.contains("listAvailableTools"));
+        assertFalse(executionNames.contains("getToolDocumentation"));
+        assertFalse(executionNames.contains(benchmarkCase.targetToolObject().name()));
     }
 
     private BenchmarkToolService createServer() {
-        SessionStateManager stateManager = new SessionStateManager();
-        return new BenchmarkToolService(
-                new BenchmarkProperties(),
-                stateManager,
-                new CliSimulator(),
-                new BenchmarkScorer(stateManager),
-                new BenchmarkEventLogger(new ObjectMapper()));
+        try {
+            return (BenchmarkToolService) BenchmarkToolService.class.getDeclaredConstructors()[0].newInstance(null, null);
+        } catch (ReflectiveOperationException e) {
+            throw new AssertionError(e);
+        }
+    }
+
+    private Set<String> callbackNames(ToolCallbackProvider provider) {
+        return List.of(provider.getToolCallbacks()).stream()
+                .map(callback -> callback.getToolDefinition().name())
+                .collect(Collectors.toSet());
     }
 }

@@ -38,7 +38,7 @@ public class CliSimulator {
                                    String option,
                                    SessionStateManager stateManager,
                                    String sessionId) {
-        String trimmedOptionName = trimOptionName(option);
+        String trimmedOptionName = CommandOptionNormalizer.normalize(option);
         Map<String, String> beforeState = new java.util.HashMap<>(
                 stateManager.getToolStateSnapshot(sessionId, tool.name()));
         log.debug("CLI execution tool={} command={} option={}", tool.name(), commandName, trimmedOptionName);
@@ -56,10 +56,10 @@ public class CliSimulator {
             return ExecutionResult.failure(command.name(), preconditionFailure);
         }
 
-        if (!isValidOption(command, trimmedOptionName)) {
-            String message = "Unknown option " + trimmedOptionName + " for command " + command.name();
-            log.debug("CLI execution rejected: {}", message);
-            return ExecutionResult.failure(command.name(), message);
+        String optionFailure = validateOption(command, trimmedOptionName);
+        if (optionFailure != null) {
+            log.debug("CLI execution rejected: {}", optionFailure);
+            return ExecutionResult.failure(command.name(), optionFailure);
         }
 
         CommandEffectApplier.applyEffects(
@@ -108,22 +108,36 @@ public class CliSimulator {
     /**
      * Validates whether a provided option belongs to the command option set.
      */
-    private boolean isValidOption(CommandObject command, String option) {
-        if (option.isBlank()) {
-            return true;
-        }
-
+    private String validateOption(CommandObject command, String option) {
         Set<String> validOptions = new HashSet<>();
+        String requiredOptionName = null;
+
         if (command.commandOptions() != null) {
             for (OptionEntity spec : command.commandOptions()) {
                 validOptions.add(spec.optionName());
+                if (spec.required() && requiredOptionName == null) {
+                    requiredOptionName = spec.optionName();
+                }
             }
         }
-        return validOptions.contains(option);
-    }
 
-    private String trimOptionName(String option) {
-        return option == null ? "" : option.trim();
+        if (option.isBlank()) {
+            if (requiredOptionName != null) {
+                return "Missing required option " + requiredOptionName + " for command " + command.name();
+            }
+            return null;
+        }
+
+        if (!validOptions.contains(option)) {
+            return "Unknown option " + option + " for command " + command.name();
+        }
+
+        if (requiredOptionName != null && !requiredOptionName.equals(option)) {
+            // The runtime accepts only one option input, so a required option must be
+            // the provided option when the command declares one.
+            return "Command " + command.name() + " requires option " + requiredOptionName;
+        }
+        return null;
     }
 
     /**

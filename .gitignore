@@ -1,4 +1,8 @@
 target/
+benchmark_run_events.jsonl
+logs/
+mlartifacts/
+mlflow.db
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/

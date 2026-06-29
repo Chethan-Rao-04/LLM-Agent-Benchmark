@@ -13,7 +13,7 @@ import java.util.Map;
  *
  * @param verb resolved action verb (full word)
  * @param noun resolved target noun (full word)
- * @param commandName {@code verb + "_" + noun} — logical identity for scoring
+ * @param commandName logical identity for scoring, built from verb and noun
  * @param precondition resolved state preconditions, or empty
  * @param effect resolved state mutations, or empty
  */
@@ -24,12 +24,24 @@ public record ResolvedStep(
         Map<String, String> precondition,
         Map<String, String> effect
 ) {
+    /**
+     * Normalizes a resolved step so scoring and tool generation see immutable state maps
+     * and a stable logical command identity.
+     */
     public ResolvedStep {
         commandName = verb + "_" + noun;
         precondition = precondition == null ? Map.of() : Map.copyOf(precondition);
         effect = effect == null ? Map.of() : Map.copyOf(effect);
     }
 
+    /**
+     * Creates a resolved step while deriving the logical command name from the full verb and noun.
+     *
+     * @param verb resolved action verb
+     * @param noun resolved target noun
+     * @param precondition resolved state preconditions
+     * @param effect resolved state mutations
+     */
     public ResolvedStep(String verb, String noun, Map<String, String> precondition, Map<String, String> effect) {
         this(verb, noun, verb + "_" + noun, precondition, effect);
     }

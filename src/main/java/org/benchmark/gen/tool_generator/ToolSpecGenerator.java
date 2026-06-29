@@ -18,8 +18,9 @@ import java.util.Set;
 /**
  * Generates one synthetic tool specification for the benchmark.
  *
- * <p>The single-step version keeps tools simple: each tool has a small state
- * schema, a set of commands, optional flags, and direct state effects.</p>
+ * <p>Distractor tools stay simple: each tool has a small state
+ * schema, a set of commands, at most one runtime-selectable option, and direct
+ * state effects.</p>
  */
 public class ToolSpecGenerator {
 
@@ -28,6 +29,7 @@ public class ToolSpecGenerator {
 
     private final Random random;
     private final CommandDict commandDict;
+    private final CommandOptionGenerator optionGenerator;
 
     /**
      * Creates a tool generator that uses the shared random source.
@@ -37,6 +39,7 @@ public class ToolSpecGenerator {
     public ToolSpecGenerator(Random random) {
         this.random = random;
         this.commandDict = new CommandDict(random);
+        this.optionGenerator = new CommandOptionGenerator(random, commandDict);
     }
 
     /**
@@ -92,8 +95,8 @@ public class ToolSpecGenerator {
     /**
      * Generates executable commands for a tool.
      *
-     * <p>Each command gets a unique name, optional flags, and a direct effect on
-     * the tool state. No command depends on a setup step in the single-step benchmark.</p>
+     * <p>Each command gets a unique name, at most one selectable option, and a direct effect on
+     * the tool state. Random distractors do not require setup chains.</p>
      */
     private List<CommandObject> generateCommands(Map<String, String> stateVariables, Domain domain) {
         List<CommandObject> commands = new ArrayList<>();
@@ -113,8 +116,8 @@ public class ToolSpecGenerator {
                 continue;
             }
 
-            List<OptionEntity> commandOptions = generateOptionSpecs();
-            List<EffectObject> effects = generateEffects(commandOptions, numericVariables, stringVariables);
+            List<OptionEntity> commandOptions = optionGenerator.generateOptions();
+            List<EffectObject> effects = generateEffects(numericVariables, stringVariables);
             String description = "Executes the " + commandName + " operation.";
             commands.add(new CommandObject(commandName, commandOptions, description, effects, Map.of()));
         }
@@ -135,8 +138,7 @@ public class ToolSpecGenerator {
      * <p>The generator prefers to give each command one direct effect so state-based
      * scoring remains meaningful without introducing planning logic.</p>
      */
-    private List<EffectObject> generateEffects(List<OptionEntity> commandOptions,
-                                               List<String> numericVariables,
+    private List<EffectObject> generateEffects(List<String> numericVariables,
                                                List<String> stringVariables) {
         if (numericVariables.isEmpty() && stringVariables.isEmpty()) {
             return List.of();
@@ -159,23 +161,4 @@ public class ToolSpecGenerator {
         return effects;
     }
 
-    /**
-     * Generates a de-duplicated list of common option specs for one command.
-     */
-    private List<OptionEntity> generateOptionSpecs() {
-        int optionCount = Math.min(random.nextInt(6), CommandDict.COMMON_OPTS.size());
-        List<OptionEntity> options = new ArrayList<>();
-        int attempts = 0;
-
-        while (options.size() < optionCount && attempts < optionCount * 10) {
-            attempts++;
-            OptionEntity candidate = commandDict.getRandomCommonOptionSpec();
-            boolean alreadyPresent = options.stream()
-                    .anyMatch(option -> option.optionName().equals(candidate.optionName()));
-            if (!alreadyPresent) {
-                options.add(candidate);
-            }
-        }
-        return options;
-    }
 }

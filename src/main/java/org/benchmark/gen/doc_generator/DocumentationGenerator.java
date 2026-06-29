@@ -1,5 +1,8 @@
 package org.benchmark.gen.doc_generator;
 
+import org.benchmark.gen.spec.BenchmarkCaseSpec;
+import org.benchmark.gen.spec.CapabilityStep;
+import org.benchmark.gen.tool_generator.CommandAbbreviator;
 import org.benchmark.model.enums.DocumentComplexity;
 import org.benchmark.model.objects.CommandObject;
 import org.benchmark.model.objects.EffectObject;
@@ -8,6 +11,7 @@ import org.benchmark.model.objects.ToolObject;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Produces tool documentation ranging from clean manuals to degraded references.
@@ -28,6 +32,56 @@ public class DocumentationGenerator {
             case LOGICAL_CONFLICT -> generateLogicalConflict(tool);
         };
     }
+
+    /**
+     * Generates target-tool documentation from the semantic case specification.
+     */
+    public String generateDocumentation(ToolObject tool, DocumentComplexity quality, BenchmarkCaseSpec spec) {
+        return generateDocumentation(applySemanticDescriptions(tool, spec), quality);
+    }
+
+    private ToolObject applySemanticDescriptions(ToolObject tool, BenchmarkCaseSpec spec) {
+        if (spec == null || spec.capabilitySteps().isEmpty()) {
+            return tool;
+        }
+
+        Map<String, CapabilityStep> stepsByCommandName = spec.capabilitySteps().stream()
+                .collect(Collectors.toMap(
+                        step -> CommandAbbreviator.commandName(step.verb(), step.noun()),
+                        step -> step,
+                        (first, ignored) -> first
+                ));
+        List<CommandObject> commands = tool.commands().stream()
+                .map(command -> {
+                    CapabilityStep step = stepsByCommandName.get(command.name());
+                    if (step == null) {
+                        return command;
+                    }
+                    return new CommandObject(
+                            command.name(),
+                            command.commandOptions(),
+                            semanticDescription(step),
+                            command.commandEffectObjects(),
+                            command.preconditions(),
+                            command.documentedEffects()
+                    );
+                })
+                .toList();
+        return new ToolObject(tool.name(), tool.description(), tool.domain(), commands, tool.stateVariables());
+    }
+
+    private String semanticDescription(CapabilityStep step) {
+        String target = step.noun().replace('_', ' ');
+        if (step.precondition().isEmpty()) {
+            return "Prepares " + target + " for the documented workflow.";
+        }
+        if (step.effect().isEmpty()) {
+            return "Checks the current " + target + " workflow state.";
+        }
+        String stateValue = step.effect().values().iterator().next().replace('_', ' ');
+        return "Moves " + target + " toward the documented " + stateValue + " state.";
+    }
+
     /**
      * Builds the clean, structured documentation used as the baseline profile.
      */
@@ -76,7 +130,9 @@ public class DocumentationGenerator {
         for (OptionEntity option : options) {
             builder.append("- `")
                     .append(option.optionName())
-                    .append("`: ")
+                    .append("` (")
+                    .append(option.required() ? "required" : "optional")
+                    .append("): ")
                     .append(option.description())
                     .append("\n");
         }
@@ -170,13 +226,14 @@ public class DocumentationGenerator {
             return;
         }
 
-        builder.append("Options: includes `")
-                .append(options.get(0).optionName())
-                .append("`");
-        if (options.size() > 1) {
-            builder.append(" and additional undocumented flags");
+        builder.append("Options: available flags ");
+        for (int index = 0; index < options.size(); index++) {
+            if (index > 0) {
+                builder.append(", ");
+            }
+            builder.append('`').append(options.get(index).optionName()).append('`');
         }
-        builder.append(".\n");
+        builder.append(". Details are partial.\n");
     }
 
     private void appendIncompletePreconditions(StringBuilder builder, Map<String, String> preconditions) {
