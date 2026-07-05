@@ -130,9 +130,7 @@ public class DocumentationGenerator {
         for (OptionEntity option : options) {
             builder.append("- `")
                     .append(option.optionName())
-                    .append("` (")
-                    .append(option.required() ? "required" : "optional")
-                    .append("): ")
+                    .append("`: ")
                     .append(option.description())
                     .append("\n");
         }

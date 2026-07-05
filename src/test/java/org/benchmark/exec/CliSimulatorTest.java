@@ -87,7 +87,7 @@ class CliSimulatorTest {
     }
 
     @Test
-    void executeSucceedsWithNullOption() {
+    void executeFailsWithNullOptionWhenCommandDeclaresOption() {
         ToolObject tool = new ToolObject(
                 TOOL_NAME,
                 "Test tool",
@@ -104,12 +104,12 @@ class CliSimulatorTest {
 
         CliSimulator.ExecutionResult result = simulator.execute(tool, "start_process", null, stateManager, SESSION_ID);
 
-        assertTrue(result.success());
-        assertEquals("done", stateManager.getToolState(SESSION_ID, TOOL_NAME, "label"));
+        assertFalse(result.success());
+        assertTrue(result.stderr().contains("Missing required option for command start_process"));
     }
 
     @Test
-    void executeSucceedsWithEmptyOption() {
+    void executeFailsWithEmptyOptionWhenCommandDeclaresOption() {
         ToolObject tool = new ToolObject(
                 TOOL_NAME,
                 "Test tool",
@@ -126,11 +126,12 @@ class CliSimulatorTest {
 
         CliSimulator.ExecutionResult result = simulator.execute(tool, "start_process", "", stateManager, SESSION_ID);
 
-        assertTrue(result.success());
+        assertFalse(result.success());
+        assertTrue(result.stderr().contains("Missing required option for command start_process"));
     }
 
     @Test
-    void executeTreatsLegacyNoneMarkerAsEmptyOption() {
+    void executeTreatsLegacyNoneMarkerAsMissingOption() {
         ToolObject tool = new ToolObject(
                 TOOL_NAME,
                 "Test tool",
@@ -147,18 +148,19 @@ class CliSimulatorTest {
 
         CliSimulator.ExecutionResult result = simulator.execute(tool, "start_process", "<none>", stateManager, SESSION_ID);
 
-        assertTrue(result.success());
+        assertFalse(result.success());
+        assertTrue(result.stderr().contains("Missing required option for command start_process"));
     }
 
     @Test
-    void executeFailsWhenRequiredOptionIsMissing() {
+    void executeFailsWhenAnyDeclaredOptionIsMissing() {
         ToolObject tool = new ToolObject(
                 TOOL_NAME,
                 "Test tool",
                 Domain.MANUFACTURING,
                 List.of(new CommandObject(
                         "start_process",
-                        List.of(new OptionEntity("--confirm", "Confirm execution", true)),
+                        List.of(new OptionEntity("--confirm", "Confirm execution")),
                         "Start the process",
                         List.of(),
                         Map.of()
@@ -169,7 +171,7 @@ class CliSimulatorTest {
         CliSimulator.ExecutionResult result = simulator.execute(tool, "start_process", "", stateManager, SESSION_ID);
 
         assertFalse(result.success());
-        assertTrue(result.stderr().contains("Missing required option --confirm"));
+        assertTrue(result.stderr().contains("Missing required option for command start_process"));
     }
 
     @Test

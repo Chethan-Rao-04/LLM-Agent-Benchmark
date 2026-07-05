@@ -110,32 +110,22 @@ public class CliSimulator {
      */
     private String validateOption(CommandObject command, String option) {
         Set<String> validOptions = new HashSet<>();
-        String requiredOptionName = null;
 
         if (command.commandOptions() != null) {
             for (OptionEntity spec : command.commandOptions()) {
                 validOptions.add(spec.optionName());
-                if (spec.required() && requiredOptionName == null) {
-                    requiredOptionName = spec.optionName();
-                }
             }
         }
 
         if (option.isBlank()) {
-            if (requiredOptionName != null) {
-                return "Missing required option " + requiredOptionName + " for command " + command.name();
+            if (!validOptions.isEmpty()) {
+                return "Missing required option for command " + command.name();
             }
             return null;
         }
 
         if (!validOptions.contains(option)) {
             return "Unknown option " + option + " for command " + command.name();
-        }
-
-        if (requiredOptionName != null && !requiredOptionName.equals(option)) {
-            // The runtime accepts only one option input, so a required option must be
-            // the provided option when the command declares one.
-            return "Command " + command.name() + " requires option " + requiredOptionName;
         }
         return null;
     }

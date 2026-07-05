@@ -26,7 +26,6 @@ final class CommandOptionGenerator {
             return List.of();
         }
 
-        boolean required = random.nextInt(4) == 0;
-        return List.of(commandDict.getRandomCommonOptionSpec(required));
+        return List.of(commandDict.getRandomCommonOptionSpec());
     }
 }

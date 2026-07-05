@@ -74,7 +74,7 @@ public class BenchmarkCaseToolCallbackFactory {
      *
      * @param toolName exact benchmark tool name selected from the case manual
      * @param commandName command name to execute within the selected tool
-     * @param option single option flag, or empty string when no option is required
+     * @param option single option flag, or empty string when the command declares no options
      */
     public record BenchmarkToolExecutionRequest(String toolName, String commandName, String option) {
     }

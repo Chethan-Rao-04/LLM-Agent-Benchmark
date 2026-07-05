@@ -48,7 +48,7 @@ public class BenchmarkToolService {
      * @param sessionId active benchmark session identifier
      * @param toolName selected tool name
      * @param commandName selected command name
-     * @param option optional command flag
+     * @param option selected command flag, or empty when the command declares no options
      * @return execution response with updated state snapshot
      */
     public CommandExecutionResponse executeCommand(String sessionId,

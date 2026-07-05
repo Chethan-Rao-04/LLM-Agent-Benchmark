@@ -129,14 +129,13 @@ public class CommandDict {
 
 
     /**
-     * Returns a random common option specification with explicit requiredness.
+     * Returns a random common option specification.
      *
-     * @param required whether the generated option should be required at runtime
      * @return random option spec
      */
-    public OptionEntity getRandomCommonOptionSpec(boolean required) {
+    public OptionEntity getRandomCommonOptionSpec() {
         String optionNameFromDict = pickOne(COMMON_OPTS);
-        return new OptionEntity("--" + optionNameFromDict, getCommonFlagDescription(optionNameFromDict), required);
+        return new OptionEntity("--" + optionNameFromDict, getCommonFlagDescription(optionNameFromDict));
     }
 
     private static String getCommonFlagDescription(String optionNameFromDict) {

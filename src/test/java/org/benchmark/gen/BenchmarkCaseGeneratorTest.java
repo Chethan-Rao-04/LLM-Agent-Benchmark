@@ -535,21 +535,14 @@ class BenchmarkCaseGeneratorTest {
         BenchmarkCaseGenerator generator = new BenchmarkCaseGenerator(DocumentComplexity.CLEAN, 42L);
         List<BenchmarkCaseGenerator.BenchmarkCase> cases = generator.generateCases(10, 3, null);
 
-        boolean foundRequiredOption = false;
-
         for (BenchmarkCaseGenerator.BenchmarkCase benchmarkCase : cases) {
             for (ToolObject tool : benchmarkCase.allTools()) {
                 for (CommandObject command : tool.commands()) {
                     assertTrue(command.commandOptions().size() <= 1,
                             "Runtime supports only one selected option per command");
-                    if (!command.commandOptions().isEmpty() && command.commandOptions().get(0).required()) {
-                        foundRequiredOption = true;
-                    }
                 }
             }
         }
-
-        assertTrue(foundRequiredOption, "Generated benchmark cases should include required options");
     }
 
     @Test

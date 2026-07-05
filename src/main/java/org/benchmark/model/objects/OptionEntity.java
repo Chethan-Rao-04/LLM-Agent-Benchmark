@@ -5,21 +5,9 @@ package org.benchmark.model.objects;
  *
  * @param optionName option flag (for example {@code --verbose})
  * @param description human-readable option description
- * @param required whether the runtime requires this option to execute the command
  */
 public record OptionEntity(
         String optionName,
-        String description,
-        boolean required
+        String description
 ) {
-
-    /**
-     * Creates an optional command option.
-     *
-     * @param optionName option flag (for example {@code --verbose})
-     * @param description human-readable option description
-     */
-    public OptionEntity(String optionName, String description) {
-        this(optionName, description, false);
-    }
 }

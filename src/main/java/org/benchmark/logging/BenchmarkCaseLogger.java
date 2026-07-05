@@ -341,7 +341,7 @@ public class BenchmarkCaseLogger {
             return "{options=[]}";
         }
         return options.stream()
-                .map(option -> option.optionName() + (option.required() ? " (required)" : ""))
+                .map(OptionEntity::optionName)
                 .collect(Collectors.joining(", ", "{options=[", "]}"));
     }
 }

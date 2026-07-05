@@ -36,7 +36,7 @@ class DocumentationGeneratorTest {
                 List.of(
                         new CommandObject(
                                 "start_process",
-                                List.of(new OptionEntity("--verbose", "Enable verbose logging", true)),
+                                List.of(new OptionEntity("--verbose", "Enable verbose logging")),
                                 "Start the manufacturing process",
                                 List.of(new EffectObject("counter", EffectOp.INCREMENT, null)),
                                 Map.of()
@@ -78,7 +78,7 @@ class DocumentationGeneratorTest {
     void cleanDocContainsOptions() {
         String doc = generator.generateDocumentation(testTool, DocumentComplexity.CLEAN);
         assertTrue(doc.contains("--verbose"));
-        assertTrue(doc.contains("required"));
+        assertTrue(doc.contains("Enable verbose logging"));
     }
 
     @Test
