@@ -5,9 +5,9 @@ import java.util.List;
 /**
  * Declares the decoy surface requested for a generated case.
  *
- * @param semanticDecoyCount number of semantic decoys generated from the scenario pool
+ * @param semanticDecoyCount number of target-like wrong tools generated from neighboring catalog families
  * @param randomDistractorCount number of unrelated same-domain distractor tools
- * @param semanticDecoyKinds intended semantic decoy categories for later scorer and generator upgrades
+ * @param semanticDecoyKinds compatibility metadata for target-like wrong tools
  */
 public record DecoyPlan(
         int semanticDecoyCount,
@@ -25,15 +25,12 @@ public record DecoyPlan(
     }
 
     /**
-     * Matches the current generator behavior while making the intended decoy role explicit.
+     * Uses the single target-like wrong neighboring-tool kind.
      */
     public static DecoyPlan currentDefault(int semanticDecoyCount, int randomDistractorCount) {
         List<DecoyKind> kinds = semanticDecoyCount == 0
                 ? List.of()
-                : List.of(
-                        DecoyKind.SIMILAR_INTENT_WRONG_RESOURCE,
-                        DecoyKind.SIMILAR_COMMANDS_WRONG_STATE_PATH
-                ).subList(0, Math.min(semanticDecoyCount, 2));
+                : List.of(DecoyKind.SIMILAR_INTENT_WRONG_RESOURCE);
         return new DecoyPlan(semanticDecoyCount, randomDistractorCount, kinds);
     }
 }

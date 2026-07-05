@@ -279,10 +279,10 @@ public class BenchmarkScorer {
     }
 
     /**
-     * Scores how well the agent resisted semantic decoys.
+     * Scores how well the agent avoided target-like wrong neighboring tools.
      *
-     * <p>Harmless probing lowers the score slightly, while a successful semantic-decoy mutation
-     * lowers it more heavily because it shows the agent committed to the wrong state path.</p>
+     * <p>Harmless probing lowers the score slightly, while a successful wrong-tool mutation
+     * lowers it more heavily because it shows the agent selected the target-looking wrong resource.</p>
      */
     public double scoreDecoyResistance(List<ExecutionRecord> logs,
                                        BenchmarkCaseGenerator.BenchmarkCase benchmarkCase) {

@@ -1,11 +1,14 @@
 package org.benchmark.gen;
 
+import org.benchmark.gen.catalog.ToolCatalog;
+import org.benchmark.gen.catalog.ToolCatalogLoader;
+import org.benchmark.gen.catalog.ToolFamily;
+import org.benchmark.gen.catalog.WorkflowStepTemplate;
+import org.benchmark.gen.catalog.WorkflowTemplate;
+import org.benchmark.gen.doc_generator.DocumentationGenerator;
 import org.benchmark.gen.query_generator.UserQueryGenerator;
 import org.benchmark.gen.scenario.ResolvedScenario;
 import org.benchmark.gen.scenario.ResolvedStep;
-import org.benchmark.gen.scenario.ScenarioLoader;
-import org.benchmark.gen.scenario.ScenarioPattern;
-import org.benchmark.gen.scenario.ScenarioResolver;
 import org.benchmark.gen.spec.BenchmarkCaseSpec;
 import org.benchmark.gen.spec.CapabilityStep;
 import org.benchmark.gen.spec.DecoyKind;
@@ -13,9 +16,7 @@ import org.benchmark.gen.spec.DecoyPlan;
 import org.benchmark.gen.spec.ScoringPolicy;
 import org.benchmark.gen.tool_generator.CommandDict;
 import org.benchmark.gen.tool_generator.ScenarioToolGenerator;
-import org.benchmark.gen.tool_generator.SemanticDecoyGenerator;
 import org.benchmark.gen.tool_generator.ToolSpecGenerator;
-import org.benchmark.gen.doc_generator.DocumentationGenerator;
 import org.benchmark.model.enums.DocumentComplexity;
 import org.benchmark.model.enums.Domain;
 import org.benchmark.model.objects.ToolObject;
@@ -23,27 +24,26 @@ import org.benchmark.model.objects.ToolObject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
-import java.util.Comparator;
+import java.util.Set;
 
 /**
- * Generates multi-step scenario-driven benchmark cases.
+ * Generates multi-step benchmark cases from a hidden static family/workflow catalog.
  *
- * <p>Each case is backed by a scenario pattern loaded from YAML. The generator
- * resolves template variables, builds a target tool with scenario-aligned commands,
- * creates semantic decoys from the same vocabulary pool, and adds random distractors.</p>
+ * <p>The runtime still receives only the sampled per-case manual, while the hidden
+ * catalog keeps target tools, queries, commands, and decoys semantically aligned.</p>
  */
 public class BenchmarkCaseGenerator {
 
     private final Random random;
-    private final ScenarioLoader scenarioLoader;
-    private final ScenarioResolver scenarioResolver;
+    private final ToolCatalog catalog;
     private final ScenarioToolGenerator scenarioToolGenerator;
-    private final SemanticDecoyGenerator semanticDecoyGenerator;
     private final ToolSpecGenerator toolSpecGenerator;
     private final DocumentationGenerator documentationGenerator;
     private final UserQueryGenerator queryGenerator;
@@ -52,33 +52,18 @@ public class BenchmarkCaseGenerator {
 
     /**
      * Creates the benchmark case generator from explicit collaborators.
-     *
-     * @param random shared random source
-     * @param scenarioLoader scenario template loader
-     * @param scenarioResolver template resolver
-     * @param scenarioToolGenerator target tool generator
-     * @param semanticDecoyGenerator semantic distractor generator
-     * @param toolSpecGenerator random distractor generator
-     * @param documentationGenerator documentation renderer
-     * @param queryGenerator user query generator
-     * @param documentationComplexity documentation degradation profile
-     * @param trapCommand whether trap commands may be injected into generated target tools
      */
     public BenchmarkCaseGenerator(Random random,
-                                  ScenarioLoader scenarioLoader,
-                                  ScenarioResolver scenarioResolver,
+                                  ToolCatalogLoader toolCatalogLoader,
                                   ScenarioToolGenerator scenarioToolGenerator,
-                                  SemanticDecoyGenerator semanticDecoyGenerator,
                                   ToolSpecGenerator toolSpecGenerator,
                                   DocumentationGenerator documentationGenerator,
                                   UserQueryGenerator queryGenerator,
                                   DocumentComplexity documentationComplexity,
                                   boolean trapCommand) {
         this.random = Objects.requireNonNull(random, "random must not be null");
-        this.scenarioLoader = Objects.requireNonNull(scenarioLoader, "scenarioLoader must not be null");
-        this.scenarioResolver = Objects.requireNonNull(scenarioResolver, "scenarioResolver must not be null");
+        this.catalog = Objects.requireNonNull(toolCatalogLoader, "toolCatalogLoader must not be null").getCatalog();
         this.scenarioToolGenerator = Objects.requireNonNull(scenarioToolGenerator, "scenarioToolGenerator must not be null");
-        this.semanticDecoyGenerator = Objects.requireNonNull(semanticDecoyGenerator, "semanticDecoyGenerator must not be null");
         this.toolSpecGenerator = Objects.requireNonNull(toolSpecGenerator, "toolSpecGenerator must not be null");
         this.documentationGenerator = Objects.requireNonNull(documentationGenerator, "documentationGenerator must not be null");
         this.queryGenerator = Objects.requireNonNull(queryGenerator, "queryGenerator must not be null");
@@ -86,23 +71,10 @@ public class BenchmarkCaseGenerator {
         this.trapCommand = trapCommand;
     }
 
-    /**
-     * Creates a self-contained generator with default collaborators and no trap commands.
-     *
-     * @param documentationComplexity documentation degradation profile
-     * @param seed optional seed for deterministic generation
-     */
     public BenchmarkCaseGenerator(DocumentComplexity documentationComplexity, Long seed) {
         this(documentationComplexity, seed, false);
     }
 
-    /**
-     * Creates a self-contained generator with default collaborators.
-     *
-     * @param documentationComplexity documentation degradation profile
-     * @param seed optional seed for deterministic generation
-     * @param trapCommand whether generated cases may include a trap and recovery path
-     */
     public BenchmarkCaseGenerator(DocumentComplexity documentationComplexity, Long seed, boolean trapCommand) {
         this(createRandom(seed), documentationComplexity, trapCommand);
     }
@@ -110,10 +82,8 @@ public class BenchmarkCaseGenerator {
     private BenchmarkCaseGenerator(Random random, DocumentComplexity documentationComplexity, boolean trapCommand) {
         this(
                 random,
-                new ScenarioLoader(),
-                new ScenarioResolver(random),
+                new ToolCatalogLoader(),
                 new ScenarioToolGenerator(random, new CommandDict(random)),
-                new SemanticDecoyGenerator(random, new CommandDict(random)),
                 new ToolSpecGenerator(random),
                 new DocumentationGenerator(),
                 new UserQueryGenerator(random),
@@ -134,53 +104,62 @@ public class BenchmarkCaseGenerator {
         List<Domain> availableDomains = specificDomain == null
                 ? Arrays.asList(Domain.values())
                 : List.of(specificDomain);
-        List<ScenarioPattern> patterns = scenarioLoader.getPatterns();
 
         for (int index = 0; index < count; index++) {
-            Domain domain = availableDomains.get(random.nextInt(availableDomains.size()));
-            ScenarioPattern pattern = patterns.get(random.nextInt(patterns.size()));
+            Domain domain = pickOne(availableDomains);
+            ToolFamily targetFamily = pickOne(nonEmptyFamilies(domain));
+            WorkflowTemplate targetWorkflow = pickWorkflow(targetFamily);
+            int semanticDecoyCount = Math.min(1, distractorCount);
 
-            ResolvedScenario scenario = scenarioResolver.resolve(pattern, domain);
-            int semanticDecoyCount = Math.min(2, distractorCount);
-            BenchmarkCaseSpec generationSpec = BenchmarkCaseSpec.fromScenario(scenario, semanticDecoyCount, 0);
+            CatalogCaseDefinition targetDefinition = buildCaseDefinition(targetFamily, targetWorkflow, semanticDecoyCount, 0);
             boolean enableTrapForCase = trapCommand && random.nextInt(5) == 0;
-            ScenarioToolGenerator.ToolGenerationResult result =
-                    scenarioToolGenerator.generateTool(generationSpec, enableTrapForCase);
-            ToolObject targetTool = result.tool();
-            String trapCommandName = result.trapCommandName();
-            String recoveryCommandName = result.recoveryCommandName();
-            boolean hasTrap = trapCommandName != null;
+            ScenarioToolGenerator.ToolGenerationResult targetResult =
+                    scenarioToolGenerator.generateTool(
+                            targetDefinition.spec(),
+                            targetFamily,
+                            targetWorkflow,
+                            catalog,
+                            enableTrapForCase
+                    );
+            ToolObject targetTool = targetResult.tool();
+            Set<String> usedToolNames = new LinkedHashSet<>();
+            usedToolNames.add(targetTool.name());
 
-            List<ToolObject> semanticDecoys = semanticDecoyGenerator.generate(pattern, scenario, generationSpec.decoyPlan());
+            List<ToolObject> semanticDecoys = generateSemanticDecoys(targetFamily, targetTool, semanticDecoyCount, usedToolNames);
+            int remainingDistractors = Math.max(0, distractorCount - semanticDecoys.size());
+            List<ToolObject> randomDistractors = generateRandomDistractors(domain, targetFamily, remainingDistractors, usedToolNames);
 
-            int remainingDistractors = distractorCount - semanticDecoys.size();
-            List<ToolObject> randomDistractors = new ArrayList<>();
-            for (int d = 0; d < remainingDistractors; d++) {
-                randomDistractors.add(toolSpecGenerator.generateTool(domain));
-            }
+            BenchmarkCaseSpec spec = buildSpec(
+                    targetFamily,
+                    targetWorkflow,
+                    targetDefinition.scenario().steps(),
+                    targetDefinition.scenario().cumulativeExpectedState(),
+                    semanticDecoys.size(),
+                    randomDistractors.size()
+            );
+            Map<String, DecoyKind> semanticDecoyKindsByToolName =
+                    buildSemanticDecoyKindMap(semanticDecoys);
+
             List<ToolObject> allDistractors = new ArrayList<>(semanticDecoys);
             allDistractors.addAll(randomDistractors);
-
-            BenchmarkCaseSpec spec = BenchmarkCaseSpec.fromScenario(
-                    scenario, semanticDecoys.size(), randomDistractors.size());
-            Map<String, DecoyKind> semanticDecoyKindsByToolName =
-                    buildSemanticDecoyKindMap(semanticDecoys, spec.decoyPlan());
             String caseManual = buildCaseManual(targetTool, allDistractors, spec);
+            String userQuery = queryGenerator.generateGoalQuery(spec, targetFamily, targetWorkflow);
+
             cases.add(new BenchmarkCase(
-                    scenario,
+                    targetDefinition.scenario(),
                     spec,
                     targetTool,
-                    scenario.steps(),
+                    targetDefinition.scenario().steps(),
                     caseManual,
-                    scenario.cumulativeExpectedState(),
+                    targetDefinition.scenario().cumulativeExpectedState(),
                     allDistractors,
                     semanticDecoys,
                     randomDistractors,
                     semanticDecoyKindsByToolName,
-                    queryGenerator,
-                    hasTrap,
-                    trapCommandName,
-                    recoveryCommandName
+                    userQuery,
+                    targetResult.trapCommandName() != null,
+                    targetResult.trapCommandName(),
+                    targetResult.recoveryCommandName()
             ));
         }
 
@@ -208,16 +187,237 @@ public class BenchmarkCaseGenerator {
         return manual.toString();
     }
 
-    private Map<String, DecoyKind> buildSemanticDecoyKindMap(List<ToolObject> semanticDecoys, DecoyPlan decoyPlan) {
+    private List<ToolObject> generateSemanticDecoys(ToolFamily targetFamily,
+                                                    ToolObject targetTool,
+                                                    int semanticDecoyCount,
+                                                    Set<String> usedToolNames) {
+        if (semanticDecoyCount <= 0 || targetFamily.decoyFamilyIds().isEmpty()) {
+            return List.of();
+        }
+
+        ToolObject decoy = generateDecoyTool(targetFamily, targetTool, usedToolNames);
+        return decoy == null ? List.of() : List.of(decoy);
+    }
+
+    private ToolObject generateDecoyTool(ToolFamily targetFamily,
+                                         ToolObject targetTool,
+                                         Set<String> usedToolNames) {
+        List<ToolFamily> candidateFamilies = targetFamily.decoyFamilyIds().stream()
+                .map(catalog::family)
+                .toList();
+        if (candidateFamilies.isEmpty()) {
+            return null;
+        }
+
+        for (int attempts = 0; attempts < 20; attempts++) {
+            ToolFamily decoyFamily = pickOne(candidateFamilies);
+            WorkflowTemplate decoyWorkflow = pickWorkflow(decoyFamily);
+            CatalogCaseDefinition decoyDefinition = buildCaseDefinition(decoyFamily, decoyWorkflow, 0, 0);
+            ToolObject baseTool = scenarioToolGenerator.generateTool(
+                    decoyDefinition.spec(),
+                    decoyFamily,
+                    decoyWorkflow,
+                    catalog,
+                    false
+            ).tool();
+            ToolObject decoyTool = renameToolLikeTarget(baseTool, targetTool.name());
+            if (usedToolNames.add(decoyTool.name())) {
+                return decoyTool;
+            }
+        }
+        return null;
+    }
+
+    private ToolObject renameToolLikeTarget(ToolObject tool, String targetToolName) {
+        return new ToolObject(
+                similarToolName(targetToolName),
+                tool.description(),
+                tool.domain(),
+                tool.commands(),
+                tool.stateVariables()
+        );
+    }
+
+    private String similarToolName(String targetToolName) {
+        int suffixStart = targetToolName.lastIndexOf('-');
+        String prefix = suffixStart > 0 ? targetToolName.substring(0, suffixStart) : targetToolName;
+        return prefix + "-" + (100 + random.nextInt(900));
+    }
+
+    private List<ToolObject> generateRandomDistractors(Domain domain,
+                                                       ToolFamily targetFamily,
+                                                       int count,
+                                                       Set<String> usedToolNames) {
+        if (count <= 0) {
+            return List.of();
+        }
+
+        List<ToolFamily> unrelatedFamilies = nonEmptyFamilies(domain).stream()
+                .filter(family -> !family.id().equals(targetFamily.id()))
+                .filter(family -> !targetFamily.decoyFamilyIds().contains(family.id()))
+                .toList();
+        List<ToolObject> distractors = new ArrayList<>(count);
+
+        for (int index = 0; index < count; index++) {
+            ToolObject distractor = unrelatedFamilies.isEmpty()
+                    ? generateFallbackDistractor(domain, usedToolNames)
+                    : generateCatalogDistractor(unrelatedFamilies, usedToolNames);
+            if (distractor == null) {
+                distractor = generateFallbackDistractor(domain, usedToolNames);
+            }
+            if (distractor != null) {
+                distractors.add(distractor);
+            }
+        }
+        return distractors;
+    }
+
+    private ToolObject generateCatalogDistractor(List<ToolFamily> candidateFamilies, Set<String> usedToolNames) {
+        for (int attempts = 0; attempts < 20; attempts++) {
+            ToolFamily family = pickOne(candidateFamilies);
+            WorkflowTemplate workflow = pickWorkflow(family);
+            CatalogCaseDefinition definition = buildCaseDefinition(family, workflow, 0, 0);
+            ToolObject tool = scenarioToolGenerator.generateTool(
+                    definition.spec(),
+                    family,
+                    workflow,
+                    catalog,
+                    false
+            ).tool();
+            if (usedToolNames.add(tool.name())) {
+                return tool;
+            }
+        }
+        return null;
+    }
+
+    private ToolObject generateFallbackDistractor(Domain domain, Set<String> usedToolNames) {
+        for (int attempts = 0; attempts < 20; attempts++) {
+            ToolObject tool = toolSpecGenerator.generateTool(domain);
+            if (usedToolNames.add(tool.name())) {
+                return tool;
+            }
+        }
+        return null;
+    }
+
+    private CatalogCaseDefinition buildCaseDefinition(ToolFamily family,
+                                                      WorkflowTemplate workflow,
+                                                      int semanticDecoyCount,
+                                                      int randomDistractorCount) {
+        List<ResolvedStep> steps = new ArrayList<>(workflow.steps().size());
+        List<CapabilityStep> capabilities = new ArrayList<>(workflow.steps().size());
+
+        for (WorkflowStepTemplate stepTemplate : workflow.steps()) {
+            ResolvedStep step = new ResolvedStep(
+                    pickOne(stepTemplate.verbSeeds()),
+                    pickOne(stepTemplate.nounSeeds()),
+                    stepTemplate.preconditionTemplate(),
+                    stepTemplate.effectTemplate()
+            );
+            steps.add(step);
+            capabilities.add(new CapabilityStep(
+                    stepTemplate.role(),
+                    step.verb(),
+                    step.noun(),
+                    step.commandName(),
+                    step.precondition(),
+                    step.effect()
+            ));
+        }
+
+        Map<String, String> cumulativeExpectedState = computeCumulativeExpectedState(steps);
+        if (!cumulativeExpectedState.equals(workflow.expectedFinalState())) {
+            throw new IllegalStateException("Workflow '" + workflow.id()
+                    + "' expectedFinalState does not match generated cumulative state");
+        }
+
+        ResolvedScenario scenario = new ResolvedScenario(
+                workflow.id(),
+                workflow.intent(),
+                family.domain(),
+                steps,
+                cumulativeExpectedState,
+                Map.of(
+                        "toolFamilyId", family.id(),
+                        "workflowId", workflow.id()
+                )
+        );
+        BenchmarkCaseSpec spec = new BenchmarkCaseSpec(
+                workflow.intent(),
+                family.domain(),
+                capabilities,
+                cumulativeExpectedState,
+                DecoyPlan.currentDefault(semanticDecoyCount, randomDistractorCount),
+                ScoringPolicy.currentDefault(),
+                family.id(),
+                workflow.id()
+        );
+        return new CatalogCaseDefinition(family, workflow, scenario, spec);
+    }
+
+    private BenchmarkCaseSpec buildSpec(ToolFamily family,
+                                        WorkflowTemplate workflow,
+                                        List<ResolvedStep> steps,
+                                        Map<String, String> expectedState,
+                                        int semanticDecoyCount,
+                                        int randomDistractorCount) {
+        List<CapabilityStep> capabilities = new ArrayList<>(steps.size());
+        for (int index = 0; index < steps.size(); index++) {
+            ResolvedStep step = steps.get(index);
+            String role = workflow.steps().get(index).role();
+            capabilities.add(new CapabilityStep(
+                    role,
+                    step.verb(),
+                    step.noun(),
+                    step.commandName(),
+                    step.precondition(),
+                    step.effect()
+            ));
+        }
+
+        return new BenchmarkCaseSpec(
+                workflow.intent(),
+                family.domain(),
+                capabilities,
+                expectedState,
+                DecoyPlan.currentDefault(semanticDecoyCount, randomDistractorCount),
+                ScoringPolicy.currentDefault(),
+                family.id(),
+                workflow.id()
+        );
+    }
+
+    private Map<String, String> computeCumulativeExpectedState(List<ResolvedStep> steps) {
+        Map<String, String> cumulative = new LinkedHashMap<>();
+        for (ResolvedStep step : steps) {
+            cumulative.putAll(step.effect());
+        }
+        return Map.copyOf(cumulative);
+    }
+
+    private Map<String, DecoyKind> buildSemanticDecoyKindMap(List<ToolObject> semanticDecoys) {
         Map<String, DecoyKind> decoyKinds = new LinkedHashMap<>();
-        List<DecoyKind> plannedKinds = decoyPlan.semanticDecoyKinds();
-        for (int index = 0; index < semanticDecoys.size(); index++) {
-            DecoyKind kind = plannedKinds.isEmpty()
-                    ? DecoyKind.SIMILAR_INTENT_WRONG_RESOURCE
-                    : plannedKinds.get(Math.min(index, plannedKinds.size() - 1));
-            decoyKinds.put(semanticDecoys.get(index).name(), kind);
+        for (ToolObject semanticDecoy : semanticDecoys) {
+            decoyKinds.put(semanticDecoy.name(), DecoyKind.SIMILAR_INTENT_WRONG_RESOURCE);
         }
         return decoyKinds;
+    }
+
+    private WorkflowTemplate pickWorkflow(ToolFamily family) {
+        return catalog.workflow(pickOne(family.workflowIds()));
+    }
+
+    private List<ToolFamily> nonEmptyFamilies(Domain domain) {
+        List<ToolFamily> families = catalog.familiesForDomain(domain);
+        if (families.isEmpty()) {
+            throw new IllegalStateException("No tool families available for domain " + domain);
+        }
+        return families;
+    }
+
+    private <T> T pickOne(List<T> values) {
+        return values.get(random.nextInt(values.size()));
     }
 
     /**
@@ -234,7 +434,7 @@ public class BenchmarkCaseGenerator {
             List<ToolObject> semanticDecoys,
             List<ToolObject> randomDistractors,
             Map<String, DecoyKind> semanticDecoyKindsByToolName,
-            UserQueryGenerator queryGenerator,
+            String userQuery,
             boolean hasTrap,
             String trapCommandName,
             String recoveryCommandName
@@ -247,7 +447,7 @@ public class BenchmarkCaseGenerator {
                              List<ToolObject> distractors,
                              List<ToolObject> semanticDecoys,
                              List<ToolObject> randomDistractors,
-                             UserQueryGenerator queryGenerator,
+                             String userQuery,
                              boolean hasTrap,
                              String trapCommandName,
                              String recoveryCommandName) {
@@ -258,7 +458,8 @@ public class BenchmarkCaseGenerator {
                             targetSteps,
                             expectedState,
                             semanticDecoys == null ? 0 : semanticDecoys.size(),
-                            randomDistractors == null ? 0 : randomDistractors.size()),
+                            randomDistractors == null ? 0 : randomDistractors.size()
+                    ),
                     targetToolObject,
                     targetSteps,
                     caseManual,
@@ -267,7 +468,7 @@ public class BenchmarkCaseGenerator {
                     semanticDecoys,
                     randomDistractors,
                     buildSemanticDecoyKindMapStatic(semanticDecoys),
-                    queryGenerator,
+                    userQuery,
                     hasTrap,
                     trapCommandName,
                     recoveryCommandName
@@ -279,13 +480,8 @@ public class BenchmarkCaseGenerator {
                 return Map.of();
             }
             Map<String, DecoyKind> decoyKinds = new LinkedHashMap<>();
-            DecoyPlan plan = DecoyPlan.currentDefault(semanticDecoys.size(), 0);
-            List<DecoyKind> plannedKinds = plan.semanticDecoyKinds();
-            for (int index = 0; index < semanticDecoys.size(); index++) {
-                DecoyKind kind = plannedKinds.isEmpty()
-                        ? DecoyKind.SIMILAR_INTENT_WRONG_RESOURCE
-                        : plannedKinds.get(Math.min(index, plannedKinds.size() - 1));
-                decoyKinds.put(semanticDecoys.get(index).name(), kind);
+            for (ToolObject semanticDecoy : semanticDecoys) {
+                decoyKinds.put(semanticDecoy.name(), DecoyKind.SIMILAR_INTENT_WRONG_RESOURCE);
             }
             return decoyKinds;
         }
@@ -310,10 +506,6 @@ public class BenchmarkCaseGenerator {
             );
         }
 
-        /**
-         * Normalizes benchmark case collections into immutable snapshots so downstream
-         * runtime code can treat each generated case as stable metadata.
-         */
         public BenchmarkCase {
             scenario = Objects.requireNonNull(scenario, "scenario must not be null");
             spec = Objects.requireNonNull(spec, "spec must not be null");
@@ -332,21 +524,13 @@ public class BenchmarkCaseGenerator {
             semanticDecoyKindsByToolName = Collections.unmodifiableMap(new LinkedHashMap<>(
                     Objects.requireNonNull(semanticDecoyKindsByToolName,
                             "semanticDecoyKindsByToolName must not be null")));
-            queryGenerator = Objects.requireNonNull(queryGenerator, "queryGenerator must not be null");
+            userQuery = Objects.requireNonNullElse(userQuery, "");
         }
 
-        /**
-         * Generates the synthetic user request. It is goal-oriented, not step-revealing.
-         */
         public String generateUserQuery() {
-            return queryGenerator.generateGoalQuery(spec);
+            return userQuery;
         }
 
-        /**
-         * Returns the target tool together with all distractor tools in execution order.
-         *
-         * @return immutable list of all tools exposed to the agent
-         */
         public List<ToolObject> allTools() {
             List<ToolObject> tools = new ArrayList<>(distractors.size() + 1);
             tools.add(targetToolObject);
@@ -354,12 +538,6 @@ public class BenchmarkCaseGenerator {
             return Collections.unmodifiableList(tools);
         }
 
-        /**
-         * Finds a tool by name using the same case-insensitive lookup semantics as the runtime tool layer.
-         *
-         * @param toolName requested tool name
-         * @return matching tool, or {@code null} when the case does not expose that tool
-         */
         public ToolObject findTool(String toolName) {
             if (toolName == null || toolName.isBlank()) return null;
             return allTools().stream()
@@ -368,10 +546,6 @@ public class BenchmarkCaseGenerator {
                     .orElse(null);
         }
 
-        /**
-         * Returns the trapped command. Its real effects
-         * differ from its documented effects. Returns null if no trap exists.
-         */
         public org.benchmark.model.objects.CommandObject trapCommand() {
             if (!hasTrap || trapCommandName == null || trapCommandName.isBlank()) return null;
             return targetToolObject.commands().stream()
@@ -379,5 +553,13 @@ public class BenchmarkCaseGenerator {
                     .findFirst()
                     .orElse(null);
         }
+    }
+
+    private record CatalogCaseDefinition(
+            ToolFamily family,
+            WorkflowTemplate workflow,
+            ResolvedScenario scenario,
+            BenchmarkCaseSpec spec
+    ) {
     }
 }

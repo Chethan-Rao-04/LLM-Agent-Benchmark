@@ -54,17 +54,24 @@ class BenchmarkRunArtifactWriter {
         markdown.append("- Average state accuracy: ").append(format(summaryMetrics.get("averageStateAccuracy").doubleValue(), 2)).append('\n');
         markdown.append("- Average efficiency: ").append(format(summaryMetrics.get("averageEfficiency").doubleValue(), 2)).append('\n');
         markdown.append("- Average command precision: ").append(format(summaryMetrics.get("averageCommandPrecision").doubleValue(), 2)).append('\n');
-        markdown.append("- Average decoy resistance: ").append(format(summaryMetrics.get("averageDecoyResistance").doubleValue(), 2)).append("\n\n");
+        markdown.append("- Average target-like wrong tool avoidance: ")
+                .append(format(metric(summaryMetrics, "averageTargetLikeWrongToolAvoidance", "averageDecoyResistance"), 2))
+                .append("\n\n");
 
         for (BenchmarkRunCaseReport report : summary.caseReports) {
             markdown.append("## Case ").append(report.caseIndex()).append('\n');
             markdown.append("Session: ").append(report.sessionId()).append('\n');
             markdown.append("Target tool: ").append(report.targetTool()).append('\n');
+            markdown.append("Target-like wrong tools:\n");
+            appendList(markdown, report.targetLikeWrongTools());
             markdown.append("Result: ").append(report.passed() ? "passed" : "failed").append('\n');
             markdown.append("Recovery: ").append(report.recovery()).append('\n');
             markdown.append("Attempts: ").append(report.attemptsUsed()).append('\n');
             markdown.append("Executions: ").append(report.executionCount()).append('\n');
             markdown.append("Score: ").append(format(report.compositeScore(), 3)).append('\n');
+            markdown.append("Target-like wrong tool avoidance: ")
+                    .append(format(report.decoyResistance(), 2))
+                    .append('\n');
             markdown.append('\n');
             markdown.append("### Expected Steps\n");
             appendList(markdown, report.expectedSteps());
@@ -81,7 +88,7 @@ class BenchmarkRunArtifactWriter {
 
     String toCsv(BenchmarkRunSummary summary) {
         StringBuilder csv = new StringBuilder();
-        csv.append("case,session,passed,score,attempts,executions,toolSelection,stepCompletion,orderingAccuracy,stateAccuracy,efficiency,commandPrecision,decoyResistance,recovery\n");
+        csv.append("case,session,passed,score,attempts,executions,toolSelection,stepCompletion,orderingAccuracy,stateAccuracy,efficiency,commandPrecision,targetLikeWrongToolAvoidance,recovery\n");
         for (BenchmarkRunCaseReport report : summary.caseReports) {
             csv.append(report.caseIndex()).append(',')
                     .append(escapeCsv(report.sessionId())).append(',')
@@ -124,5 +131,13 @@ class BenchmarkRunArtifactWriter {
 
     private String format(double value, int scale) {
         return String.format("%." + scale + "f", value);
+    }
+
+    private double metric(Map<String, Number> metrics, String primaryKey, String fallbackKey) {
+        Number value = metrics.get(primaryKey);
+        if (value == null) {
+            value = metrics.get(fallbackKey);
+        }
+        return value == null ? 0.0 : value.doubleValue();
     }
 }

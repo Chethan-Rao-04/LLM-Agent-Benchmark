@@ -2,7 +2,6 @@ package org.benchmark.scoring;
 
 import org.benchmark.exec.SessionStateManager;
 import org.benchmark.gen.BenchmarkCaseGenerator;
-import org.benchmark.gen.query_generator.UserQueryGenerator;
 import org.benchmark.gen.scenario.ResolvedScenario;
 import org.benchmark.gen.scenario.ResolvedStep;
 import org.benchmark.model.enums.Domain;
@@ -14,7 +13,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -102,8 +100,8 @@ class BenchmarkScorerTest {
     }
 
     @Test
-    void semanticDecoyProbeLowersDecoyResistanceSlightly() {
-        String sessionId = "semantic-decoy-probe";
+    void targetLikeWrongToolProbeLowersDecoyResistanceSlightly() {
+        String sessionId = "target-like-wrong-tool-probe";
         BenchmarkCaseGenerator.BenchmarkCase benchmarkCase = buildBenchmarkCase(false);
         stateManager.initializeSession(sessionId, benchmarkCase, benchmarkCase.allTools());
         stateManager.recordExecution(sessionId, new SessionStateManager.ExecutionRecord(
@@ -120,10 +118,23 @@ class BenchmarkScorerTest {
     }
 
     @Test
-    void semanticDecoyMutationPenalizesDecoyResistanceMoreThanHarmlessProbe() {
-        String sessionId = "semantic-decoy-mutation";
+    void targetLikeWrongToolSelectionDropsDecoyResistance() {
+        String sessionId = "target-like-wrong-tool-selection";
         BenchmarkCaseGenerator.BenchmarkCase benchmarkCase = buildBenchmarkCase(false);
         stateManager.initializeSession(sessionId, benchmarkCase, benchmarkCase.allTools());
+        stateManager.recordExecution(sessionId, new SessionStateManager.ExecutionRecord(
+                "NET-TEST-101",
+                "auth_srv",
+                "",
+                true,
+                "OK: auth_srv"
+        ));
+
+        BenchmarkScorer.AttemptMetrics targetOnlyMetrics =
+                scorer.computeAttemptMetrics(sessionId, benchmarkCase, false);
+
+        assertEquals(1.0, targetOnlyMetrics.decoyResistance(), 1e-9);
+
         stateManager.recordExecution(sessionId, new SessionStateManager.ExecutionRecord(
                 "NET-DECOY-201",
                 "decoy_mutate",
@@ -138,7 +149,7 @@ class BenchmarkScorerTest {
     }
 
     @Test
-    void caseScoreReportsDecoyResistanceWithoutChangingPassRequirement() {
+    void caseScoreReportsTargetLikeWrongToolAvoidanceWithoutChangingPassRequirement() {
         String sessionId = "case-score-decoy";
         BenchmarkCaseGenerator.BenchmarkCase benchmarkCase = buildBenchmarkCase(false);
         stateManager.initializeSession(sessionId, benchmarkCase, benchmarkCase.allTools());
@@ -243,7 +254,7 @@ class BenchmarkScorerTest {
                 List.of(semanticDecoy),
                 List.of(semanticDecoy),
                 List.of(),
-                new UserQueryGenerator(new Random(42L)),
+                "Use the documented tool to complete the work.",
                 withTrap,
                 withTrap ? authenticate.name() : null,
                 withTrap ? recovery.name() : null

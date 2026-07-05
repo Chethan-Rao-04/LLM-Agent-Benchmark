@@ -1,5 +1,6 @@
 package org.benchmark.gen.doc_generator;
 
+import org.benchmark.gen.description.GeneratedDescriptionPolicy;
 import org.benchmark.gen.spec.BenchmarkCaseSpec;
 import org.benchmark.gen.spec.CapabilityStep;
 import org.benchmark.gen.tool_generator.CommandAbbreviator;
@@ -60,26 +61,30 @@ public class DocumentationGenerator {
                     return new CommandObject(
                             command.name(),
                             command.commandOptions(),
-                            semanticDescription(step),
+                            GeneratedDescriptionPolicy.commandDescription(
+                                    step.intent(),
+                                    command.preconditions(),
+                                    documentedEffects(command)
+                            ),
                             command.commandEffectObjects(),
                             command.preconditions(),
                             command.documentedEffects()
                     );
                 })
                 .toList();
-        return new ToolObject(tool.name(), tool.description(), tool.domain(), commands, tool.stateVariables());
+        return new ToolObject(
+                tool.name(),
+                tool.description(),
+                tool.domain(),
+                commands,
+                tool.stateVariables()
+        );
     }
 
-    private String semanticDescription(CapabilityStep step) {
-        String target = step.noun().replace('_', ' ');
-        if (step.precondition().isEmpty()) {
-            return "Prepares " + target + " for the documented workflow.";
-        }
-        if (step.effect().isEmpty()) {
-            return "Checks the current " + target + " workflow state.";
-        }
-        String stateValue = step.effect().values().iterator().next().replace('_', ' ');
-        return "Moves " + target + " toward the documented " + stateValue + " state.";
+    private List<EffectObject> documentedEffects(CommandObject command) {
+        return command.documentedEffects() != null
+                ? command.documentedEffects()
+                : command.commandEffectObjects();
     }
 
     /**

@@ -1,13 +1,13 @@
 package org.benchmark.config;
 
 import org.benchmark.gen.BenchmarkCaseGenerator;
+import org.benchmark.gen.catalog.ToolCatalogLoader;
 import org.benchmark.gen.doc_generator.DocumentationGenerator;
 import org.benchmark.gen.query_generator.UserQueryGenerator;
 import org.benchmark.gen.scenario.ScenarioLoader;
 import org.benchmark.gen.scenario.ScenarioResolver;
 import org.benchmark.gen.tool_generator.CommandDict;
 import org.benchmark.gen.tool_generator.ScenarioToolGenerator;
-import org.benchmark.gen.tool_generator.SemanticDecoyGenerator;
 import org.benchmark.gen.tool_generator.ToolSpecGenerator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -65,6 +65,16 @@ public class BenchmarkGenerationConfig {
     }
 
     /**
+     * Loads the hidden static family/workflow catalog used by the generator pipeline.
+     *
+     * @return catalog loader backed by the default YAML resource
+     */
+    @Bean
+    public ToolCatalogLoader toolCatalogLoader() {
+        return new ToolCatalogLoader();
+    }
+
+    /**
      * Builds target tools whose commands align with resolved benchmark scenarios.
      *
      * @param benchmarkRandom shared benchmark random source
@@ -74,18 +84,6 @@ public class BenchmarkGenerationConfig {
     @Bean
     public ScenarioToolGenerator scenarioToolGenerator(Random benchmarkRandom, CommandDict commandDict) {
         return new ScenarioToolGenerator(benchmarkRandom, commandDict);
-    }
-
-    /**
-     * Builds semantic decoy tools that look plausible within the same domain vocabulary.
-     *
-     * @param benchmarkRandom shared benchmark random source
-     * @param commandDict domain vocabulary dictionary
-     * @return decoy generator
-     */
-    @Bean
-    public SemanticDecoyGenerator semanticDecoyGenerator(Random benchmarkRandom, CommandDict commandDict) {
-        return new SemanticDecoyGenerator(benchmarkRandom, commandDict);
     }
 
     /**
@@ -124,10 +122,8 @@ public class BenchmarkGenerationConfig {
      * Assembles the top-level benchmark case generator from its scenario, tool, and prompt collaborators.
      *
      * @param properties benchmark configuration properties
-     * @param scenarioLoader scenario template loader
-     * @param scenarioResolver scenario resolver
+     * @param toolCatalogLoader hidden catalog loader
      * @param scenarioToolGenerator scenario-aligned tool generator
-     * @param semanticDecoyGenerator semantic distractor generator
      * @param toolSpecGenerator random distractor generator
      * @param documentationGenerator documentation renderer
      * @param userQueryGenerator user query generator
@@ -136,20 +132,16 @@ public class BenchmarkGenerationConfig {
      */
     @Bean
     public BenchmarkCaseGenerator benchmarkCaseGenerator(BenchmarkProperties properties,
-                                                         ScenarioLoader scenarioLoader,
-                                                         ScenarioResolver scenarioResolver,
-                                                         ScenarioToolGenerator scenarioToolGenerator,
-                                                         SemanticDecoyGenerator semanticDecoyGenerator,
-                                                         ToolSpecGenerator toolSpecGenerator,
-                                                         DocumentationGenerator documentationGenerator,
-                                                         UserQueryGenerator userQueryGenerator,
-                                                         Random benchmarkRandom) {
+                                                          ToolCatalogLoader toolCatalogLoader,
+                                                          ScenarioToolGenerator scenarioToolGenerator,
+                                                          ToolSpecGenerator toolSpecGenerator,
+                                                          DocumentationGenerator documentationGenerator,
+                                                          UserQueryGenerator userQueryGenerator,
+                                                          Random benchmarkRandom) {
         return new BenchmarkCaseGenerator(
                 benchmarkRandom,
-                scenarioLoader,
-                scenarioResolver,
+                toolCatalogLoader,
                 scenarioToolGenerator,
-                semanticDecoyGenerator,
                 toolSpecGenerator,
                 documentationGenerator,
                 userQueryGenerator,

@@ -18,6 +18,7 @@ class BenchmarkRunArtifactWriterTest {
                 1,
                 "abc",
                 "MAN-VALVE-123",
+                List.of("MAN-VALVE-123 -> MAN-VALVE-555"),
                 true,
                 false,
                 2,
@@ -51,7 +52,8 @@ class BenchmarkRunArtifactWriterTest {
                 Map.entry("averageStateAccuracy", 1.0),
                 Map.entry("averageEfficiency", 0.80),
                 Map.entry("averageCommandPrecision", 0.90),
-                Map.entry("averageDecoyResistance", 0.75)
+                Map.entry("averageDecoyResistance", 0.75),
+                Map.entry("averageTargetLikeWrongToolAvoidance", 0.75)
         );
 
         String markdown = writer.toMarkdown(summary, metrics, "run-123");
@@ -60,11 +62,13 @@ class BenchmarkRunArtifactWriterTest {
         assertTrue(markdown.contains("# Benchmark Run Report"));
         assertTrue(markdown.contains("## Case 1"));
         assertTrue(markdown.contains("Session: abc"));
+        assertTrue(markdown.contains("- MAN-VALVE-123 -> MAN-VALVE-555"));
+        assertTrue(markdown.contains("Target-like wrong tool avoidance: 0.75"));
         assertTrue(markdown.contains("- SUCCESS MAN-VALVE-123 rpr_vlv --retry"));
         assertTrue(markdown.contains("- MAN-VALVE-123 diag_vlv: attempt already consumed"));
-        assertTrue(markdown.contains("- Average decoy resistance: 0.75"));
+        assertTrue(markdown.contains("- Average target-like wrong tool avoidance: 0.75"));
 
-        assertTrue(csv.contains("case,session,passed,score,attempts,executions,toolSelection,stepCompletion,orderingAccuracy,stateAccuracy,efficiency,commandPrecision,decoyResistance,recovery"));
+        assertTrue(csv.contains("case,session,passed,score,attempts,executions,toolSelection,stepCompletion,orderingAccuracy,stateAccuracy,efficiency,commandPrecision,targetLikeWrongToolAvoidance,recovery"));
         assertTrue(csv.contains("1,abc,true,0.860,2,4,1.00,1.00,0.75,1.00,0.80,0.90,0.75,false"));
     }
 }

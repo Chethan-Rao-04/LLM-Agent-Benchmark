@@ -64,6 +64,7 @@ public class BenchmarkCaseLogger {
         payload.put("expectedState", benchmarkCase.expectedState());
         payload.put("candidateTools", benchmarkCase.allTools().stream().map(ToolObject::name).toList());
         payload.put("semanticDecoys", benchmarkCase.semanticDecoys().stream().map(ToolObject::name).toList());
+        payload.put("targetLikeWrongTools", targetLikeWrongToolPairs(benchmarkCase));
         payload.put("randomDistractors", benchmarkCase.randomDistractors().stream().map(ToolObject::name).toList());
         payload.put("documentComplexity", properties.getDocumentComplexity());
         CommandObject trap = benchmarkCase.trapCommand();
@@ -84,7 +85,8 @@ public class BenchmarkCaseLogger {
                 targetSteps:
                 {}
                 availableTools: {}
-                semanticDecoys: {}
+                targetLikeWrongTools:
+                {}
                 randomDistractors: {}
                 """,
                 index,
@@ -94,7 +96,7 @@ public class BenchmarkCaseLogger {
                 benchmarkCase.scenario().patternName(),
                 formatTargetSteps(benchmarkCase),
                 benchmarkCase.allTools().size(),
-                benchmarkCase.semanticDecoys().size(),
+                formatTargetLikeWrongTools(benchmarkCase),
                 benchmarkCase.randomDistractors().size());
         if (trap != null) {
             log.info("""
@@ -168,6 +170,7 @@ public class BenchmarkCaseLogger {
         payload.put("efficiency", metrics.efficiency());
         payload.put("commandPrecision", metrics.commandPrecision());
         payload.put("decoyResistance", metrics.decoyResistance());
+        payload.put("targetLikeWrongToolAvoidance", metrics.decoyResistance());
         payload.put("scenarioComplete", metrics.scenarioComplete());
         payload.put("goalAchieved", metrics.goalAchieved());
         payload.put("executionsTotal", metrics.executionsTotal());
@@ -220,6 +223,8 @@ public class BenchmarkCaseLogger {
         payload.put("finalStateScore", score.stateAccuracy());
         payload.put("commandPrecision", score.commandPrecision());
         payload.put("decoyResistance", score.decoyResistance());
+        payload.put("targetLikeWrongToolAvoidance", score.decoyResistance());
+        payload.put("targetLikeWrongTools", targetLikeWrongToolPairs(benchmarkCase));
         payload.put("targetToolState", stateManager.getToolStateSnapshot(sessionId, benchmarkCase.targetToolObject().name()));
         payload.put("sessionState", stateManager.getSessionStateSnapshot(sessionId));
         payload.put("executionLog", stateManager.executionLog(sessionId));
@@ -241,7 +246,7 @@ public class BenchmarkCaseLogger {
                   stateAccuracy: {}
                   efficiency: {}
                   commandPrecision: {}
-                  decoyResistance: {}
+                  targetLikeWrongToolAvoidance: {}
                 """,
                 score.passed() ? "SUCCESS" : "FAILURE",
                 score.recovery(),
@@ -275,6 +280,23 @@ public class BenchmarkCaseLogger {
                 .map(s -> formatTargetStep(benchmarkCase.targetToolObject(),
                         CommandAbbreviator.commandName(s.verb(), s.noun())))
                 .map(step -> "  - " + step)
+                .collect(Collectors.joining(System.lineSeparator()));
+    }
+
+    private List<Map<String, String>> targetLikeWrongToolPairs(BenchmarkCaseGenerator.BenchmarkCase benchmarkCase) {
+        String targetTool = benchmarkCase.targetToolObject().name();
+        return benchmarkCase.semanticDecoys().stream()
+                .map(decoy -> Map.of("targetTool", targetTool, "wrongTool", decoy.name()))
+                .toList();
+    }
+
+    private String formatTargetLikeWrongTools(BenchmarkCaseGenerator.BenchmarkCase benchmarkCase) {
+        if (benchmarkCase.semanticDecoys().isEmpty()) {
+            return "  none";
+        }
+        String targetTool = benchmarkCase.targetToolObject().name();
+        return benchmarkCase.semanticDecoys().stream()
+                .map(decoy -> "  - " + targetTool + " -> " + decoy.name())
                 .collect(Collectors.joining(System.lineSeparator()));
     }
 

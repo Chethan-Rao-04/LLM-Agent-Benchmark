@@ -1,7 +1,12 @@
 package org.benchmark.gen.tool_generator;
 
+import org.benchmark.gen.catalog.OptionProfile;
+import org.benchmark.gen.catalog.ToolCatalog;
+import org.benchmark.gen.catalog.ToolFamily;
+import org.benchmark.gen.catalog.WorkflowStepTemplate;
+import org.benchmark.gen.catalog.WorkflowTemplate;
+import org.benchmark.gen.description.GeneratedDescriptionPolicy;
 import org.benchmark.gen.scenario.ResolvedScenario;
-import org.benchmark.gen.scenario.ResolvedStep;
 import org.benchmark.gen.spec.BenchmarkCaseSpec;
 import org.benchmark.gen.spec.CapabilityStep;
 import org.benchmark.model.enums.EffectOp;
@@ -61,14 +66,22 @@ public class ScenarioToolGenerator {
      * @return tool specification plus optional trap and recovery command names
      */
     public ToolGenerationResult generateTool(ResolvedScenario scenario, boolean includeTrapCommand) {
-        return generateTool(BenchmarkCaseSpec.fromScenario(scenario, 0, 0), includeTrapCommand);
+        return generateTool(BenchmarkCaseSpec.fromScenario(scenario, 0, 0), null, null, null, includeTrapCommand);
     }
 
     /**
      * Generates the target tool from the semantic benchmark case specification.
      */
     public ToolGenerationResult generateTool(BenchmarkCaseSpec spec, boolean includeTrapCommand) {
-        Map<String, String> stateVariables = buildStateSchema(spec);
+        return generateTool(spec, null, null, null, includeTrapCommand);
+    }
+
+    public ToolGenerationResult generateTool(BenchmarkCaseSpec spec,
+                                             ToolFamily family,
+                                             WorkflowTemplate workflow,
+                                             ToolCatalog catalog,
+                                             boolean includeTrapCommand) {
+        Map<String, String> stateVariables = buildStateSchema(spec, family);
         List<CommandObject> commands = new ArrayList<>();
         Set<String> usedCommandNames = new HashSet<>();
         String trapCommandName = null;
@@ -99,28 +112,31 @@ public class ScenarioToolGenerator {
         // Scenario step commands
         for (int i = 0; i < spec.capabilitySteps().size(); i++) {
             CapabilityStep step = spec.capabilitySteps().get(i);
+            WorkflowStepTemplate stepTemplate = workflowStep(workflow, i);
             String name = CommandAbbreviator.commandName(step.verb(), step.noun());
             usedCommandNames.add(name);
 
             if (trappedStepIndex != null && i == trappedStepIndex) {
-                commands.add(buildTrappedStepCommand(name, step, corruptedVar, wrongValue));
+                commands.add(buildTrappedStepCommand(name, step, stepTemplate, catalog, corruptedVar, wrongValue));
                 trapCommandName = name;
             } else {
-                commands.add(buildStepCommand(name, step));
+                commands.add(buildStepCommand(name, step, stepTemplate, catalog));
             }
         }
 
         if (trapCommandName != null) {
             CommandObject recovery = buildRecoveryCommand(
-                    spec, corruptedVar, wrongValue, correctValue, usedCommandNames);
+                    spec, family, corruptedVar, wrongValue, correctValue, usedCommandNames);
             if (recovery == null) {
                 trapCommandName = null;
                 commands.clear();
                 usedCommandNames.clear();
-                for (CapabilityStep step : spec.capabilitySteps()) {
+                for (int i = 0; i < spec.capabilitySteps().size(); i++) {
+                    CapabilityStep step = spec.capabilitySteps().get(i);
+                    WorkflowStepTemplate stepTemplate = workflowStep(workflow, i);
                     String name = CommandAbbreviator.commandName(step.verb(), step.noun());
                     usedCommandNames.add(name);
-                    commands.add(buildStepCommand(name, step));
+                    commands.add(buildStepCommand(name, step, stepTemplate, catalog));
                 }
             } else {
                 recoveryCommandName = recovery.name();
@@ -135,15 +151,15 @@ public class ScenarioToolGenerator {
                 + (recoveryCommandName != null ? 1 : 0);
         while (commands.size() < targetSize && attempts < fillerCount * 10) {
             attempts++;
-            String verb = commandDict.getRandomVerb(spec.domain());
-            String noun = commandDict.getRandomNoun(spec.domain());
+            String[] fillerRole = fillerRole(family, spec.domain());
+            String verb = fillerRole[0];
+            String noun = fillerRole[1];
             String name = CommandAbbreviator.commandName(verb, noun);
             if (!usedCommandNames.add(name)) continue;
 
-            List<OptionEntity> options = optionGenerator.generateOptions();
             List<EffectObject> effects = generateFillerEffect(stateVariables);
-            commands.add(new CommandObject(name, options,
-                    "Executes the " + name + " operation.", effects, Map.of()));
+            commands.add(new CommandObject(name, List.of(),
+                    GeneratedDescriptionPolicy.commandDescription("support", Map.of(), effects), effects, Map.of()));
         }
 
         if (recoveryCommandName != null) {
@@ -162,8 +178,12 @@ public class ScenarioToolGenerator {
             }
         }
 
-        String toolName = commandDict.generateToolName(spec.domain());
-        String description = generateDescription(spec);
+        String toolName = family == null
+                ? commandDict.generateToolName(spec.domain())
+                : commandDict.generateToolName(spec.domain(), family.nameFragments());
+        String description = family == null
+                ? GeneratedDescriptionPolicy.toolDescription(spec.domain())
+                : GeneratedDescriptionPolicy.toolDescription(family.purpose());
         ToolObject tool = new ToolObject(toolName, description, spec.domain(), commands, stateVariables);
         return new ToolGenerationResult(tool, trapCommandName, recoveryCommandName);
     }
@@ -173,7 +193,10 @@ public class ScenarioToolGenerator {
      * correct effects, but the real effects assign a wrong value to the target
      * variable, causing the next step's precondition to fail.
      */
-    private CommandObject buildTrappedStepCommand(String name, CapabilityStep step,
+    private CommandObject buildTrappedStepCommand(String name,
+                                                  CapabilityStep step,
+                                                  WorkflowStepTemplate stepTemplate,
+                                                  ToolCatalog catalog,
                                                   String corruptedVar, String wrongValue) {
         // Documented effects: the correct ones (what the LLM expects)
         List<EffectObject> documentedEffects = new ArrayList<>();
@@ -191,8 +214,9 @@ public class ScenarioToolGenerator {
             }
         }
 
-        List<OptionEntity> options = optionGenerator.generateOptions();
-        return new CommandObject(name, options, commandDescription(step),
+        List<OptionEntity> options = resolveOptions(stepTemplate, catalog);
+        return new CommandObject(name, options,
+                GeneratedDescriptionPolicy.commandDescription(step.intent(), step.precondition(), documentedEffects),
                 realEffects, step.precondition(), documentedEffects);
     }
 
@@ -201,15 +225,15 @@ public class ScenarioToolGenerator {
      * when the bad value is actually present.
      */
     private CommandObject buildRecoveryCommand(BenchmarkCaseSpec spec,
+                                               ToolFamily family,
                                                String corruptedVar,
                                                String wrongValue,
                                                String correctValue,
                                                Set<String> usedCommandNames) {
         String recoveryName = null;
         for (int attempts = 0; attempts < 20; attempts++) {
-            String candidate = CommandAbbreviator.commandName(
-                    commandDict.getRandomVerb(spec.domain()),
-                    commandDict.getRandomNoun(spec.domain()));
+            String[] fillerRole = fillerRole(family, spec.domain());
+            String candidate = CommandAbbreviator.commandName(fillerRole[0], fillerRole[1]);
             if (usedCommandNames.add(candidate)) {
                 recoveryName = candidate;
                 break;
@@ -222,25 +246,35 @@ public class ScenarioToolGenerator {
         List<EffectObject> effects = List.of(
                 new EffectObject(corruptedVar, EffectOp.ASSIGN, correctValue)
         );
-        return new CommandObject(recoveryName, optionGenerator.generateOptions(), "Executes the " + recoveryName + " operation.",
-                effects, Map.of(corruptedVar, wrongValue));
+        Map<String, String> recoveryPreconditions = Map.of(corruptedVar, wrongValue);
+        return new CommandObject(recoveryName, List.of(),
+                GeneratedDescriptionPolicy.commandDescription("recovery", recoveryPreconditions, effects),
+                effects, recoveryPreconditions);
     }
 
     private String wrongValueFor(String correctValue) {
         return correctValue + "_" + WRONG_VALUE_SUFFIXES[random.nextInt(WRONG_VALUE_SUFFIXES.length)];
     }
 
-    private CommandObject buildStepCommand(String abbreviatedName, CapabilityStep step) {
-        List<OptionEntity> options = optionGenerator.generateOptions();
+    private CommandObject buildStepCommand(String abbreviatedName,
+                                           CapabilityStep step,
+                                           WorkflowStepTemplate stepTemplate,
+                                           ToolCatalog catalog) {
+        List<OptionEntity> options = resolveOptions(stepTemplate, catalog);
         List<EffectObject> effects = new ArrayList<>();
         for (Map.Entry<String, String> entry : step.effect().entrySet()) {
             effects.add(new EffectObject(entry.getKey(), EffectOp.ASSIGN, entry.getValue()));
         }
-        return new CommandObject(abbreviatedName, options, commandDescription(step), effects, step.precondition());
+        return new CommandObject(abbreviatedName, options,
+                GeneratedDescriptionPolicy.commandDescription(step.intent(), step.precondition(), effects),
+                effects, step.precondition());
     }
 
-    private Map<String, String> buildStateSchema(BenchmarkCaseSpec spec) {
+    private Map<String, String> buildStateSchema(BenchmarkCaseSpec spec, ToolFamily family) {
         Map<String, String> schema = new LinkedHashMap<>();
+        if (family != null) {
+            family.stateVariables().forEach(variable -> schema.put(variable, "string"));
+        }
         for (CapabilityStep step : spec.capabilitySteps()) {
             step.precondition().keySet().forEach(k -> schema.put(k, "string"));
             step.effect().keySet().forEach(k -> schema.put(k, "string"));
@@ -262,21 +296,31 @@ public class ScenarioToolGenerator {
         return List.of();
     }
 
-    private String generateDescription(BenchmarkCaseSpec spec) {
-        return String.format("Manages %s operations for %s domain.",
-                spec.intentDescription().toLowerCase().replace('_', ' '),
-                spec.domain().name().toLowerCase().replace('_', ' '));
+    private WorkflowStepTemplate workflowStep(WorkflowTemplate workflow, int index) {
+        if (workflow == null || workflow.steps().isEmpty() || index >= workflow.steps().size()) {
+            return null;
+        }
+        return workflow.steps().get(index);
     }
 
-    private String commandDescription(CapabilityStep step) {
-        String target = step.noun().replace('_', ' ');
-        if (step.precondition().isEmpty()) {
-            return "Prepares " + target + " for the next documented workflow state.";
+    private List<OptionEntity> resolveOptions(WorkflowStepTemplate stepTemplate, ToolCatalog catalog) {
+        if (stepTemplate == null || stepTemplate.optionProfile().isBlank() || catalog == null) {
+            return List.of();
         }
-        if (step.effect().isEmpty()) {
-            return "Checks the current " + target + " workflow state without changing target state.";
-        }
-        String stateValue = step.effect().values().iterator().next().replace('_', ' ');
-        return "Moves " + target + " toward the documented " + stateValue + " workflow state.";
+        OptionProfile optionProfile = catalog.optionProfile(stepTemplate.optionProfile());
+        return optionGenerator.generateOptions(optionProfile);
     }
+
+    private String[] fillerRole(ToolFamily family, org.benchmark.model.enums.Domain domain) {
+        if (family == null || family.fillerCommandRoles().isEmpty()) {
+            return new String[]{commandDict.getRandomVerb(domain), commandDict.getRandomNoun(domain)};
+        }
+        String role = family.fillerCommandRoles().get(random.nextInt(family.fillerCommandRoles().size())).trim();
+        int split = role.indexOf(' ');
+        if (split <= 0 || split == role.length() - 1) {
+            return new String[]{commandDict.getRandomVerb(domain), commandDict.getRandomNoun(domain)};
+        }
+        return new String[]{role.substring(0, split), role.substring(split + 1)};
+    }
+
 }

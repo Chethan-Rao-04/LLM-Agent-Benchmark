@@ -56,6 +56,7 @@ class BenchmarkRunSummaryAggregator {
                 caseIndex,
                 sessionId,
                 benchmarkCase.targetToolObject().name(),
+                formatTargetLikeWrongTools(benchmarkCase),
                 result.passed(),
                 result.recovery(),
                 attemptsUsed,
@@ -86,7 +87,9 @@ class BenchmarkRunSummaryAggregator {
         metrics.put("averageStateAccuracy", average(summary.totalStateAccuracy, iterations));
         metrics.put("averageEfficiency", average(summary.totalEfficiency, iterations));
         metrics.put("averageCommandPrecision", average(summary.totalCommandPrecision, iterations));
-        metrics.put("averageDecoyResistance", average(summary.totalDecoyResistance, iterations));
+        double averageTargetLikeWrongToolAvoidance = average(summary.totalDecoyResistance, iterations);
+        metrics.put("averageDecoyResistance", averageTargetLikeWrongToolAvoidance);
+        metrics.put("averageTargetLikeWrongToolAvoidance", averageTargetLikeWrongToolAvoidance);
         return metrics;
     }
 
@@ -101,6 +104,13 @@ class BenchmarkRunSummaryAggregator {
             steps.add(formatTargetStep(benchmarkCase.targetToolObject(), commandName));
         }
         return List.copyOf(steps);
+    }
+
+    private List<String> formatTargetLikeWrongTools(BenchmarkCaseGenerator.BenchmarkCase benchmarkCase) {
+        String targetTool = benchmarkCase.targetToolObject().name();
+        return benchmarkCase.semanticDecoys().stream()
+                .map(decoy -> targetTool + " -> " + decoy.name())
+                .toList();
     }
 
     private List<String> formatExecutions(List<SessionStateManager.ExecutionRecord> executionLog) {

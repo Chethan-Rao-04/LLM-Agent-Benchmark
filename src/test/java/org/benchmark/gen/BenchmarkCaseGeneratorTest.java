@@ -1,6 +1,7 @@
 package org.benchmark.gen;
 
-import org.benchmark.gen.query_generator.UserQueryGenerator;
+import org.benchmark.gen.catalog.ToolCatalogLoader;
+import org.benchmark.gen.catalog.ToolFamily;
 import org.benchmark.gen.scenario.ResolvedScenario;
 import org.benchmark.gen.scenario.ResolvedStep;
 import org.benchmark.gen.spec.BenchmarkCaseSpec;
@@ -188,6 +189,8 @@ class BenchmarkCaseGeneratorTest {
         assertEquals(benchmarkCase.scenario().description(), spec.intentDescription());
         assertEquals(benchmarkCase.scenario().domain(), spec.domain());
         assertEquals(benchmarkCase.expectedState(), spec.expectedFinalState());
+        assertFalse(spec.toolFamilyId().isBlank());
+        assertFalse(spec.workflowId().isBlank());
         assertEquals(benchmarkCase.semanticDecoys().size(), spec.decoyPlan().semanticDecoyCount());
         assertEquals(benchmarkCase.randomDistractors().size(), spec.decoyPlan().randomDistractorCount());
         assertTrue(spec.scoringPolicy().requireExpectedFinalState());
@@ -228,7 +231,7 @@ class BenchmarkCaseGeneratorTest {
                 List.of(),
                 List.of(),
                 List.of(),
-                new UserQueryGenerator(new Random(42L)),
+                "Use the documented tool to complete the work.",
                 false,
                 null,
                 null
@@ -260,32 +263,49 @@ class BenchmarkCaseGeneratorTest {
     }
 
     @Test
-    void semanticDecoysHaveExplicitKindMetadata() {
+    void targetToolDescriptionsDoNotEchoScenarioIntent() {
+        BenchmarkCaseGenerator generator = new BenchmarkCaseGenerator(DocumentComplexity.CLEAN, 42L);
+        ToolCatalogLoader catalogLoader = new ToolCatalogLoader();
+        List<BenchmarkCaseGenerator.BenchmarkCase> cases = generator.generateCases(10, 3, null);
+
+        for (BenchmarkCaseGenerator.BenchmarkCase benchmarkCase : cases) {
+            String description = benchmarkCase.targetToolObject().description();
+            ToolFamily family = catalogLoader.getCatalog().family(benchmarkCase.spec().toolFamilyId());
+
+            assertTrue(containsIgnoreCase(description, "documented procedures"));
+            assertTrue(containsIgnoreCase(description, family.purpose()));
+
+            for (CapabilityStep step : benchmarkCase.spec().capabilitySteps()) {
+                String commandName = CommandAbbreviator.commandName(step.verb(), step.noun());
+                assertFalse(containsIgnoreCase(description, commandName));
+            }
+        }
+    }
+
+    @Test
+    void semanticDecoysUseSingleNeighborToolWithTargetLikeName() {
         BenchmarkCaseGenerator generator = new BenchmarkCaseGenerator(DocumentComplexity.CLEAN, 42L);
         List<BenchmarkCaseGenerator.BenchmarkCase> cases = generator.generateCases(10, 3, Domain.MANUFACTURING);
 
-        boolean foundTaggedSemanticDecoy = false;
-        boolean foundWrongStatePathDecoy = false;
+        boolean foundSemanticDecoy = false;
         for (BenchmarkCaseGenerator.BenchmarkCase benchmarkCase : cases) {
+            assertTrue(benchmarkCase.semanticDecoys().size() <= 1,
+                    "Generation should expose at most one semantic decoy");
             assertEquals(benchmarkCase.semanticDecoys().size(),
                     benchmarkCase.semanticDecoyKindsByToolName().size());
+
             for (ToolObject decoy : benchmarkCase.semanticDecoys()) {
-                DecoyKind kind = benchmarkCase.semanticDecoyKindsByToolName().get(decoy.name());
-                assertNotNull(kind, "Semantic decoy should have a declared kind");
-                if (kind == DecoyKind.SIMILAR_COMMANDS_WRONG_STATE_PATH) {
-                    boolean hasShiftedStateValue = decoy.commands().stream()
-                            .flatMap(command -> command.commandEffectObjects().stream())
-                            .anyMatch(effect -> effect.valueRef() != null && effect.valueRef().endsWith("_alternate"));
-                    assertTrue(hasShiftedStateValue,
-                            "Wrong-state-path decoys should expose an alternate state transition");
-                    foundWrongStatePathDecoy = true;
-                }
-                foundTaggedSemanticDecoy = true;
+                assertEquals(DecoyKind.SIMILAR_INTENT_WRONG_RESOURCE,
+                        benchmarkCase.semanticDecoyKindsByToolName().get(decoy.name()));
+                assertNotEquals(benchmarkCase.targetToolObject().name(), decoy.name());
+                assertEquals(toolNamePrefix(benchmarkCase.targetToolObject().name()), toolNamePrefix(decoy.name()));
+                assertNotEquals(benchmarkCase.targetToolObject().description(), decoy.description(),
+                        "Semantic decoys should come from a neighboring family, not a renamed target clone");
+                foundSemanticDecoy = true;
             }
         }
 
-        assertTrue(foundTaggedSemanticDecoy, "Generated cases should include tagged semantic decoys");
-        assertTrue(foundWrongStatePathDecoy, "Generated cases should include a wrong-state-path semantic decoy");
+        assertTrue(foundSemanticDecoy, "Generated cases should include semantic decoys");
     }
 
     @Test
@@ -313,6 +333,41 @@ class BenchmarkCaseGeneratorTest {
     }
 
     @Test
+    void semanticDecoyDescriptionsUseNeutralPolicy() {
+        BenchmarkCaseGenerator generator = new BenchmarkCaseGenerator(DocumentComplexity.CLEAN, 42L);
+        List<BenchmarkCaseGenerator.BenchmarkCase> cases = generator.generateCases(10, 3, Domain.MANUFACTURING);
+
+        boolean checkedSemanticDecoy = false;
+        boolean foundDistinctDescription = false;
+        for (BenchmarkCaseGenerator.BenchmarkCase benchmarkCase : cases) {
+            String targetDescription = benchmarkCase.targetToolObject().description();
+            for (ToolObject decoy : benchmarkCase.semanticDecoys()) {
+                checkedSemanticDecoy = true;
+                assertTrue(containsIgnoreCase(decoy.description(), "documented procedures"));
+                if (!targetDescription.equals(decoy.description())) {
+                    foundDistinctDescription = true;
+                }
+
+                for (CommandObject command : decoy.commands()) {
+                    assertFalse(containsIgnoreCase(command.description(), command.name()));
+                    assertFalse(command.description().startsWith("Executes the "));
+                    assertTrue(containsIgnoreCase(command.description(), "documented"));
+                    for (var effect : command.commandEffectObjects()) {
+                        assertFalse(containsIgnoreCase(command.description(), effect.variable()));
+                        if (effect.valueRef() != null) {
+                            assertFalse(containsIgnoreCase(command.description(), effect.valueRef()));
+                            assertFalse(containsIgnoreCase(command.description(), effect.valueRef().replace('_', ' ')));
+                        }
+                    }
+                }
+            }
+        }
+
+        assertTrue(checkedSemanticDecoy, "Generated cases should include semantic decoys");
+        assertTrue(foundDistinctDescription, "Semantic decoys should carry family-specific descriptions");
+    }
+
+    @Test
     void goalQueryIsNotEmpty() {
         BenchmarkCaseGenerator generator = new BenchmarkCaseGenerator(DocumentComplexity.CLEAN, 42L);
         List<BenchmarkCaseGenerator.BenchmarkCase> cases = generator.generateCases(5, 2, null);
@@ -336,6 +391,7 @@ class BenchmarkCaseGeneratorTest {
                 String commandName = CommandAbbreviator.commandName(step.verb(), step.noun());
                 assertFalse(query.contains(commandName), "Query should not leak proprietary command names");
             }
+            assertFalse(containsIgnoreCase(query, benchmarkCase.spec().toolFamilyId()));
         }
     }
 
@@ -546,6 +602,32 @@ class BenchmarkCaseGeneratorTest {
     }
 
     @Test
+    void targetSupportAndRecoveryCommandsHaveNoOptions() {
+        BenchmarkCaseGenerator generator = new BenchmarkCaseGenerator(DocumentComplexity.CLEAN, 42L, true);
+        List<BenchmarkCaseGenerator.BenchmarkCase> cases = generator.generateCases(25, 3, null);
+
+        boolean checkedRecoveryCommand = false;
+        for (BenchmarkCaseGenerator.BenchmarkCase benchmarkCase : cases) {
+            Set<String> workflowCommandNames = benchmarkCase.targetSteps().stream()
+                    .map(step -> CommandAbbreviator.commandName(step.verb(), step.noun()))
+                    .collect(Collectors.toSet());
+
+            for (CommandObject command : benchmarkCase.targetToolObject().commands()) {
+                if (workflowCommandNames.contains(command.name())) {
+                    continue;
+                }
+                assertTrue(command.commandOptions().isEmpty(),
+                        "Support and recovery commands should not carry generic options");
+                if (command.name().equals(benchmarkCase.recoveryCommandName())) {
+                    checkedRecoveryCommand = true;
+                }
+            }
+        }
+
+        assertTrue(checkedRecoveryCommand, "Trap-enabled generation should include a recovery command to verify");
+    }
+
+    @Test
     void generatedOptionsAvoidFlagsWithUnsupportedRuntimeSemantics() {
         BenchmarkCaseGenerator generator = new BenchmarkCaseGenerator(DocumentComplexity.CLEAN, 42L);
         List<BenchmarkCaseGenerator.BenchmarkCase> cases = generator.generateCases(10, 3, null);
@@ -562,5 +644,14 @@ class BenchmarkCaseGeneratorTest {
                 }
             }
         }
+    }
+
+    private boolean containsIgnoreCase(String text, String value) {
+        return text.toLowerCase().contains(value.toLowerCase());
+    }
+
+    private String toolNamePrefix(String toolName) {
+        int suffixStart = toolName.lastIndexOf('-');
+        return suffixStart > 0 ? toolName.substring(0, suffixStart) : toolName;
     }
 }

@@ -361,7 +361,7 @@ class BenchmarkToolServiceTest {
                 List.of(),
                 List.of(),
                 List.of(),
-                new UserQueryGenerator(new Random(42)),
+                "Use the documented tool to complete the work.",
                 false,
                 null,
                 null
@@ -403,7 +403,7 @@ class BenchmarkToolServiceTest {
                 List.of(),
                 List.of(),
                 List.of(),
-                new UserQueryGenerator(new Random(42)),
+                "Use the documented tool to complete the work.",
                 false,
                 null,
                 null
@@ -443,7 +443,7 @@ class BenchmarkToolServiceTest {
                 List.of(),
                 List.of(),
                 List.of(),
-                new UserQueryGenerator(new Random(42)),
+                "Use the documented tool to complete the work.",
                 false,
                 null,
                 null

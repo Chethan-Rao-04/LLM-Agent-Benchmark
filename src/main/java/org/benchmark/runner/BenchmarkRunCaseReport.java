@@ -9,6 +9,7 @@ record BenchmarkRunCaseReport(
         int caseIndex,
         String sessionId,
         String targetTool,
+        List<String> targetLikeWrongTools,
         boolean passed,
         boolean recovery,
         int attemptsUsed,

@@ -23,8 +23,19 @@ public record BenchmarkCaseSpec(
         List<CapabilityStep> capabilitySteps,
         Map<String, String> expectedFinalState,
         DecoyPlan decoyPlan,
-        ScoringPolicy scoringPolicy
+        ScoringPolicy scoringPolicy,
+        String toolFamilyId,
+        String workflowId
 ) {
+    public BenchmarkCaseSpec(String intentDescription,
+                             Domain domain,
+                             List<CapabilityStep> capabilitySteps,
+                             Map<String, String> expectedFinalState,
+                             DecoyPlan decoyPlan,
+                             ScoringPolicy scoringPolicy) {
+        this(intentDescription, domain, capabilitySteps, expectedFinalState, decoyPlan, scoringPolicy, "", "");
+    }
+
     public BenchmarkCaseSpec {
         intentDescription = Objects.requireNonNull(intentDescription, "intentDescription must not be null");
         domain = Objects.requireNonNull(domain, "domain must not be null");
@@ -32,6 +43,8 @@ public record BenchmarkCaseSpec(
         expectedFinalState = Map.copyOf(Objects.requireNonNull(expectedFinalState, "expectedFinalState must not be null"));
         decoyPlan = Objects.requireNonNull(decoyPlan, "decoyPlan must not be null");
         scoringPolicy = Objects.requireNonNull(scoringPolicy, "scoringPolicy must not be null");
+        toolFamilyId = toolFamilyId == null ? "" : toolFamilyId;
+        workflowId = workflowId == null ? "" : workflowId;
     }
 
     /**

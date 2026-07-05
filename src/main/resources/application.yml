@@ -14,7 +14,7 @@ spring:
 
 benchmark:
   iterations: 4
-  distractor-count: 8
+  distractor-count: 9
   max-execution-steps: 8
   max-executions-per-attempt: 1
   max-repeated-command-failures-per-attempt: 1

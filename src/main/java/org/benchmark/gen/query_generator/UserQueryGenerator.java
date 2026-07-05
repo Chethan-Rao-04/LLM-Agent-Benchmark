@@ -1,5 +1,7 @@
 package org.benchmark.gen.query_generator;
 
+import org.benchmark.gen.catalog.ToolFamily;
+import org.benchmark.gen.catalog.WorkflowTemplate;
 import org.benchmark.gen.scenario.ResolvedScenario;
 import org.benchmark.gen.spec.BenchmarkCaseSpec;
 import org.benchmark.gen.spec.CapabilityStep;
@@ -53,6 +55,24 @@ public class UserQueryGenerator {
         return String.format(pick(GOAL_TEMPLATES), target, finalState);
     }
 
+    public String generateGoalQuery(BenchmarkCaseSpec spec,
+                                    ToolFamily family,
+                                    WorkflowTemplate workflow) {
+        String finalState = readableFinalState(spec, spec.capabilitySteps().get(spec.capabilitySteps().size() - 1));
+        if (family != null && !family.querySymptoms().isEmpty()) {
+            return formatTemplate(pick(family.querySymptoms()), finalState);
+        }
+        if (workflow != null && !workflow.queryOutcomes().isEmpty()) {
+            return formatTemplate(pick(workflow.queryOutcomes()), finalState);
+        }
+
+        String indirectTemplate = "Complete the documented workflow so the affected service path ends %s.";
+        if (workflow != null && !workflow.intent().isBlank()) {
+            indirectTemplate = "Use the documented tool to " + workflow.intent().toLowerCase() + " and leave the result %s.";
+        }
+        return formatTemplate(indirectTemplate, finalState);
+    }
+
     private String readableTarget(CapabilityStep lastStep) {
         return lastStep.noun().replace('_', ' ');
     }
@@ -69,5 +89,15 @@ public class UserQueryGenerator {
 
     private String pick(String[] values) {
         return values[random.nextInt(values.length)];
+    }
+
+    private String pick(List<String> values) {
+        return values.get(random.nextInt(values.size()));
+    }
+
+    private String formatTemplate(String template, String finalState) {
+        return template.contains("%s")
+                ? String.format(template, finalState)
+                : template;
     }
 }

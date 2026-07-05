@@ -126,7 +126,7 @@ class DocumentationGeneratorTest {
     }
 
     @Test
-    void targetDocumentationUsesSemanticDescriptions() {
+    void targetDocumentationUsesNeutralSemanticDescriptions() {
         BenchmarkCaseGenerator benchmarkGenerator = new BenchmarkCaseGenerator(DocumentComplexity.CLEAN, 42L);
         BenchmarkCaseGenerator.BenchmarkCase benchmarkCase =
                 benchmarkGenerator.generateCases(1, 2, Domain.MANUFACTURING).getFirst();
@@ -136,7 +136,33 @@ class DocumentationGeneratorTest {
             assertTrue(benchmarkCase.caseManual().contains("## " + commandName));
             assertFalse(benchmarkCase.caseManual().contains(
                     "Description: Executes the " + commandName + " operation."));
+
+            String descriptionLine = commandDescriptionLine(benchmarkCase.caseManual(), commandName);
+            assertFalse(containsIgnoreCase(descriptionLine, commandName));
+            assertFalse(containsIgnoreCase(descriptionLine, step.noun()));
+            assertFalse(containsIgnoreCase(descriptionLine, step.noun().replace('_', ' ')));
+
+            for (Map.Entry<String, String> effect : step.effect().entrySet()) {
+                assertFalse(containsIgnoreCase(descriptionLine, effect.getKey()));
+                assertFalse(containsIgnoreCase(descriptionLine, effect.getValue()));
+                assertFalse(containsIgnoreCase(descriptionLine, effect.getValue().replace('_', ' ')));
+            }
         }
+    }
+
+    private String commandDescriptionLine(String manual, String commandName) {
+        String marker = "## " + commandName;
+        int commandStart = manual.indexOf(marker);
+        assertTrue(commandStart >= 0);
+        int descriptionStart = manual.indexOf("Description: ", commandStart);
+        assertTrue(descriptionStart >= 0);
+        int descriptionEnd = manual.indexOf('\n', descriptionStart);
+        assertTrue(descriptionEnd > descriptionStart);
+        return manual.substring(descriptionStart, descriptionEnd);
+    }
+
+    private boolean containsIgnoreCase(String text, String value) {
+        return text.toLowerCase().contains(value.toLowerCase());
     }
 
 }

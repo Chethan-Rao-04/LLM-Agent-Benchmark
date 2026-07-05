@@ -3,8 +3,10 @@ package org.benchmark.gen.tool_generator;
 import org.benchmark.model.enums.Domain;
 import org.benchmark.model.objects.OptionEntity;
 
+import java.util.Arrays;
 import java.util.Random;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -99,6 +101,15 @@ public class CommandDict {
                 (100 + random.nextInt(900));
     }
 
+    public String generateToolName(Domain domain, List<String> nameFragments) {
+        if (nameFragments == null || nameFragments.isEmpty()) {
+            return generateToolName(domain);
+        }
+        return domain.name().substring(0, 3).toUpperCase() + "-"
+                + compactToolFragment(pickOne(nameFragments)) + "-"
+                + (100 + random.nextInt(900));
+    }
+
 
     /**
      * Returns a random command verb for the given domain.
@@ -165,5 +176,16 @@ public class CommandDict {
 
     private String pickOne(List<String> list) {
         return list.get(random.nextInt(list.size()));
+    }
+
+    private String compactToolFragment(String fragment) {
+        String normalized = fragment == null ? "" : fragment.trim();
+        if (normalized.isBlank()) {
+            return "TOOL";
+        }
+        return Arrays.stream(normalized.split("[^A-Za-z0-9]+"))
+                .filter(part -> !part.isBlank())
+                .map(part -> part.substring(0, Math.min(3, part.length())).toUpperCase())
+                .collect(Collectors.joining());
     }
 }

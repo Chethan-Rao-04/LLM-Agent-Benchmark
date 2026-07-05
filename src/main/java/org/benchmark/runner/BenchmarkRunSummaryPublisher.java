@@ -42,6 +42,8 @@ class BenchmarkRunSummaryPublisher {
         log.info("Average state accuracy: {}", formatDecimal(summaryMetrics.get("averageStateAccuracy").doubleValue(), 2));
         log.info("Average efficiency: {}", formatDecimal(summaryMetrics.get("averageEfficiency").doubleValue(), 2));
         log.info("Average command precision: {}", formatDecimal(summaryMetrics.get("averageCommandPrecision").doubleValue(), 2));
+        log.info("Average target-like wrong tool avoidance: {}",
+                formatDecimal(summaryMetrics.get("averageTargetLikeWrongToolAvoidance").doubleValue(), 2));
 
         eventLogger.logEvent("benchmark_run_completed", buildSummaryPayload(summaryMetrics, benchmarkRunId));
         artifactWriter.writeArtifacts(summary, summaryMetrics, benchmarkRunId);
