@@ -56,14 +56,30 @@ public record ToolCatalog(
     private static void validate(List<ToolFamily> families,
                                  List<WorkflowTemplate> workflows,
                                  List<OptionProfile> optionProfiles) {
+        for (OptionProfile optionProfile : optionProfiles) {
+            if (optionProfile.style() == OptionProfileStyle.REQUIRED
+                    && optionProfile.allowedFlags().isEmpty()) {
+                throw new IllegalStateException("Required option profile '" + optionProfile.id()
+                        + "' must declare at least one allowed flag");
+            }
+        }
+
         for (ToolFamily family : families) {
-            for (String workflowId : family.workflowIds()) {
-                boolean present = workflows.stream()
-                        .anyMatch(workflow -> workflow.id().equals(workflowId) && workflow.familyId().equals(family.id()));
-                if (!present) {
+            if (family.fillerCommandRoles().isEmpty()) {
+                throw new IllegalStateException("Family '" + family.id()
+                        + "' must declare at least one filler command role");
+            }
+            for (String fillerCommandRole : family.fillerCommandRoles()) {
+                int separator = fillerCommandRole.indexOf(' ');
+                if (separator <= 0 || separator == fillerCommandRole.length() - 1) {
                     throw new IllegalStateException("Family '" + family.id()
-                            + "' references missing workflow '" + workflowId + "'");
+                            + "' has invalid filler command role '" + fillerCommandRole + "'");
                 }
+            }
+            boolean hasWorkflow = workflows.stream()
+                    .anyMatch(workflow -> workflow.familyId().equals(family.id()));
+            if (!hasWorkflow) {
+                throw new IllegalStateException("Family '" + family.id() + "' has no workflows");
             }
             for (String decoyFamilyId : family.decoyFamilyIds()) {
                 ToolFamily decoyFamily = families.stream()

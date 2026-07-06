@@ -1,0 +1,40 @@
+optionProfiles:
+  - id: confirm_required
+    style: REQUIRED
+    allowedFlags: [confirm]
+    valueMode: NONE
+
+families:
+  - id: router_mesh
+    domain: NETWORK_INFRA
+    purpose: route repair and uplink stabilization
+    nameFragments: [routex]
+    decoyFamilyIds: []
+    stateVariables: [auth_token, route_state, service_state]
+    fillerCommandRoles: [inspect]
+    querySymptoms:
+      - "Restore routing service and leave connectivity %s."
+
+workflows:
+  - id: route_repair_sequence
+    familyId: router_mesh
+    intent: Restore route handling and verify service readiness
+    steps:
+      - role: authenticate
+        verbSeeds: [authenticate]
+        nounSeeds: [server]
+        preconditionTemplate: {}
+        effectTemplate: { auth_token: valid }
+        optionProfile: confirm_required
+      - role: repair
+        verbSeeds: [configure]
+        nounSeeds: [router]
+        preconditionTemplate: { auth_token: valid }
+        effectTemplate: { route_state: repaired }
+        optionProfile: confirm_required
+      - role: verify
+        verbSeeds: [verify]
+        nounSeeds: [service]
+        preconditionTemplate: { route_state: repaired }
+        effectTemplate: { service_state: verified }
+        optionProfile: confirm_required

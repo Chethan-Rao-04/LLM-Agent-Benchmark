@@ -81,6 +81,11 @@ public class ScenarioToolGenerator {
                                              WorkflowTemplate workflow,
                                              ToolCatalog catalog,
                                              boolean includeTrapCommand) {
+        boolean catalogBacked = family != null || workflow != null || catalog != null;
+        if (catalogBacked && (family == null || workflow == null || catalog == null)) {
+            throw new IllegalStateException("Catalog-backed tool generation requires family, workflow, and catalog");
+        }
+
         Map<String, String> stateVariables = buildStateSchema(spec, family);
         List<CommandObject> commands = new ArrayList<>();
         Set<String> usedCommandNames = new HashSet<>();
@@ -297,14 +302,18 @@ public class ScenarioToolGenerator {
     }
 
     private WorkflowStepTemplate workflowStep(WorkflowTemplate workflow, int index) {
-        if (workflow == null || workflow.steps().isEmpty() || index >= workflow.steps().size()) {
+        if (workflow == null) {
             return null;
+        }
+        if (index < 0 || index >= workflow.steps().size()) {
+            throw new IllegalStateException("Workflow '" + workflow.id()
+                    + "' is missing step metadata at index " + index);
         }
         return workflow.steps().get(index);
     }
 
     private List<OptionEntity> resolveOptions(WorkflowStepTemplate stepTemplate, ToolCatalog catalog) {
-        if (stepTemplate == null || stepTemplate.optionProfile().isBlank() || catalog == null) {
+        if (stepTemplate == null || stepTemplate.optionProfile().isBlank()) {
             return List.of();
         }
         OptionProfile optionProfile = catalog.optionProfile(stepTemplate.optionProfile());
@@ -312,14 +321,15 @@ public class ScenarioToolGenerator {
     }
 
     private String[] fillerRole(ToolFamily family, org.benchmark.model.enums.Domain domain) {
-        if (family == null || family.fillerCommandRoles().isEmpty()) {
+        if (family == null) {
             return new String[]{commandDict.getRandomVerb(domain), commandDict.getRandomNoun(domain)};
+        }
+        if (family.fillerCommandRoles().isEmpty()) {
+            throw new IllegalStateException("Tool family '" + family.id()
+                    + "' must declare at least one filler command role");
         }
         String role = family.fillerCommandRoles().get(random.nextInt(family.fillerCommandRoles().size())).trim();
         int split = role.indexOf(' ');
-        if (split <= 0 || split == role.length() - 1) {
-            return new String[]{commandDict.getRandomVerb(domain), commandDict.getRandomNoun(domain)};
-        }
         return new String[]{role.substring(0, split), role.substring(split + 1)};
     }
 

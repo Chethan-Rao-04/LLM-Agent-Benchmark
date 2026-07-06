@@ -17,7 +17,6 @@ import org.benchmark.gen.spec.ScoringPolicy;
 import org.benchmark.gen.tool_generator.CommandDict;
 import org.benchmark.gen.tool_generator.CommandAbbreviator;
 import org.benchmark.gen.tool_generator.ScenarioToolGenerator;
-import org.benchmark.gen.tool_generator.ToolSpecGenerator;
 import org.benchmark.model.enums.DocumentComplexity;
 import org.benchmark.model.enums.Domain;
 import org.benchmark.model.objects.ToolObject;
@@ -45,7 +44,6 @@ public class BenchmarkCaseGenerator {
     private final Random random;
     private final ToolCatalog catalog;
     private final ScenarioToolGenerator scenarioToolGenerator;
-    private final ToolSpecGenerator toolSpecGenerator;
     private final DocumentationGenerator documentationGenerator;
     private final UserQueryGenerator queryGenerator;
     private final DocumentComplexity documentationComplexity;
@@ -57,7 +55,6 @@ public class BenchmarkCaseGenerator {
     public BenchmarkCaseGenerator(Random random,
                                   ToolCatalogLoader toolCatalogLoader,
                                   ScenarioToolGenerator scenarioToolGenerator,
-                                  ToolSpecGenerator toolSpecGenerator,
                                   DocumentationGenerator documentationGenerator,
                                   UserQueryGenerator queryGenerator,
                                   DocumentComplexity documentationComplexity,
@@ -65,7 +62,6 @@ public class BenchmarkCaseGenerator {
         this.random = Objects.requireNonNull(random, "random must not be null");
         this.catalog = Objects.requireNonNull(toolCatalogLoader, "toolCatalogLoader must not be null").getCatalog();
         this.scenarioToolGenerator = Objects.requireNonNull(scenarioToolGenerator, "scenarioToolGenerator must not be null");
-        this.toolSpecGenerator = Objects.requireNonNull(toolSpecGenerator, "toolSpecGenerator must not be null");
         this.documentationGenerator = Objects.requireNonNull(documentationGenerator, "documentationGenerator must not be null");
         this.queryGenerator = Objects.requireNonNull(queryGenerator, "queryGenerator must not be null");
         this.documentationComplexity = documentationComplexity == null ? DocumentComplexity.CLEAN : documentationComplexity;
@@ -85,7 +81,6 @@ public class BenchmarkCaseGenerator {
                 random,
                 new ToolCatalogLoader(),
                 new ScenarioToolGenerator(random, new CommandDict(random)),
-                new ToolSpecGenerator(random),
                 new DocumentationGenerator(),
                 new UserQueryGenerator(random),
                 documentationComplexity,
@@ -257,18 +252,19 @@ public class BenchmarkCaseGenerator {
                 .filter(family -> !family.id().equals(targetFamily.id()))
                 .filter(family -> !targetFamily.decoyFamilyIds().contains(family.id()))
                 .toList();
+        if (unrelatedFamilies.isEmpty()) {
+            throw new IllegalStateException("No unrelated catalog families available for domain "
+                    + domain + " and family '" + targetFamily.id() + "'");
+        }
         List<ToolObject> distractors = new ArrayList<>(count);
 
         for (int index = 0; index < count; index++) {
-            ToolObject distractor = unrelatedFamilies.isEmpty()
-                    ? generateFallbackDistractor(domain, usedToolNames)
-                    : generateCatalogDistractor(unrelatedFamilies, usedToolNames);
+            ToolObject distractor = generateCatalogDistractor(unrelatedFamilies, usedToolNames);
             if (distractor == null) {
-                distractor = generateFallbackDistractor(domain, usedToolNames);
+                throw new IllegalStateException("Unable to generate " + count
+                        + " unique catalog distractors for family '" + targetFamily.id() + "'");
             }
-            if (distractor != null) {
-                distractors.add(distractor);
-            }
+            distractors.add(distractor);
         }
         return distractors;
     }
@@ -285,16 +281,6 @@ public class BenchmarkCaseGenerator {
                     catalog,
                     false
             ).tool();
-            if (usedToolNames.add(tool.name())) {
-                return tool;
-            }
-        }
-        return null;
-    }
-
-    private ToolObject generateFallbackDistractor(Domain domain, Set<String> usedToolNames) {
-        for (int attempts = 0; attempts < 20; attempts++) {
-            ToolObject tool = toolSpecGenerator.generateTool(domain);
             if (usedToolNames.add(tool.name())) {
                 return tool;
             }
@@ -328,10 +314,6 @@ public class BenchmarkCaseGenerator {
         }
 
         Map<String, String> cumulativeExpectedState = computeCumulativeExpectedState(steps);
-        if (!cumulativeExpectedState.equals(workflow.expectedFinalState())) {
-            throw new IllegalStateException("Workflow '" + workflow.id()
-                    + "' expectedFinalState does not match generated cumulative state");
-        }
 
         ResolvedScenario scenario = new ResolvedScenario(
                 workflow.id(),
@@ -406,7 +388,11 @@ public class BenchmarkCaseGenerator {
     }
 
     private WorkflowTemplate pickWorkflow(ToolFamily family) {
-        return catalog.workflow(pickOne(family.workflowIds()));
+        List<WorkflowTemplate> workflows = catalog.workflowsForFamily(family.id());
+        if (workflows.isEmpty()) {
+            throw new IllegalStateException("No workflows defined for family '" + family.id() + "'");
+        }
+        return pickOne(workflows);
     }
 
     private List<ToolFamily> nonEmptyFamilies(Domain domain) {

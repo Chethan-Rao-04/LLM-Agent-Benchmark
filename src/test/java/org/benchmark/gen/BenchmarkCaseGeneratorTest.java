@@ -2,6 +2,8 @@ package org.benchmark.gen;
 
 import org.benchmark.gen.catalog.ToolCatalogLoader;
 import org.benchmark.gen.catalog.ToolFamily;
+import org.benchmark.gen.doc_generator.DocumentationGenerator;
+import org.benchmark.gen.query_generator.UserQueryGenerator;
 import org.benchmark.gen.scenario.ResolvedScenario;
 import org.benchmark.gen.scenario.ResolvedStep;
 import org.benchmark.gen.spec.BenchmarkCaseSpec;
@@ -29,6 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class BenchmarkCaseGeneratorTest {
@@ -193,7 +196,6 @@ class BenchmarkCaseGeneratorTest {
         assertFalse(spec.workflowId().isBlank());
         assertEquals(benchmarkCase.semanticDecoys().size(), spec.decoyPlan().semanticDecoyCount());
         assertEquals(benchmarkCase.randomDistractors().size(), spec.decoyPlan().randomDistractorCount());
-        assertTrue(spec.scoringPolicy().requireExpectedFinalState());
         assertTrue(spec.scoringPolicy().penalizeSemanticDecoyUse());
 
         List<ResolvedStep> scenarioSteps = benchmarkCase.scenario().steps();
@@ -643,6 +645,25 @@ class BenchmarkCaseGeneratorTest {
                 }
             }
         }
+    }
+
+    @Test
+    void generationFailsWhenCatalogCannotSupplyUnrelatedDistractors() {
+        Random random = new Random(42L);
+        BenchmarkCaseGenerator generator = new BenchmarkCaseGenerator(
+                random,
+                new ToolCatalogLoader("test-tool-catalog-single-family.yaml"),
+                new ScenarioToolGenerator(random, new CommandDict(random)),
+                new DocumentationGenerator(),
+                new UserQueryGenerator(random),
+                DocumentComplexity.CLEAN,
+                false
+        );
+
+        IllegalStateException error = assertThrows(IllegalStateException.class,
+                () -> generator.generateCases(1, 1, Domain.NETWORK_INFRA));
+
+        assertTrue(error.getMessage().contains("No unrelated catalog families available"));
     }
 
     private boolean containsIgnoreCase(String text, String value) {

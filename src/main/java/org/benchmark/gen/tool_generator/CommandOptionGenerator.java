@@ -42,7 +42,8 @@ final class CommandOptionGenerator {
             return List.of();
         }
         if (optionProfile.allowedFlags().isEmpty()) {
-            return List.of();
+            throw new IllegalStateException("Option profile '" + optionProfile.id()
+                    + "' requires at least one allowed flag");
         }
 
         String flagBase = optionProfile.allowedFlags().get(random.nextInt(optionProfile.allowedFlags().size()));

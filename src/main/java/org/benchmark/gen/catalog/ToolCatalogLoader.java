@@ -75,10 +75,8 @@ public class ToolCatalogLoader {
             families.add(new ToolFamily(
                     requireString(entry, "id", "tool family"),
                     parseEnum(Domain.class, requireString(entry, "domain", "tool family"), "tool family domain"),
-                    copyStringList(entry.get("labels"), "labels for tool family"),
                     requireString(entry, "purpose", "tool family"),
                     copyStringList(entry.get("nameFragments"), "nameFragments for tool family"),
-                    copyStringList(entry.get("workflowIds"), "workflowIds for tool family"),
                     copyStringList(entry.get("decoyFamilyIds"), "decoyFamilyIds for tool family"),
                     copyStringList(entry.get("stateVariables"), "stateVariables for tool family"),
                     copyStringList(entry.get("fillerCommandRoles"), "fillerCommandRoles for tool family"),
@@ -97,9 +95,7 @@ public class ToolCatalogLoader {
                     requireString(entry, "id", "workflow"),
                     requireString(entry, "familyId", "workflow"),
                     requireString(entry, "intent", "workflow"),
-                    parseWorkflowSteps(entry.get("steps")),
-                    toStringMap(entry.get("expectedFinalState"), "expectedFinalState for workflow"),
-                    copyStringList(entry.get("queryOutcomes"), "queryOutcomes for workflow")
+                    parseWorkflowSteps(entry.get("steps"))
             ));
         }
         return List.copyOf(workflows);

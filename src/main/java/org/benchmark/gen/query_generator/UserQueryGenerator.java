@@ -62,9 +62,6 @@ public class UserQueryGenerator {
         if (family != null && !family.querySymptoms().isEmpty()) {
             return formatTemplate(pick(family.querySymptoms()), finalState);
         }
-        if (workflow != null && !workflow.queryOutcomes().isEmpty()) {
-            return formatTemplate(pick(workflow.queryOutcomes()), finalState);
-        }
 
         String indirectTemplate = "Complete the documented workflow so the affected service path ends %s.";
         if (workflow != null && !workflow.intent().isBlank()) {

@@ -6,7 +6,6 @@ import org.benchmark.gen.doc_generator.DocumentationGenerator;
 import org.benchmark.gen.query_generator.UserQueryGenerator;
 import org.benchmark.gen.tool_generator.CommandDict;
 import org.benchmark.gen.tool_generator.ScenarioToolGenerator;
-import org.benchmark.gen.tool_generator.ToolSpecGenerator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -64,17 +63,6 @@ public class BenchmarkGenerationConfig {
     }
 
     /**
-     * Builds random distractor tools that are not tied to a scenario template.
-     *
-     * @param benchmarkRandom shared benchmark random source
-     * @return generic tool specification generator
-     */
-    @Bean
-    public ToolSpecGenerator toolSpecGenerator(Random benchmarkRandom) {
-        return new ToolSpecGenerator(benchmarkRandom);
-    }
-
-    /**
      * Produces synthetic tool documentation with the configured quality profile.
      *
      * @return documentation generator
@@ -101,7 +89,6 @@ public class BenchmarkGenerationConfig {
      * @param properties benchmark configuration properties
      * @param toolCatalogLoader hidden catalog loader
      * @param scenarioToolGenerator scenario-aligned tool generator
-     * @param toolSpecGenerator random distractor generator
      * @param documentationGenerator documentation renderer
      * @param userQueryGenerator user query generator
      * @param benchmarkRandom shared benchmark random source
@@ -111,7 +98,6 @@ public class BenchmarkGenerationConfig {
     public BenchmarkCaseGenerator benchmarkCaseGenerator(BenchmarkProperties properties,
                                                           ToolCatalogLoader toolCatalogLoader,
                                                           ScenarioToolGenerator scenarioToolGenerator,
-                                                          ToolSpecGenerator toolSpecGenerator,
                                                           DocumentationGenerator documentationGenerator,
                                                           UserQueryGenerator userQueryGenerator,
                                                           Random benchmarkRandom) {
@@ -119,7 +105,6 @@ public class BenchmarkGenerationConfig {
                 benchmarkRandom,
                 toolCatalogLoader,
                 scenarioToolGenerator,
-                toolSpecGenerator,
                 documentationGenerator,
                 userQueryGenerator,
                 properties.getDocumentComplexity(),
