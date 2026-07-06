@@ -15,6 +15,7 @@ import org.benchmark.gen.spec.DecoyKind;
 import org.benchmark.gen.spec.DecoyPlan;
 import org.benchmark.gen.spec.ScoringPolicy;
 import org.benchmark.gen.tool_generator.CommandDict;
+import org.benchmark.gen.tool_generator.CommandAbbreviator;
 import org.benchmark.gen.tool_generator.ScenarioToolGenerator;
 import org.benchmark.gen.tool_generator.ToolSpecGenerator;
 import org.benchmark.model.enums.DocumentComplexity;
@@ -320,7 +321,7 @@ public class BenchmarkCaseGenerator {
                     stepTemplate.role(),
                     step.verb(),
                     step.noun(),
-                    step.commandName(),
+                    CommandAbbreviator.commandName(step.verb(), step.noun()),
                     step.precondition(),
                     step.effect()
             ));
@@ -370,7 +371,7 @@ public class BenchmarkCaseGenerator {
                     role,
                     step.verb(),
                     step.noun(),
-                    step.commandName(),
+                    CommandAbbreviator.commandName(step.verb(), step.noun()),
                     step.precondition(),
                     step.effect()
             ));

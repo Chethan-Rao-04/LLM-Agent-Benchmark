@@ -5,10 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.benchmark.config.BenchmarkProperties;
 import org.benchmark.exec.CommandOptionNormalizer;
 import org.benchmark.exec.SessionStateManager;
-import org.benchmark.exec.SessionStateManager.CommandRejectionRecord;
 import org.benchmark.exec.SessionStateManager.ExecutionRecord;
 import org.benchmark.gen.BenchmarkCaseGenerator;
-import org.benchmark.gen.tool_generator.CommandAbbreviator;
 import org.benchmark.llm.LlmClient;
 import org.benchmark.scoring.BenchmarkScorer;
 import org.benchmark.model.objects.CommandObject;
@@ -57,12 +55,11 @@ public class BenchmarkCaseLogger {
         payload.put("userQuery", userQuery);
         payload.put("targetTool", benchmarkCase.targetToolObject().name());
         payload.put("scenarioPattern", benchmarkCase.scenario().patternName());
-        payload.put("targetSteps", benchmarkCase.targetSteps().stream()
-                .map(s -> formatTargetStep(benchmarkCase.targetToolObject(),
-                        CommandAbbreviator.commandName(s.verb(), s.noun())))
+        payload.put("targetSteps", benchmarkCase.spec().capabilitySteps().stream()
+                .map(step -> formatTargetStep(benchmarkCase.targetToolObject(), step.commandName()))
                 .toList());
         payload.put("expectedState", benchmarkCase.expectedState());
-        payload.put("candidateTools", benchmarkCase.allTools().stream().map(ToolObject::name).toList());
+        payload.put("targetTools", List.of(benchmarkCase.targetToolObject().name()));
         payload.put("semanticDecoys", benchmarkCase.semanticDecoys().stream().map(ToolObject::name).toList());
         payload.put("targetLikeWrongTools", targetLikeWrongToolPairs(benchmarkCase));
         payload.put("randomDistractors", benchmarkCase.randomDistractors().stream().map(ToolObject::name).toList());
@@ -152,7 +149,6 @@ public class BenchmarkCaseLogger {
                                     long timeTaken,
                                     LlmClient.LlmResult result,
                                     List<ExecutionRecord> newExecutions,
-                                    List<CommandRejectionRecord> rejectedCommands,
                                     String attemptFeedback,
                                     BenchmarkScorer.AttemptMetrics metrics) {
         Map<String, Object> payload = eventLogger.newEventPayload("attempt_completed");
@@ -161,7 +157,6 @@ public class BenchmarkCaseLogger {
         payload.put("tokenUsage", result.tokenUsage());
         payload.put("assistantResponse", result.content());
         payload.put("newExecutions", newExecutions);
-        payload.put("rejectedCommands", rejectedCommands);
         payload.put("attemptFeedback", attemptFeedback);
         payload.put("toolSelection", metrics.toolSelection());
         payload.put("stepCompletionRate", metrics.stepCompletionRate());
@@ -183,14 +178,11 @@ public class BenchmarkCaseLogger {
                 tokens: {}
                 executions:
                 {}
-                rejectedCommands:
-                {}
                 """,
                 attempt,
                 timeTaken,
                 result.tokenUsage(),
-                formatExecutions(newExecutions),
-                formatRejections(rejectedCommands));
+                formatExecutions(newExecutions));
     }
 
     /**
@@ -276,9 +268,8 @@ public class BenchmarkCaseLogger {
     }
 
     private String formatTargetSteps(BenchmarkCaseGenerator.BenchmarkCase benchmarkCase) {
-        return benchmarkCase.targetSteps().stream()
-                .map(s -> formatTargetStep(benchmarkCase.targetToolObject(),
-                        CommandAbbreviator.commandName(s.verb(), s.noun())))
+        return benchmarkCase.spec().capabilitySteps().stream()
+                .map(step -> formatTargetStep(benchmarkCase.targetToolObject(), step.commandName()))
                 .map(step -> "  - " + step)
                 .collect(Collectors.joining(System.lineSeparator()));
     }
@@ -318,28 +309,6 @@ public class BenchmarkCaseLogger {
                      message: %s""".formatted(
                 index,
                 record.success() ? "SUCCESS" : "ERROR",
-                record.toolName(),
-                record.commandName(),
-                CommandOptionNormalizer.formatForModel(record.option()),
-                blankSafe(record.message(), "none"));
-    }
-
-    private String formatRejections(List<CommandRejectionRecord> rejections) {
-        if (rejections == null || rejections.isEmpty()) {
-            return "  none";
-        }
-        return java.util.stream.IntStream.range(0, rejections.size())
-                .mapToObj(i -> formatRejection(i + 1, rejections.get(i)))
-                .collect(Collectors.joining(System.lineSeparator()));
-    }
-
-    private String formatRejection(int index, CommandRejectionRecord record) {
-        return """
-                  %d. tool: %s
-                     command: %s
-                     option: %s
-                     message: %s""".formatted(
-                index,
                 record.toolName(),
                 record.commandName(),
                 CommandOptionNormalizer.formatForModel(record.option()),

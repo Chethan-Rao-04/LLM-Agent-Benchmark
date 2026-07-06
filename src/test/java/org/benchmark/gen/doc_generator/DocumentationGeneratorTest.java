@@ -1,7 +1,6 @@
 package org.benchmark.gen.doc_generator;
 
 import org.benchmark.gen.BenchmarkCaseGenerator;
-import org.benchmark.gen.tool_generator.CommandAbbreviator;
 import org.benchmark.model.enums.DocumentComplexity;
 import org.benchmark.model.enums.Domain;
 import org.benchmark.model.enums.EffectOp;
@@ -132,7 +131,7 @@ class DocumentationGeneratorTest {
                 benchmarkGenerator.generateCases(1, 2, Domain.MANUFACTURING).getFirst();
 
         for (var step : benchmarkCase.spec().capabilitySteps()) {
-            String commandName = CommandAbbreviator.commandName(step.verb(), step.noun());
+            String commandName = step.commandName();
             assertTrue(benchmarkCase.caseManual().contains("## " + commandName));
             assertFalse(benchmarkCase.caseManual().contains(
                     "Description: Executes the " + commandName + " operation."));

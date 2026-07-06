@@ -59,7 +59,6 @@ public class BenchmarkCaseExecutor {
             attempt++;
             stateManager.startAttempt(sessionId);
             int logStartIndex = stateManager.executionLog(sessionId).size();
-            int commandRejectionLogStartIndex = stateManager.commandRejectionLog(sessionId).size();
 
             if (attempt > 1) {
                 messageHistory.add(promptBuilder.buildRetryMessage(sessionId, attempt - 1, latestRetryFeedback));
@@ -77,8 +76,7 @@ public class BenchmarkCaseExecutor {
                     sessionId,
                     benchmarkCase,
                     attempt,
-                    logStartIndex,
-                    commandRejectionLogStartIndex
+                    logStartIndex
             );
             goalAchieved = attemptOutcome.goalAchieved();
 
@@ -95,7 +93,6 @@ public class BenchmarkCaseExecutor {
                     timeTaken,
                     attemptExchange.loggingResult(),
                     attemptOutcome.newExecutions(),
-                    attemptOutcome.rejectedCommands(),
                     attemptOutcome.attemptFeedback(),
                     attemptOutcome.attemptMetrics()
             );

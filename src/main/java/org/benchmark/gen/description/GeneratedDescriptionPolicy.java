@@ -49,12 +49,17 @@ public final class GeneratedDescriptionPolicy {
         String stage = normalizedIntent(intent);
 
         if (!hasDocumentedEffects) {
-            return "Runs the documented " + stage + " check with no documented state update.";
+            return "Performs the documented " + stage + " check; no state update is documented.";
         }
+        String updateSummary = documentedEffects.size() == 1
+                ? "one documented state update"
+                : documentedEffects.size() + " documented state updates";
         if (hasPreconditions) {
-            return "Runs the documented " + stage + " transition after required state checks pass.";
+            return "Applies the documented " + stage + " procedure after required state checks pass and records "
+                    + updateSummary + ".";
         }
-        return "Runs the documented " + stage + " transition from the current tool state.";
+        return "Applies the documented " + stage + " procedure to the current tool state and records "
+                + updateSummary + ".";
     }
 
     private static String normalizedIntent(String intent) {

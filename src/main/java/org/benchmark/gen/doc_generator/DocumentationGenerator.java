@@ -3,7 +3,6 @@ package org.benchmark.gen.doc_generator;
 import org.benchmark.gen.description.GeneratedDescriptionPolicy;
 import org.benchmark.gen.spec.BenchmarkCaseSpec;
 import org.benchmark.gen.spec.CapabilityStep;
-import org.benchmark.gen.tool_generator.CommandAbbreviator;
 import org.benchmark.model.enums.DocumentComplexity;
 import org.benchmark.model.objects.CommandObject;
 import org.benchmark.model.objects.EffectObject;
@@ -48,7 +47,7 @@ public class DocumentationGenerator {
 
         Map<String, CapabilityStep> stepsByCommandName = spec.capabilitySteps().stream()
                 .collect(Collectors.toMap(
-                        step -> CommandAbbreviator.commandName(step.verb(), step.noun()),
+                        CapabilityStep::commandName,
                         step -> step,
                         (first, ignored) -> first
                 ));

@@ -204,7 +204,8 @@ class BenchmarkCaseGeneratorTest {
             CapabilityStep capabilityStep = capabilitySteps.get(index);
             assertEquals(scenarioStep.verb(), capabilityStep.verb());
             assertEquals(scenarioStep.noun(), capabilityStep.noun());
-            assertEquals(scenarioStep.commandName(), capabilityStep.commandName());
+            assertEquals(CommandAbbreviator.commandName(scenarioStep.verb(), scenarioStep.noun()),
+                    capabilityStep.commandName());
             assertEquals(scenarioStep.precondition(), capabilityStep.precondition());
             assertEquals(scenarioStep.effect(), capabilityStep.effect());
         }
@@ -238,7 +239,8 @@ class BenchmarkCaseGeneratorTest {
         );
 
         assertEquals(benchmarkCase.targetSteps().size(), benchmarkCase.spec().capabilitySteps().size());
-        assertEquals(payloadStep.commandName(), benchmarkCase.spec().capabilitySteps().getFirst().commandName());
+        assertEquals(CommandAbbreviator.commandName(payloadStep.verb(), payloadStep.noun()),
+                benchmarkCase.spec().capabilitySteps().getFirst().commandName());
         assertEquals(benchmarkCase.expectedState(), benchmarkCase.spec().expectedFinalState());
     }
 
@@ -248,9 +250,8 @@ class BenchmarkCaseGeneratorTest {
         BenchmarkCaseGenerator.BenchmarkCase benchmarkCase = generator.generateCases(1, 2, Domain.NETWORK_INFRA).getFirst();
 
         for (CapabilityStep step : benchmarkCase.spec().capabilitySteps()) {
-            String commandName = CommandAbbreviator.commandName(step.verb(), step.noun());
             CommandObject command = benchmarkCase.targetToolObject().commands().stream()
-                    .filter(candidate -> candidate.name().equals(commandName))
+                    .filter(candidate -> candidate.name().equals(step.commandName()))
                     .findFirst()
                     .orElseThrow();
             Map<String, String> actualEffects = command.commandEffectObjects().stream()
@@ -276,8 +277,7 @@ class BenchmarkCaseGeneratorTest {
             assertTrue(containsIgnoreCase(description, family.purpose()));
 
             for (CapabilityStep step : benchmarkCase.spec().capabilitySteps()) {
-                String commandName = CommandAbbreviator.commandName(step.verb(), step.noun());
-                assertFalse(containsIgnoreCase(description, commandName));
+                assertFalse(containsIgnoreCase(description, step.commandName()));
             }
         }
     }
@@ -387,9 +387,8 @@ class BenchmarkCaseGeneratorTest {
         for (BenchmarkCaseGenerator.BenchmarkCase benchmarkCase : cases) {
             String query = benchmarkCase.generateUserQuery();
             assertTrue(query.length() > 45, "Query should be a realistic intent request");
-            for (ResolvedStep step : benchmarkCase.targetSteps()) {
-                String commandName = CommandAbbreviator.commandName(step.verb(), step.noun());
-                assertFalse(query.contains(commandName), "Query should not leak proprietary command names");
+            for (CapabilityStep step : benchmarkCase.spec().capabilitySteps()) {
+                assertFalse(query.contains(step.commandName()), "Query should not leak proprietary command names");
             }
             assertFalse(containsIgnoreCase(query, benchmarkCase.spec().toolFamilyId()));
         }
@@ -416,9 +415,9 @@ class BenchmarkCaseGeneratorTest {
                 assertEquals(benchmarkCase.trapCommandName(), trapCmd.name(),
                         "Trap lookup should use explicit trap command metadata");
 
-                List<String> effectfulStepNames = benchmarkCase.targetSteps().stream()
+                List<String> effectfulStepNames = benchmarkCase.spec().capabilitySteps().stream()
                         .filter(step -> !step.effect().isEmpty())
-                        .map(step -> CommandAbbreviator.commandName(step.verb(), step.noun()))
+                        .map(CapabilityStep::commandName)
                         .toList();
                 assertTrue(effectfulStepNames.contains(trapCmd.name()),
                         "Trap should be embedded in one of the effectful scenario steps");
@@ -608,8 +607,8 @@ class BenchmarkCaseGeneratorTest {
 
         boolean checkedRecoveryCommand = false;
         for (BenchmarkCaseGenerator.BenchmarkCase benchmarkCase : cases) {
-            Set<String> workflowCommandNames = benchmarkCase.targetSteps().stream()
-                    .map(step -> CommandAbbreviator.commandName(step.verb(), step.noun()))
+            Set<String> workflowCommandNames = benchmarkCase.spec().capabilitySteps().stream()
+                    .map(CapabilityStep::commandName)
                     .collect(Collectors.toSet());
 
             for (CommandObject command : benchmarkCase.targetToolObject().commands()) {

@@ -124,7 +124,7 @@ What happens during startup:
 
 - Spring Boot starts the application
 - `BenchmarkRunner` begins a benchmark run
-- cases are generated from `scenarios.yaml`
+- cases are generated from `tool-catalog.yaml`
 - a session is created for each case
 - the LLM is allowed to call `getCurrentState` and `executeCommand` through Spring AI function callbacks
 - command execution is simulated in memory

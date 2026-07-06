@@ -4,8 +4,6 @@ import org.benchmark.gen.BenchmarkCaseGenerator;
 import org.benchmark.gen.catalog.ToolCatalogLoader;
 import org.benchmark.gen.doc_generator.DocumentationGenerator;
 import org.benchmark.gen.query_generator.UserQueryGenerator;
-import org.benchmark.gen.scenario.ScenarioLoader;
-import org.benchmark.gen.scenario.ScenarioResolver;
 import org.benchmark.gen.tool_generator.CommandDict;
 import org.benchmark.gen.tool_generator.ScenarioToolGenerator;
 import org.benchmark.gen.tool_generator.ToolSpecGenerator;
@@ -41,27 +39,6 @@ public class BenchmarkGenerationConfig {
     @Bean
     public CommandDict commandDict(Random benchmarkRandom) {
         return new CommandDict(benchmarkRandom);
-    }
-
-    /**
-     * Loads scenario templates from the classpath once at application startup.
-     *
-     * @return scenario loader backed by the default YAML resource
-     */
-    @Bean
-    public ScenarioLoader scenarioLoader() {
-        return new ScenarioLoader();
-    }
-
-    /**
-     * Resolves scenario template variables into concrete domain-specific values.
-     *
-     * @param benchmarkRandom shared benchmark random source
-     * @return scenario resolver
-     */
-    @Bean
-    public ScenarioResolver scenarioResolver(Random benchmarkRandom) {
-        return new ScenarioResolver(benchmarkRandom);
     }
 
     /**

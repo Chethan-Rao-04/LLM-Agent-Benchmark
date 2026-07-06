@@ -23,7 +23,6 @@ record BenchmarkRunCaseReport(
         double commandPrecision,
         double decoyResistance,
         List<String> expectedSteps,
-        List<String> executions,
-        List<String> rejectedCommands
+        List<String> executions
 ) {
 }

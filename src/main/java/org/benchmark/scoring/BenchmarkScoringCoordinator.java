@@ -2,7 +2,6 @@ package org.benchmark.scoring;
 
 import lombok.RequiredArgsConstructor;
 import org.benchmark.exec.SessionStateManager;
-import org.benchmark.exec.SessionStateManager.CommandRejectionRecord;
 import org.benchmark.exec.SessionStateManager.ExecutionRecord;
 import org.benchmark.gen.BenchmarkCaseGenerator;
 import org.benchmark.prompt.BenchmarkAttemptFeedbackBuilder;
@@ -37,12 +36,9 @@ public class BenchmarkScoringCoordinator {
     public AttemptOutcome evaluateAttempt(String sessionId,
                                           BenchmarkCaseGenerator.BenchmarkCase benchmarkCase,
                                           int attempt,
-                                          int logStartIndex,
-                                          int commandRejectionLogStartIndex) {
+                                          int logStartIndex) {
         List<ExecutionRecord> allExecutions = stateManager.executionLog(sessionId);
         List<ExecutionRecord> newExecutions = stateManager.executionLogFromIndex(sessionId, logStartIndex);
-        List<CommandRejectionRecord> rejectedCommands = stateManager.commandRejectionLogFromIndex(
-                sessionId, commandRejectionLogStartIndex);
         Map<String, String> actualToolState = stateManager.getToolStateSnapshot(
                 sessionId, benchmarkCase.targetToolObject().name());
         boolean goalAchieved = scorer.hasSuccessfulScenarioCompletion(
@@ -52,7 +48,6 @@ public class BenchmarkScoringCoordinator {
                 sessionId, benchmarkCase, goalAchieved);
         return new AttemptOutcome(
                 newExecutions,
-                rejectedCommands,
                 goalAchieved,
                 attemptFeedback,
                 attemptMetrics
@@ -63,7 +58,6 @@ public class BenchmarkScoringCoordinator {
      * Immutable attempt evaluation result returned to the executor.
      */
     public record AttemptOutcome(List<ExecutionRecord> newExecutions,
-                                 List<CommandRejectionRecord> rejectedCommands,
                                  boolean goalAchieved,
                                  String attemptFeedback,
                                  BenchmarkScorer.AttemptMetrics attemptMetrics) {

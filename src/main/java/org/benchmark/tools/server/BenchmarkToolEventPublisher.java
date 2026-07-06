@@ -7,7 +7,6 @@ import org.benchmark.exec.SessionStateManager.ExecutionRecord;
 import org.benchmark.logging.BenchmarkEventLogger;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -19,27 +18,6 @@ class BenchmarkToolEventPublisher {
 
     private final SessionStateManager stateManager;
     private final BenchmarkEventLogger eventLogger;
-
-    void publishToolCatalogListed(String sessionId, List<String> tools) {
-        eventLogger.logEvent("list_available_tools", Map.of(
-                "sessionId", sessionId,
-                "toolCount", tools.size(),
-                "toolNames", tools));
-    }
-
-    void publishToolDocumentationRead(String sessionId, String toolName, String documentation) {
-        eventLogger.logEvent("get_tool_documentation", Map.of(
-                "sessionId", sessionId,
-                "toolName", toolName,
-                "documentationLength", documentation.length(),
-                "documentation", documentation));
-    }
-
-    void publishStateRead(String sessionId) {
-        eventLogger.logEvent("get_current_state", Map.of(
-                "sessionId", sessionId,
-                "state", stateManager.getSessionStateSnapshot(sessionId)));
-    }
 
     void publishExecution(String sessionId, ExecutionRecord record, String eventType) {
         Map<String, Map<String, String>> toolStates = stateManager.getAllToolStatesSnapshot(sessionId);

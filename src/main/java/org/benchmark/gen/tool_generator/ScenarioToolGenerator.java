@@ -113,7 +113,7 @@ public class ScenarioToolGenerator {
         for (int i = 0; i < spec.capabilitySteps().size(); i++) {
             CapabilityStep step = spec.capabilitySteps().get(i);
             WorkflowStepTemplate stepTemplate = workflowStep(workflow, i);
-            String name = CommandAbbreviator.commandName(step.verb(), step.noun());
+            String name = step.commandName();
             usedCommandNames.add(name);
 
             if (trappedStepIndex != null && i == trappedStepIndex) {
@@ -134,7 +134,7 @@ public class ScenarioToolGenerator {
                 for (int i = 0; i < spec.capabilitySteps().size(); i++) {
                     CapabilityStep step = spec.capabilitySteps().get(i);
                     WorkflowStepTemplate stepTemplate = workflowStep(workflow, i);
-                    String name = CommandAbbreviator.commandName(step.verb(), step.noun());
+                    String name = step.commandName();
                     usedCommandNames.add(name);
                     commands.add(buildStepCommand(name, step, stepTemplate, catalog));
                 }

@@ -3,8 +3,6 @@ package org.benchmark.runner;
 import lombok.RequiredArgsConstructor;
 import org.benchmark.exec.SessionStateManager;
 import org.benchmark.gen.BenchmarkCaseGenerator;
-import org.benchmark.gen.scenario.ResolvedStep;
-import org.benchmark.gen.tool_generator.CommandAbbreviator;
 import org.benchmark.model.objects.OptionEntity;
 import org.benchmark.model.objects.ToolObject;
 import org.benchmark.scoring.BenchmarkScorer.BenchmarkScore;
@@ -36,7 +34,6 @@ class BenchmarkRunSummaryAggregator {
                 int attemptsUsed,
                 BenchmarkCaseGenerator.BenchmarkCase benchmarkCase) {
         List<SessionStateManager.ExecutionRecord> executionLog = stateManager.executionLog(sessionId);
-        List<SessionStateManager.CommandRejectionRecord> commandRejections = stateManager.commandRejectionLog(sessionId);
         if (result.passed()) {
             summary.totalSuccess++;
         }
@@ -70,8 +67,7 @@ class BenchmarkRunSummaryAggregator {
                 result.commandPrecision(),
                 result.decoyResistance(),
                 formatExpectedSteps(benchmarkCase),
-                formatExecutions(executionLog),
-                formatRejections(commandRejections)
+                formatExecutions(executionLog)
         ));
     }
 
@@ -99,9 +95,8 @@ class BenchmarkRunSummaryAggregator {
 
     private List<String> formatExpectedSteps(BenchmarkCaseGenerator.BenchmarkCase benchmarkCase) {
         List<String> steps = new ArrayList<>();
-        for (ResolvedStep step : benchmarkCase.targetSteps()) {
-            String commandName = CommandAbbreviator.commandName(step.verb(), step.noun());
-            steps.add(formatTargetStep(benchmarkCase.targetToolObject(), commandName));
+        for (var step : benchmarkCase.spec().capabilitySteps()) {
+            steps.add(formatTargetStep(benchmarkCase.targetToolObject(), step.commandName()));
         }
         return List.copyOf(steps);
     }
@@ -120,16 +115,6 @@ class BenchmarkRunSummaryAggregator {
                         record.toolName(),
                         record.commandName(),
                         formatOption(record.option())))
-                .toList();
-    }
-
-    private List<String> formatRejections(List<SessionStateManager.CommandRejectionRecord> commandRejections) {
-        return commandRejections.stream()
-                .map(record -> "%s %s%s: %s".formatted(
-                        record.toolName(),
-                        record.commandName(),
-                        formatOption(record.option()),
-                        record.message()))
                 .toList();
     }
 

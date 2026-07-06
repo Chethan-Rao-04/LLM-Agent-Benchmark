@@ -228,18 +228,6 @@ public class SessionStateManager {
     }
 
     /**
-     * Returns a stable snapshot of rejected command requests from a specific index onward.
-     */
-    public List<CommandRejectionRecord> commandRejectionLogFromIndex(String sessionId, int startIndex) {
-        List<CommandRejectionRecord> snapshot = commandRejectionLog(sessionId);
-        if (snapshot.isEmpty()) {
-            return List.of();
-        }
-        int safeStartIndex = Math.max(0, Math.min(startIndex, snapshot.size()));
-        return List.copyOf(snapshot.subList(safeStartIndex, snapshot.size()));
-    }
-
-    /**
      * Updates one state value inside a tool environment.
      */
     public void updateToolState(String sessionId, String toolName, String variable, String value) {

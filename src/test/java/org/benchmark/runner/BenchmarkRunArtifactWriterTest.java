@@ -37,8 +37,7 @@ class BenchmarkRunArtifactWriterTest {
                         "ERROR MAN-PUMP-555 rpr_pmp",
                         "SUCCESS MAN-VALVE-123 rpr_vlv --retry",
                         "SUCCESS MAN-VALVE-123 vfy_vlv"
-                ),
-                List.of("MAN-VALVE-123 diag_vlv: attempt already consumed")
+                )
         ));
 
         Map<String, Number> metrics = Map.ofEntries(
@@ -65,7 +64,6 @@ class BenchmarkRunArtifactWriterTest {
         assertTrue(markdown.contains("- MAN-VALVE-123 -> MAN-VALVE-555"));
         assertTrue(markdown.contains("Target-like wrong tool avoidance: 0.75"));
         assertTrue(markdown.contains("- SUCCESS MAN-VALVE-123 rpr_vlv --retry"));
-        assertTrue(markdown.contains("- MAN-VALVE-123 diag_vlv: attempt already consumed"));
         assertTrue(markdown.contains("- Average target-like wrong tool avoidance: 0.75"));
 
         assertTrue(csv.contains("case,session,passed,score,attempts,executions,toolSelection,stepCompletion,orderingAccuracy,stateAccuracy,efficiency,commandPrecision,targetLikeWrongToolAvoidance,recovery"));

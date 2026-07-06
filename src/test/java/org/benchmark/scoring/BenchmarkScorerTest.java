@@ -4,6 +4,10 @@ import org.benchmark.exec.SessionStateManager;
 import org.benchmark.gen.BenchmarkCaseGenerator;
 import org.benchmark.gen.scenario.ResolvedScenario;
 import org.benchmark.gen.scenario.ResolvedStep;
+import org.benchmark.gen.spec.BenchmarkCaseSpec;
+import org.benchmark.gen.spec.CapabilityStep;
+import org.benchmark.gen.spec.DecoyPlan;
+import org.benchmark.gen.spec.ScoringPolicy;
 import org.benchmark.model.enums.Domain;
 import org.benchmark.model.enums.EffectOp;
 import org.benchmark.model.objects.CommandObject;
@@ -16,6 +20,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class BenchmarkScorerTest {
 
@@ -165,6 +170,134 @@ class BenchmarkScorerTest {
 
         assertEquals(0.4, score.decoyResistance(), 1e-9);
         assertFalse(score.passed());
+    }
+
+    @Test
+    void allSuccessfulExecutionsDoNotCountAsRecovery() {
+        String sessionId = "all-success-no-recovery";
+        BenchmarkCaseGenerator.BenchmarkCase benchmarkCase = buildBenchmarkCase(true);
+        stateManager.initializeSession(sessionId, benchmarkCase, benchmarkCase.allTools());
+        stateManager.recordExecution(sessionId, new SessionStateManager.ExecutionRecord(
+                "NET-TEST-101",
+                "auth_srv",
+                "",
+                true,
+                "OK: auth_srv"
+        ));
+
+        BenchmarkScorer.BenchmarkScore score = scorer.computeCaseScore(sessionId, benchmarkCase, 2, true, true);
+
+        assertFalse(score.recovery());
+    }
+
+    @Test
+    void failedExecutionThenGoalAchievementCountsAsRecovery() {
+        String sessionId = "failed-then-recovery";
+        BenchmarkCaseGenerator.BenchmarkCase benchmarkCase = buildBenchmarkCase(false);
+        stateManager.initializeSession(sessionId, benchmarkCase, benchmarkCase.allTools());
+        stateManager.recordExecution(sessionId, new SessionStateManager.ExecutionRecord(
+                "NET-TEST-101",
+                "dpl_svc",
+                "",
+                false,
+                "Precondition not met"
+        ));
+
+        BenchmarkScorer.BenchmarkScore score = scorer.computeCaseScore(sessionId, benchmarkCase, 2, true, true);
+
+        assertTrue(score.recovery());
+    }
+
+    @Test
+    void failedRequiredCommandDoesNotCountAsCommandPrecision() {
+        String sessionId = "failed-required-command";
+        BenchmarkCaseGenerator.BenchmarkCase benchmarkCase = buildBenchmarkCase(false);
+        stateManager.initializeSession(sessionId, benchmarkCase, benchmarkCase.allTools());
+        stateManager.recordExecution(sessionId, new SessionStateManager.ExecutionRecord(
+                "NET-TEST-101",
+                "auth_srv",
+                "--wrong",
+                false,
+                "Unknown option --wrong for command auth_srv"
+        ));
+
+        assertEquals(0.0, scorer.scoreCommandPrecision(
+                stateManager.executionLog(sessionId), benchmarkCase), 1e-9);
+    }
+
+    @Test
+    void scorerUsesCapabilityCommandNamesAsExpectedSteps() {
+        String sessionId = "spec-command-source";
+        ResolvedStep legacyStep = new ResolvedStep(
+                "authenticate",
+                "server",
+                Map.of(),
+                Map.of("auth_token", "valid")
+        );
+        ResolvedScenario scenario = new ResolvedScenario(
+                "custom_command",
+                "Use custom command identity",
+                Domain.NETWORK_INFRA,
+                List.of(legacyStep),
+                Map.of("auth_token", "valid"),
+                Map.of()
+        );
+        BenchmarkCaseSpec spec = new BenchmarkCaseSpec(
+                "Use custom command identity",
+                Domain.NETWORK_INFRA,
+                List.of(new CapabilityStep(
+                        "authenticate",
+                        "authenticate",
+                        "server",
+                        "custom_auth",
+                        Map.of(),
+                        Map.of("auth_token", "valid")
+                )),
+                Map.of("auth_token", "valid"),
+                DecoyPlan.currentDefault(0, 0),
+                ScoringPolicy.currentDefault()
+        );
+        ToolObject targetTool = new ToolObject(
+                "NET-TEST-101",
+                "Test tool",
+                Domain.NETWORK_INFRA,
+                List.of(new CommandObject(
+                        "custom_auth",
+                        List.of(),
+                        "Authenticate",
+                        List.of(new EffectObject("auth_token", EffectOp.ASSIGN, "valid")),
+                        Map.of()
+                )),
+                Map.of("auth_token", "string")
+        );
+        BenchmarkCaseGenerator.BenchmarkCase benchmarkCase = new BenchmarkCaseGenerator.BenchmarkCase(
+                scenario,
+                spec,
+                targetTool,
+                scenario.steps(),
+                "docs",
+                Map.of("auth_token", "valid"),
+                List.of(),
+                List.of(),
+                List.of(),
+                Map.of(),
+                "Use the documented tool.",
+                false,
+                null,
+                null
+        );
+        stateManager.initializeSession(sessionId, benchmarkCase, benchmarkCase.allTools());
+        stateManager.recordExecution(sessionId, new SessionStateManager.ExecutionRecord(
+                "NET-TEST-101",
+                "custom_auth",
+                "",
+                true,
+                "OK: custom_auth"
+        ));
+
+        assertEquals(1.0, scorer.scoreStepCompletion(stateManager.executionLog(sessionId), benchmarkCase), 1e-9);
+        assertEquals(1.0, scorer.scoreOrdering(stateManager.executionLog(sessionId), benchmarkCase), 1e-9);
+        assertEquals(1.0, scorer.scoreCommandPrecision(stateManager.executionLog(sessionId), benchmarkCase), 1e-9);
     }
 
     private void recordExecutions(String sessionId, int count) {

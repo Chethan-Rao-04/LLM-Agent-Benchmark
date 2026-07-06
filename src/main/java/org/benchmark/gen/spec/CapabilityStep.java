@@ -1,6 +1,7 @@
 package org.benchmark.gen.spec;
 
 import org.benchmark.gen.scenario.ResolvedStep;
+import org.benchmark.gen.tool_generator.CommandAbbreviator;
 
 import java.util.Map;
 import java.util.Objects;
@@ -11,7 +12,7 @@ import java.util.Objects;
  * @param intent human-readable action target used by future query and documentation generators
  * @param verb resolved action verb before proprietary command naming is applied
  * @param noun resolved action noun before proprietary command naming is applied
- * @param commandName logical command identity derived from the resolved action
+ * @param commandName executable command identity for the resolved action
  * @param precondition state required before the capability can be applied
  * @param effect state change produced by the capability
  */
@@ -43,7 +44,7 @@ public record CapabilityStep(
                 step.verb().replace('_', ' ') + " " + step.noun().replace('_', ' '),
                 step.verb(),
                 step.noun(),
-                step.commandName(),
+                CommandAbbreviator.commandName(step.verb(), step.noun()),
                 step.precondition(),
                 step.effect()
         );

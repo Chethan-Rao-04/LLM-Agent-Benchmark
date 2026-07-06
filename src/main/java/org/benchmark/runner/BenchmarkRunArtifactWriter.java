@@ -79,9 +79,6 @@ class BenchmarkRunArtifactWriter {
             markdown.append("### Executions\n");
             appendList(markdown, report.executions());
             markdown.append('\n');
-            markdown.append("### Rejected Commands\n");
-            appendList(markdown, report.rejectedCommands().isEmpty() ? java.util.List.of("None") : report.rejectedCommands());
-            markdown.append('\n');
         }
         return markdown.toString();
     }

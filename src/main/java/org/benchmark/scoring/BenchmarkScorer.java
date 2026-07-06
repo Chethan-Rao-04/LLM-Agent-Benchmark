@@ -4,8 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.benchmark.exec.SessionStateManager;
 import org.benchmark.exec.SessionStateManager.ExecutionRecord;
 import org.benchmark.gen.BenchmarkCaseGenerator;
-import org.benchmark.gen.scenario.ResolvedStep;
-import org.benchmark.gen.tool_generator.CommandAbbreviator;
 import org.benchmark.model.objects.CommandObject;
 import org.benchmark.model.objects.ToolObject;
 import org.springframework.stereotype.Component;
@@ -90,9 +88,8 @@ public class BenchmarkScorer {
         double efficiency = scoreEfficiency(logs, benchmarkCase);
         double commandPrecision = scoreCommandPrecision(logs, benchmarkCase);
         double decoyResistance = scoreDecoyResistance(logs, benchmarkCase);
-        boolean usedRecoveryCommand = benchmarkCase.recoveryCommandName() != null
-                && logs.stream().anyMatch(r -> commandMatches(r.commandName(), benchmarkCase.recoveryCommandName()));
-        boolean recovery = usedRecoveryCommand || (failedFirstAttempt && goalAchieved);
+        boolean hadFailedExecution = logs.stream().anyMatch(record -> !record.success());
+        boolean recovery = hadFailedExecution && failedFirstAttempt && goalAchieved;
         boolean passed = goalAchieved;
         return new BenchmarkScore(
                 toolSelection,
@@ -163,19 +160,18 @@ public class BenchmarkScorer {
     public double scoreStepCompletion(List<ExecutionRecord> logs,
                                        BenchmarkCaseGenerator.BenchmarkCase benchmarkCase) {
         String targetTool = benchmarkCase.targetToolObject().name();
-        List<ResolvedStep> steps = benchmarkCase.targetSteps();
-        if (steps.isEmpty()) return 1.0;
+        List<String> requiredCommands = requiredCommandNames(benchmarkCase);
+        if (requiredCommands.isEmpty()) return 1.0;
 
         int completed = 0;
-        for (ResolvedStep step : steps) {
-            String abbreviated = CommandAbbreviator.commandName(step.verb(), step.noun());
+        for (String requiredCommand : requiredCommands) {
             boolean found = logs.stream().anyMatch(r ->
                     r.success()
                             && r.toolName().equalsIgnoreCase(targetTool)
-                            && commandMatches(r.commandName(), abbreviated));
+                            && commandMatches(r.commandName(), requiredCommand));
             if (found) completed++;
         }
-        return (double) completed / steps.size();
+        return (double) completed / requiredCommands.size();
     }
 
     /**
@@ -188,18 +184,14 @@ public class BenchmarkScorer {
     public double scoreOrdering(List<ExecutionRecord> logs,
                                  BenchmarkCaseGenerator.BenchmarkCase benchmarkCase) {
         String targetTool = benchmarkCase.targetToolObject().name();
-        List<ResolvedStep> steps = benchmarkCase.targetSteps();
-        if (steps.isEmpty()) return 1.0;
-
-        List<String> abbreviatedNames = steps.stream()
-                .map(s -> CommandAbbreviator.commandName(s.verb(), s.noun()))
-                .toList();
+        List<String> requiredCommands = requiredCommandNames(benchmarkCase);
+        if (requiredCommands.isEmpty()) return 1.0;
 
         List<Integer> stepIndices = new ArrayList<>();
         for (ExecutionRecord log : logs) {
             if (!log.success() || !log.toolName().equalsIgnoreCase(targetTool)) continue;
-            for (int i = 0; i < abbreviatedNames.size(); i++) {
-                if (commandMatches(log.commandName(), abbreviatedNames.get(i))) {
+            for (int i = 0; i < requiredCommands.size(); i++) {
+                if (commandMatches(log.commandName(), requiredCommands.get(i))) {
                     stepIndices.add(i);
                     break;
                 }
@@ -208,7 +200,7 @@ public class BenchmarkScorer {
 
         if (stepIndices.isEmpty()) return 0.0;
         int lisLength = longestIncreasingSubsequence(stepIndices);
-        return (double) lisLength / steps.size();
+        return (double) lisLength / requiredCommands.size();
     }
 
     /**
@@ -242,7 +234,7 @@ public class BenchmarkScorer {
     private double scoreEfficiency(List<ExecutionRecord> logs,
                                    BenchmarkCaseGenerator.BenchmarkCase benchmarkCase) {
         if (logs.isEmpty()) return 0.0;
-        int requiredSteps = benchmarkCase.targetSteps().size();
+        int requiredSteps = requiredCommandNames(benchmarkCase).size();
         if (benchmarkCase.hasTrap()) {
             requiredSteps += 2; // recovery command + retry of failed step
         }
@@ -262,14 +254,13 @@ public class BenchmarkScorer {
         if (logs.isEmpty()) return 0.0;
 
         String targetTool = benchmarkCase.targetToolObject().name();
-        List<String> requiredCommands = new ArrayList<>(benchmarkCase.targetSteps().stream()
-                .map(s -> CommandAbbreviator.commandName(s.verb(), s.noun()))
-                .toList());
+        List<String> requiredCommands = new ArrayList<>(requiredCommandNames(benchmarkCase));
         if (benchmarkCase.recoveryCommandName() != null) {
             requiredCommands.add(benchmarkCase.recoveryCommandName());
         }
 
         long requiredExecs = logs.stream()
+                .filter(ExecutionRecord::success)
                 .filter(r -> r.toolName().equalsIgnoreCase(targetTool))
                 .filter(r -> requiredCommands.stream()
                         .anyMatch(req -> commandMatches(r.commandName(), req)))
@@ -316,6 +307,12 @@ public class BenchmarkScorer {
     private Map<String, String> targetToolState(String sessionId,
                                                 BenchmarkCaseGenerator.BenchmarkCase benchmarkCase) {
         return stateManager.getToolStateSnapshot(sessionId, benchmarkCase.targetToolObject().name());
+    }
+
+    private List<String> requiredCommandNames(BenchmarkCaseGenerator.BenchmarkCase benchmarkCase) {
+        return benchmarkCase.spec().capabilitySteps().stream()
+                .map(step -> step.commandName())
+                .toList();
     }
 
     private boolean commandMatches(String actualCommandName, String expectedCommandName) {

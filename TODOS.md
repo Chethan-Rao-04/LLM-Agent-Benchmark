@@ -1,25 +1,14 @@
 
 
-TODOS for the report-
 
-1. Explain why we did not choose MCP
-2. Start with the Methodology
-3. Explain Spring AI and the features we added.
-
-
-1. Fix Option Eval- options are not being evaluated correctly
-3. Imrpove query, commands, scenarios, and scoring - Tool descriptions are very simple and straightforward and hints the LLM largely. 
-   Queries are simple and similar to tool descriptions, options are less and not evaluated correclty, and the  --required is confusing.
-   Role of semantic decoys
-
-9. Random Distractors vs nomral tools VS SEMANTIC DECOYS, what is the diff
-10. LLM Must give reasoning for each tool call, stored as Assistant message
+1. Fix Option Eval- options are not being evaluated correctly (verify if fixed correctly)
+3. Imrpove query, commands, scenarios, and scoring - Tool descriptions are very simple and straightforward and hints the LLM largely. (Paritially fixed)
+   Queries are simple and similar to tool descriptions,
 
 Remaining from static/dynamic catalog vertical slice-
 
 1. Update README/docs so they describe tool-catalog.yaml as the default generator path, not scenarios.yaml.
-2. Add an explicit prompt-leakage test that confirms the hidden full catalog is never rendered into the model prompt.
-3. Add a prompt-size/shape check for the default 10 exposed tools setup.
+
 4. Add stronger semantic-decoy validation:
    - decoys come from configured neighbor families
    - decoys remain plausible but do not satisfy the target final state
@@ -29,7 +18,8 @@ Remaining from static/dynamic catalog vertical slice-
 7. Decide whether legacy scenario loader/resources stay as migration fallback or get removed after catalog tests are stable.
 
 
-
+2. Add an explicit prompt-leakage test that confirms the hidden full catalog is never rendered into the model prompt.
+3. Add a prompt-size/shape check for the default 10 exposed tools setup.
 
 
 Next steps -  Multi-tool workflow support
@@ -39,16 +29,8 @@ Next steps -  Multi-tool workflow support
               - Update scoring to validate all required target tool states.
               RAG
 
-Final Eval-
 
-
-5. COmpare RAG vs ICL
-6. COmpare ICL in diff docs complexity
-7. compare ICL for diff models
-8. in the above three, u can club somtimes
-
-
-ISSUES FOUND 06.07
+ISSUES FOUND 06.07 (MUST VERIFY IF FIXED)
 
 1. Autonomous Recoveries metric wrong - it should count only when the agent recovers from a failure, not when all calls are SUCCESS.
 2. What is the difference bw candidate tools and distractor tools -
@@ -86,3 +68,16 @@ executions:
    message: OK: isp_fix
 rejectedCommands:
   none
+
+## Future plan(ONLY AFTER A STABLE MVP)
+5. COmpare RAG vs ICL
+6. COmpare ICL in diff docs complexity
+7. compare ICL for diff models
+8. in the above three, u can club somtimes
+
+### TODOS for the report-
+
+
+1. Explain why we did not choose MCP
+2. Start with the Methodology
+3. Explain Spring AI and the features we added.

@@ -61,9 +61,16 @@ final class CommandOptionGenerator {
     }
 
     private String describeOption(String flagBase, OptionValueMode valueMode) {
+        String label = flagBase.replace('_', ' ');
         if (valueMode == OptionValueMode.NONE) {
-            return "Applies the documented " + flagBase + " mode.";
+            return "Applies the documented " + label + " flag.";
         }
-        return "Selects the documented " + flagBase + " path for this procedure.";
+        return switch (valueMode) {
+            case LETTER_SUFFIX -> "Selects the documented " + label + " lane for this procedure.";
+            case NUMERIC_SUFFIX -> "Selects the documented " + label + " scope for this procedure.";
+            case PROFILE_SUFFIX -> "Selects the documented " + label + " setting for this procedure.";
+            case PATH_SUFFIX -> "Selects the documented " + label + " route for this procedure.";
+            case NONE -> throw new IllegalStateException("NONE handled above");
+        };
     }
 }

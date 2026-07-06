@@ -61,6 +61,18 @@ class BenchmarkToolExecutionService {
                 return rejectExecution(sessionId, rejection.get());
             }
 
+            if (!isTargetTool(benchmarkCase, tool)) {
+                stateManager.markAttemptExecutionConsumed(sessionId);
+                return respondExecution(sessionId, new ExecutionRecord(
+                        tool.name(),
+                        commandName,
+                        normalizedOption,
+                        false,
+                        "Wrong tool selected: " + tool.name()
+                                + ". Expected target tool: " + benchmarkCase.targetToolObject().name()
+                ));
+            }
+
             CliSimulator.ExecutionResult executionResult = cliSimulator.execute(
                     tool, commandName, normalizedOption, stateManager, sessionId);
             stateManager.markAttemptExecutionConsumed(sessionId);
@@ -113,6 +125,10 @@ class BenchmarkToolExecutionService {
         return tool.commands().stream()
                 .map(CommandObject::name)
                 .anyMatch(name -> name.equalsIgnoreCase(commandName));
+    }
+
+    private boolean isTargetTool(BenchmarkCaseGenerator.BenchmarkCase benchmarkCase, ToolObject tool) {
+        return benchmarkCase.targetToolObject().name().equalsIgnoreCase(tool.name());
     }
 
     private String unknownCommandMessage(ToolObject tool, String commandName) {

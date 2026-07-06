@@ -128,6 +128,31 @@ class BenchmarkToolServiceTest {
     }
 
     @Test
+    void wrongToolCommandRecordsFailedExecution() {
+        SessionStateManager stateManager = new SessionStateManager();
+        BenchmarkToolService server = createServer(stateManager);
+        BenchmarkCaseGenerator.BenchmarkCase benchmarkCase = createBenchmarkCaseWithWrongTool();
+
+        stateManager.initializeSession(SESSION_ID, benchmarkCase, benchmarkCase.allTools());
+        stateManager.startAttempt(SESSION_ID);
+
+        BenchmarkToolService.CommandExecutionResponse response = server.executeCommand(
+                SESSION_ID,
+                "WRONG-TOOL-456",
+                "activate_router",
+                "--dry-run"
+        );
+
+        assertEquals(BenchmarkToolService.CommandOutcomeType.EXECUTED, response.outcomeType());
+        assertFalse(response.success());
+        assertTrue(response.message().contains("Wrong tool selected"));
+        assertEquals(1, stateManager.executionLog(SESSION_ID).size());
+        assertFalse(stateManager.executionLog(SESSION_ID).get(0).success());
+        assertTrue(stateManager.commandRejectionLog(SESSION_ID).isEmpty());
+        assertNull(stateManager.getToolState(SESSION_ID, "WRONG-TOOL-456", "status"));
+    }
+
+    @Test
     void executeToolRejectsSecondCommandInSameAttemptWhenBudgetIsOne() {
         SessionStateManager stateManager = new SessionStateManager();
         BenchmarkProperties properties = new BenchmarkProperties();
@@ -365,6 +390,39 @@ class BenchmarkToolServiceTest {
                 false,
                 null,
                 null
+        );
+    }
+
+    private BenchmarkCaseGenerator.BenchmarkCase createBenchmarkCaseWithWrongTool() {
+        BenchmarkCaseGenerator.BenchmarkCase benchmarkCase = createBenchmarkCase();
+        CommandObject wrongCommand = new CommandObject(
+                "activate_router",
+                List.of(new OptionEntity("--dry-run", "Simulate execution")),
+                "Wrong target command",
+                List.of(new EffectObject("status", EffectOp.ASSIGN, "ready")),
+                Map.of()
+        );
+        ToolObject wrongTool = new ToolObject(
+                "WRONG-TOOL-456",
+                "Wrong tool",
+                Domain.NETWORK_INFRA,
+                List.of(wrongCommand),
+                Map.of("status", "string")
+        );
+
+        return new BenchmarkCaseGenerator.BenchmarkCase(
+                benchmarkCase.scenario(),
+                benchmarkCase.targetToolObject(),
+                benchmarkCase.targetSteps(),
+                benchmarkCase.caseManual(),
+                benchmarkCase.expectedState(),
+                List.of(wrongTool),
+                List.of(wrongTool),
+                List.of(),
+                benchmarkCase.userQuery(),
+                benchmarkCase.hasTrap(),
+                benchmarkCase.trapCommandName(),
+                benchmarkCase.recoveryCommandName()
         );
     }
 
