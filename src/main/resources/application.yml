@@ -13,14 +13,14 @@ spring:
         max-interval: 10000
 
 benchmark:
-  iterations: 4
-  distractor-count: 9
-  max-execution-steps: 8
+  iterations: 5
+  distractor-count: 11
+  max-execution-steps: 7
   max-executions-per-attempt: 1
   max-repeated-command-failures-per-attempt: 1
   temperature: 0.0
   timeout-seconds: 720
-  random-seed: 33
+  random-seed: 30
   domain: MANUFACTURING
   document-complexity: CLEAN
   trap-command: true
