@@ -46,3 +46,43 @@ Final Eval-
 6. COmpare ICL in diff docs complexity
 7. compare ICL for diff models
 8. in the above three, u can club somtimes
+
+
+ISSUES FOUND 06.07
+
+1. Autonomous Recoveries metric wrong - it should count only when the agent recovers from a failure, not when all calls are SUCCESS.
+2. What is the difference bw candidate tools and distractor tools -
+   Example  - ´´´ 
+   "candidateTools":["MAN-ARC-229","MAN-ARC-411","MAN-THE-594","MAN-BUS-879","MAN-POW-796","MAN-LOA-207","MAN-COO-186","MAN-LOA-643","MAN-THE-725","MAN-COO-682"],
+   "semanticDecoys":["MAN-ARC-411"],
+   "targetLikeWrongTools":[{"wrongTool":"MAN-ARC-411","targetTool":"MAN-ARC-229"}],
+   "randomDistractors":["MAN-THE-594","MAN-BUS-879","MAN-POW-796","MAN-LOA-207","MAN-COO-186","MAN-LOA-643","MAN-THE-725","MAN-COO-682"]
+   ´´´
+3.   remove rejectedCommands , not needed
+4. result: SUCCESS even when wrong tool and command is run
+Case 3
+sessionId: d5403cae-79e6-47fc-8fc4-9e4ec64b042a
+query: Bring the affected compression workflow back to a verified state.
+targetTool: MAN-CLO-438
+scenario: seal_integrity_recovery
+targetSteps:
+  - isp_mld{options=[--force]}
+  - aln_fix{options=[--channel-1]}
+  - clp_asm{options=[--circuit-east]}
+  - vfy_btc{options=[--force]}
+availableTools: 12
+targetLikeWrongTools:
+  - MAN-CLO-438 -> MAN-CLO-258
+randomDistractors: 10
+
+Attempt 1 completed
+latencyMs: 3547
+tokens: 5954
+executions:
+1. result: SUCCESS
+   tool: MAN-CLO-258
+   command: isp_fix
+   option: --force
+   message: OK: isp_fix
+rejectedCommands:
+  none
