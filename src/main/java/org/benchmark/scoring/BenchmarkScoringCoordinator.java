@@ -8,7 +8,6 @@ import org.benchmark.prompt.BenchmarkAttemptFeedbackBuilder;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Coordinates score calculation inputs so executor flow does not manage scorer bookkeeping directly.
@@ -39,10 +38,8 @@ public class BenchmarkScoringCoordinator {
                                           int logStartIndex) {
         List<ExecutionRecord> allExecutions = stateManager.executionLog(sessionId);
         List<ExecutionRecord> newExecutions = stateManager.executionLogFromIndex(sessionId, logStartIndex);
-        Map<String, String> actualToolState = stateManager.getToolStateSnapshot(
-                sessionId, benchmarkCase.targetToolObject().name());
         boolean goalAchieved = scorer.hasSuccessfulScenarioCompletion(
-                allExecutions, benchmarkCase, actualToolState);
+                sessionId, allExecutions, benchmarkCase);
         String attemptFeedback = feedbackBuilder.build(newExecutions, sessionId, goalAchieved);
         BenchmarkScorer.AttemptMetrics attemptMetrics = scorer.computeAttemptMetrics(
                 sessionId, benchmarkCase, goalAchieved);

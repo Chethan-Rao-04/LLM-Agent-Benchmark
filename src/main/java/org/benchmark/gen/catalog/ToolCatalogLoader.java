@@ -45,7 +45,9 @@ public class ToolCatalogLoader {
 
             List<OptionProfile> optionProfiles = parseOptionProfiles(rawRoot.get("optionProfiles"));
             List<ToolFamily> families = parseFamilies(rawRoot.get("families"));
-            List<WorkflowTemplate> workflows = parseWorkflows(rawRoot.get("workflows"));
+            List<WorkflowTemplate> workflows = families.stream()
+                    .flatMap(family -> family.workflows().stream())
+                    .toList();
             return new ToolCatalog(families, workflows, optionProfiles);
         } catch (IOException e) {
             throw new IllegalStateException("Failed to close tool catalog resource: " + resourcePath, e);
@@ -72,30 +74,66 @@ public class ToolCatalogLoader {
         List<ToolFamily> families = new ArrayList<>(rawFamilies.size());
         for (Object rawFamily : rawFamilies) {
             Map<String, Object> entry = requireMap(rawFamily, "tool family");
+            String familyId = requireString(entry, "id", "tool family");
             families.add(new ToolFamily(
-                    requireString(entry, "id", "tool family"),
+                    familyId,
                     parseEnum(Domain.class, requireString(entry, "domain", "tool family"), "tool family domain"),
                     requireString(entry, "purpose", "tool family"),
-                    copyStringList(entry.get("nameFragments"), "nameFragments for tool family"),
-                    copyStringList(entry.get("decoyFamilyIds"), "decoyFamilyIds for tool family"),
-                    copyStringList(entry.get("stateVariables"), "stateVariables for tool family"),
-                    copyStringList(entry.get("fillerCommandRoles"), "fillerCommandRoles for tool family"),
-                    copyStringList(entry.get("querySymptoms"), "querySymptoms for tool family")
+                    copyStringList(entry.get("queryTemplates"), "queryTemplates for tool family"),
+                    parseTools(entry.get("tools"), familyId),
+                    parseWorkflows(entry.get("workflows"), familyId)
             ));
         }
         return List.copyOf(families);
     }
 
-    private List<WorkflowTemplate> parseWorkflows(Object rawValue) {
+    private List<CatalogTool> parseTools(Object rawValue, String familyId) {
+        List<?> rawTools = requireList(rawValue, "tools for family " + familyId);
+        List<CatalogTool> tools = new ArrayList<>(rawTools.size());
+        for (Object rawTool : rawTools) {
+            Map<String, Object> entry = requireMap(rawTool, "catalog tool");
+            String toolId = requireString(entry, "id", "catalog tool");
+            tools.add(new CatalogTool(
+                    toolId,
+                    requireString(entry, "purpose", "catalog tool"),
+                    copyStringList(entry.get("nameFragments"), "nameFragments for catalog tool"),
+                    copyStringList(entry.get("stateVariables"), "stateVariables for catalog tool"),
+                    copyStringList(entry.get("fillerCommandRoles"), "fillerCommandRoles for catalog tool"),
+                    parseCapabilities(entry.get("capabilities"), toolId)
+            ));
+        }
+        return List.copyOf(tools);
+    }
+
+    private List<ToolCapability> parseCapabilities(Object rawValue, String toolId) {
+        List<?> rawCapabilities = requireList(rawValue, "capabilities for tool " + toolId);
+        List<ToolCapability> capabilities = new ArrayList<>(rawCapabilities.size());
+        for (Object rawCapability : rawCapabilities) {
+            Map<String, Object> entry = requireMap(rawCapability, "tool capability");
+            capabilities.add(new ToolCapability(
+                    requireString(entry, "id", "tool capability"),
+                    requireString(entry, "role", "tool capability"),
+                    copyStringList(entry.get("verbSeeds"), "verbSeeds for tool capability"),
+                    copyStringList(entry.get("nounSeeds"), "nounSeeds for tool capability"),
+                    toStringMap(entry.get("preconditionTemplate"), "preconditionTemplate for tool capability"),
+                    toStringMap(entry.get("effectTemplate"), "effectTemplate for tool capability"),
+                    optionalString(entry.get("optionProfile"))
+            ));
+        }
+        return List.copyOf(capabilities);
+    }
+
+    private List<WorkflowTemplate> parseWorkflows(Object rawValue, String familyId) {
         List<?> rawWorkflows = requireList(rawValue, "workflows");
         List<WorkflowTemplate> workflows = new ArrayList<>(rawWorkflows.size());
         for (Object rawWorkflow : rawWorkflows) {
             Map<String, Object> entry = requireMap(rawWorkflow, "workflow");
             workflows.add(new WorkflowTemplate(
                     requireString(entry, "id", "workflow"),
-                    requireString(entry, "familyId", "workflow"),
+                    familyId,
                     requireString(entry, "intent", "workflow"),
-                    parseWorkflowSteps(entry.get("steps"))
+                    parseWorkflowSteps(entry.get("steps")),
+                    copyStringList(entry.get("outcomePhrases"), "outcomePhrases for workflow")
             ));
         }
         return List.copyOf(workflows);
@@ -107,12 +145,8 @@ public class ToolCatalogLoader {
         for (Object rawStep : rawSteps) {
             Map<String, Object> entry = requireMap(rawStep, "workflow step");
             steps.add(new WorkflowStepTemplate(
-                    requireString(entry, "role", "workflow step"),
-                    copyStringList(entry.get("verbSeeds"), "verbSeeds for workflow step"),
-                    copyStringList(entry.get("nounSeeds"), "nounSeeds for workflow step"),
-                    toStringMap(entry.get("preconditionTemplate"), "preconditionTemplate for workflow step"),
-                    toStringMap(entry.get("effectTemplate"), "effectTemplate for workflow step"),
-                    optionalString(entry.get("optionProfile"))
+                    requireString(entry, "toolId", "workflow step"),
+                    requireString(entry, "capabilityId", "workflow step")
             ));
         }
         return List.copyOf(steps);

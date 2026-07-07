@@ -61,7 +61,8 @@ class BenchmarkRunArtifactWriter {
         for (BenchmarkRunCaseReport report : summary.caseReports) {
             markdown.append("## Case ").append(report.caseIndex()).append('\n');
             markdown.append("Session: ").append(report.sessionId()).append('\n');
-            markdown.append("Target tool: ").append(report.targetTool()).append('\n');
+            markdown.append("Target tools:\n");
+            appendList(markdown, report.targetTools());
             markdown.append("Target-like wrong tools:\n");
             appendList(markdown, report.targetLikeWrongTools());
             markdown.append("Result: ").append(report.passed() ? "passed" : "failed").append('\n');
@@ -73,8 +74,8 @@ class BenchmarkRunArtifactWriter {
                     .append(format(report.decoyResistance(), 2))
                     .append('\n');
             markdown.append('\n');
-            markdown.append("### Expected Steps\n");
-            appendList(markdown, report.expectedSteps());
+            markdown.append("### Target Path\n");
+            appendList(markdown, report.targetPath());
             markdown.append('\n');
             markdown.append("### Executions\n");
             appendList(markdown, report.executions());
@@ -85,10 +86,12 @@ class BenchmarkRunArtifactWriter {
 
     String toCsv(BenchmarkRunSummary summary) {
         StringBuilder csv = new StringBuilder();
-        csv.append("case,session,passed,score,attempts,executions,toolSelection,stepCompletion,orderingAccuracy,stateAccuracy,efficiency,commandPrecision,targetLikeWrongToolAvoidance,recovery\n");
+        csv.append("case,session,targetTools,targetPath,passed,score,attempts,executions,toolSelection,stepCompletion,orderingAccuracy,stateAccuracy,efficiency,commandPrecision,targetLikeWrongToolAvoidance,recovery\n");
         for (BenchmarkRunCaseReport report : summary.caseReports) {
             csv.append(report.caseIndex()).append(',')
                     .append(escapeCsv(report.sessionId())).append(',')
+                    .append(escapeCsv(String.join(" | ", report.targetTools()))).append(',')
+                    .append(escapeCsv(String.join(" | ", report.targetPath()))).append(',')
                     .append(report.passed()).append(',')
                     .append(format(report.compositeScore(), 3)).append(',')
                     .append(report.attemptsUsed()).append(',')

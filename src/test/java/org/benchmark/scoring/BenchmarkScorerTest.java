@@ -300,6 +300,95 @@ class BenchmarkScorerTest {
         assertEquals(1.0, scorer.scoreCommandPrecision(stateManager.executionLog(sessionId), benchmarkCase), 1e-9);
     }
 
+    @Test
+    void scorerMatchesTargetStepsByToolAndCommandPair() {
+        String sessionId = "target-pair-matching";
+        BenchmarkCaseGenerator.BenchmarkCase benchmarkCase = buildMultiTargetBenchmarkCase();
+        stateManager.initializeSession(sessionId, benchmarkCase, benchmarkCase.allTools());
+        stateManager.recordExecution(sessionId, new SessionStateManager.ExecutionRecord(
+                "NET-BACKUP-202",
+                "sync_state",
+                "",
+                true,
+                "OK: sync_state"
+        ));
+
+        assertEquals(0.5, scorer.scoreStepCompletion(stateManager.executionLog(sessionId), benchmarkCase), 1e-9);
+        assertEquals(1.0, scorer.scoreCommandPrecision(stateManager.executionLog(sessionId), benchmarkCase), 1e-9);
+    }
+
+    @Test
+    void scorerOrdersTargetPathPairsAcrossTools() {
+        String sessionId = "target-pair-ordering";
+        BenchmarkCaseGenerator.BenchmarkCase benchmarkCase = buildMultiTargetBenchmarkCase();
+        stateManager.initializeSession(sessionId, benchmarkCase, benchmarkCase.allTools());
+        stateManager.recordExecution(sessionId, new SessionStateManager.ExecutionRecord(
+                "NET-BACKUP-202",
+                "sync_state",
+                "",
+                true,
+                "OK: sync_state"
+        ));
+        stateManager.recordExecution(sessionId, new SessionStateManager.ExecutionRecord(
+                "NET-PRIMARY-101",
+                "sync_state",
+                "",
+                true,
+                "OK: sync_state"
+        ));
+
+        assertEquals(1.0, scorer.scoreStepCompletion(stateManager.executionLog(sessionId), benchmarkCase), 1e-9);
+        assertEquals(0.5, scorer.scoreOrdering(stateManager.executionLog(sessionId), benchmarkCase), 1e-9);
+    }
+
+    @Test
+    void scenarioCompletionEvaluatesExpectedStatePerTargetTool() {
+        String sessionId = "per-target-state";
+        BenchmarkCaseGenerator.BenchmarkCase benchmarkCase = buildMultiTargetBenchmarkCase();
+        stateManager.initializeSession(sessionId, benchmarkCase, benchmarkCase.allTools());
+        stateManager.recordExecution(sessionId, new SessionStateManager.ExecutionRecord(
+                "NET-PRIMARY-101",
+                "sync_state",
+                "",
+                true,
+                "OK: sync_state"
+        ));
+        stateManager.recordExecution(sessionId, new SessionStateManager.ExecutionRecord(
+                "NET-BACKUP-202",
+                "sync_state",
+                "",
+                true,
+                "OK: sync_state"
+        ));
+        stateManager.updateToolState(sessionId, "NET-PRIMARY-101", "status", "primary_ready");
+
+        assertEquals(0.5, scorer.computeAttemptMetrics(sessionId, benchmarkCase, false).stateAccuracy(), 1e-9);
+        assertFalse(scorer.hasSuccessfulScenarioCompletion(
+                sessionId, stateManager.executionLog(sessionId), benchmarkCase));
+
+        stateManager.updateToolState(sessionId, "NET-BACKUP-202", "status", "backup_ready");
+
+        assertEquals(1.0, scorer.computeAttemptMetrics(sessionId, benchmarkCase, false).stateAccuracy(), 1e-9);
+        assertTrue(scorer.hasSuccessfulScenarioCompletion(
+                sessionId, stateManager.executionLog(sessionId), benchmarkCase));
+    }
+
+    @Test
+    void decoyResistancePenalizesAnyNonTargetToolExecution() {
+        String sessionId = "random-distractor-decoy";
+        BenchmarkCaseGenerator.BenchmarkCase benchmarkCase = buildMultiTargetBenchmarkCase();
+        stateManager.initializeSession(sessionId, benchmarkCase, benchmarkCase.allTools());
+        stateManager.recordExecution(sessionId, new SessionStateManager.ExecutionRecord(
+                "NET-RANDOM-303",
+                "probe_noise",
+                "",
+                false,
+                "Wrong tool selected"
+        ));
+
+        assertEquals(0.75, scorer.computeAttemptMetrics(sessionId, benchmarkCase, false).decoyResistance(), 1e-9);
+    }
+
     private void recordExecutions(String sessionId, int count) {
         for (int i = 0; i < count; i++) {
             stateManager.recordExecution(sessionId, new SessionStateManager.ExecutionRecord(
@@ -391,6 +480,115 @@ class BenchmarkScorerTest {
                 withTrap,
                 withTrap ? authenticate.name() : null,
                 withTrap ? recovery.name() : null
+        );
+    }
+
+    private BenchmarkCaseGenerator.BenchmarkCase buildMultiTargetBenchmarkCase() {
+        CommandObject primarySync = new CommandObject(
+                "sync_state",
+                List.of(),
+                "Sync primary state",
+                List.of(new EffectObject("status", EffectOp.ASSIGN, "primary_ready")),
+                Map.of()
+        );
+        CommandObject backupSync = new CommandObject(
+                "sync_state",
+                List.of(),
+                "Sync backup state",
+                List.of(new EffectObject("status", EffectOp.ASSIGN, "backup_ready")),
+                Map.of()
+        );
+        ToolObject primaryTool = new ToolObject(
+                "NET-PRIMARY-101",
+                "Primary target",
+                Domain.NETWORK_INFRA,
+                List.of(primarySync),
+                Map.of("status", "string")
+        );
+        ToolObject backupTool = new ToolObject(
+                "NET-BACKUP-202",
+                "Backup target",
+                Domain.NETWORK_INFRA,
+                List.of(backupSync),
+                Map.of("status", "string")
+        );
+        ToolObject randomDistractor = new ToolObject(
+                "NET-RANDOM-303",
+                "Random distractor",
+                Domain.NETWORK_INFRA,
+                List.of(new CommandObject(
+                        "probe_noise",
+                        List.of(),
+                        "Probe random state",
+                        List.of(),
+                        Map.of()
+                )),
+                Map.of("status", "string")
+        );
+        List<ResolvedStep> scenarioSteps = List.of(
+                new ResolvedStep("sync", "primary", Map.of(), Map.of("status", "primary_ready")),
+                new ResolvedStep("sync", "backup", Map.of(), Map.of("status", "backup_ready"))
+        );
+        ResolvedScenario scenario = new ResolvedScenario(
+                "multi_target_sync",
+                "Sync primary and backup",
+                Domain.NETWORK_INFRA,
+                scenarioSteps,
+                Map.of("status", "backup_ready"),
+                Map.of()
+        );
+        BenchmarkCaseSpec spec = new BenchmarkCaseSpec(
+                "Sync primary and backup",
+                Domain.NETWORK_INFRA,
+                List.of(
+                        new CapabilityStep(
+                                "sync primary",
+                                "primary",
+                                "sync",
+                                "primary",
+                                "sync_state",
+                                Map.of(),
+                                Map.of("status", "primary_ready")
+                        ),
+                        new CapabilityStep(
+                                "sync backup",
+                                "backup",
+                                "sync",
+                                "backup",
+                                "sync_state",
+                                Map.of(),
+                                Map.of("status", "backup_ready")
+                        )
+                ),
+                Map.of("status", "backup_ready"),
+                DecoyPlan.currentDefault(0, 1),
+                ScoringPolicy.currentDefault()
+        );
+
+        return new BenchmarkCaseGenerator.BenchmarkCase(
+                scenario,
+                spec,
+                primaryTool,
+                List.of(primaryTool, backupTool),
+                List.of(
+                        new BenchmarkCaseGenerator.TargetStep(primaryTool.name(), "sync_state"),
+                        new BenchmarkCaseGenerator.TargetStep(backupTool.name(), "sync_state")
+                ),
+                scenarioSteps,
+                "docs",
+                spec.expectedFinalState(),
+                Map.of(
+                        primaryTool.name(), Map.of("status", "primary_ready"),
+                        backupTool.name(), Map.of("status", "backup_ready")
+                ),
+                List.of(randomDistractor),
+                List.of(),
+                List.of(randomDistractor),
+                Map.of(),
+                "Use the documented tools.",
+                false,
+                null,
+                null
         );
     }
 }

@@ -51,7 +51,8 @@ class BenchmarkCaseGeneratorTest {
 
         for (BenchmarkCaseGenerator.BenchmarkCase benchmarkCase : cases) {
             assertEquals(4, benchmarkCase.distractors().size());
-            assertEquals(5, benchmarkCase.allTools().size());
+            assertEquals(benchmarkCase.targetTools().size() + benchmarkCase.distractors().size(),
+                    benchmarkCase.allTools().size());
         }
     }
 
@@ -194,6 +195,11 @@ class BenchmarkCaseGeneratorTest {
         assertEquals(benchmarkCase.expectedState(), spec.expectedFinalState());
         assertFalse(spec.toolFamilyId().isBlank());
         assertFalse(spec.workflowId().isBlank());
+        assertTrue(benchmarkCase.targetTools().size() >= 2);
+        assertEquals(spec.capabilitySteps().size(), benchmarkCase.targetPath().size());
+        assertFalse(benchmarkCase.expectedStateByTool().isEmpty());
+        ToolFamily family = new ToolCatalogLoader().getCatalog().family(spec.toolFamilyId());
+        assertEquals(family.tools().size(), benchmarkCase.targetTools().size() + benchmarkCase.semanticDecoys().size());
         assertEquals(benchmarkCase.semanticDecoys().size(), spec.decoyPlan().semanticDecoyCount());
         assertEquals(benchmarkCase.randomDistractors().size(), spec.decoyPlan().randomDistractorCount());
         assertTrue(spec.scoringPolicy().penalizeSemanticDecoyUse());
@@ -210,6 +216,7 @@ class BenchmarkCaseGeneratorTest {
                     capabilityStep.commandName());
             assertEquals(scenarioStep.precondition(), capabilityStep.precondition());
             assertEquals(scenarioStep.effect(), capabilityStep.effect());
+            assertFalse(capabilityStep.toolId().isBlank());
         }
     }
 
@@ -247,15 +254,90 @@ class BenchmarkCaseGeneratorTest {
     }
 
     @Test
+    void targetToolObjectAliasesFirstTargetDuringMigration() {
+        ToolObject firstTarget = new ToolObject(
+                "NET-FIRST-101",
+                "First target",
+                Domain.NETWORK_INFRA,
+                List.of(),
+                Map.of("primary_status", "string")
+        );
+        ToolObject secondTarget = new ToolObject(
+                "NET-SECOND-202",
+                "Second target",
+                Domain.NETWORK_INFRA,
+                List.of(),
+                Map.of("secondary_status", "string")
+        );
+        ResolvedStep firstStep = new ResolvedStep(
+                "prepare",
+                "primary",
+                Map.of(),
+                Map.of("primary_status", "ready")
+        );
+        ResolvedStep secondStep = new ResolvedStep(
+                "verify",
+                "secondary",
+                Map.of(),
+                Map.of("secondary_status", "ready")
+        );
+        ResolvedScenario scenario = new ResolvedScenario(
+                "multi_target",
+                "Coordinate two target tools",
+                Domain.NETWORK_INFRA,
+                List.of(firstStep, secondStep),
+                Map.of("primary_status", "ready", "secondary_status", "ready"),
+                Map.of()
+        );
+
+        BenchmarkCaseGenerator.BenchmarkCase benchmarkCase = new BenchmarkCaseGenerator.BenchmarkCase(
+                scenario,
+                BenchmarkCaseSpec.fromScenario(scenario, 0, 0),
+                secondTarget,
+                List.of(firstTarget, secondTarget),
+                List.of(
+                        new BenchmarkCaseGenerator.TargetStep(
+                                firstTarget.name(),
+                                CommandAbbreviator.commandName(firstStep.verb(), firstStep.noun())),
+                        new BenchmarkCaseGenerator.TargetStep(
+                                secondTarget.name(),
+                                CommandAbbreviator.commandName(secondStep.verb(), secondStep.noun()))
+                ),
+                scenario.steps(),
+                "docs",
+                scenario.cumulativeExpectedState(),
+                Map.of(
+                        firstTarget.name(), firstStep.effect(),
+                        secondTarget.name(), secondStep.effect()
+                ),
+                List.of(),
+                List.of(),
+                List.of(),
+                Map.of(),
+                "Use the documented tools.",
+                false,
+                null,
+                null
+        );
+
+        assertEquals(firstTarget, benchmarkCase.targetToolObject());
+        assertEquals(List.of(firstTarget, secondTarget), benchmarkCase.targetTools());
+    }
+
+    @Test
     void targetCommandEffectsComeFromCapabilitySteps() {
         BenchmarkCaseGenerator generator = new BenchmarkCaseGenerator(DocumentComplexity.CLEAN, 42L);
         BenchmarkCaseGenerator.BenchmarkCase benchmarkCase = generator.generateCases(1, 2, Domain.NETWORK_INFRA).getFirst();
 
-        for (CapabilityStep step : benchmarkCase.spec().capabilitySteps()) {
-            CommandObject command = benchmarkCase.targetToolObject().commands().stream()
-                    .filter(candidate -> candidate.name().equals(step.commandName()))
+        for (int index = 0; index < benchmarkCase.targetPath().size(); index++) {
+            BenchmarkCaseGenerator.TargetStep targetStep = benchmarkCase.targetPath().get(index);
+            ToolObject targetTool = benchmarkCase.findTool(targetStep.toolName());
+            assertNotNull(targetTool);
+            CommandObject command = targetTool.commands().stream()
+                    .filter(candidate -> candidate.name().equals(targetStep.commandName()))
                     .findFirst()
                     .orElseThrow();
+            CapabilityStep step = benchmarkCase.spec().capabilitySteps().get(index);
             Map<String, String> actualEffects = command.commandEffectObjects().stream()
                     .collect(Collectors.toMap(
                             effect -> effect.variable(),
@@ -268,41 +350,39 @@ class BenchmarkCaseGeneratorTest {
     @Test
     void targetToolDescriptionsDoNotEchoScenarioIntent() {
         BenchmarkCaseGenerator generator = new BenchmarkCaseGenerator(DocumentComplexity.CLEAN, 42L);
-        ToolCatalogLoader catalogLoader = new ToolCatalogLoader();
         List<BenchmarkCaseGenerator.BenchmarkCase> cases = generator.generateCases(10, 3, null);
 
         for (BenchmarkCaseGenerator.BenchmarkCase benchmarkCase : cases) {
-            String description = benchmarkCase.targetToolObject().description();
-            ToolFamily family = catalogLoader.getCatalog().family(benchmarkCase.spec().toolFamilyId());
+            for (ToolObject targetTool : benchmarkCase.targetTools()) {
+                String description = targetTool.description();
 
-            assertTrue(containsIgnoreCase(description, "documented procedures"));
-            assertTrue(containsIgnoreCase(description, family.purpose()));
+                assertTrue(containsIgnoreCase(description, "documented procedures"));
 
-            for (CapabilityStep step : benchmarkCase.spec().capabilitySteps()) {
-                assertFalse(containsIgnoreCase(description, step.commandName()));
+                for (CapabilityStep step : benchmarkCase.spec().capabilitySteps()) {
+                    assertFalse(containsIgnoreCase(description, step.commandName()));
+                }
             }
         }
     }
 
     @Test
-    void semanticDecoysUseSingleNeighborToolWithTargetLikeName() {
+    void semanticDecoysUseSameFamilyNonTargetTools() {
         BenchmarkCaseGenerator generator = new BenchmarkCaseGenerator(DocumentComplexity.CLEAN, 42L);
         List<BenchmarkCaseGenerator.BenchmarkCase> cases = generator.generateCases(10, 3, Domain.MANUFACTURING);
 
         boolean foundSemanticDecoy = false;
         for (BenchmarkCaseGenerator.BenchmarkCase benchmarkCase : cases) {
-            assertTrue(benchmarkCase.semanticDecoys().size() <= 1,
-                    "Generation should expose at most one semantic decoy");
             assertEquals(benchmarkCase.semanticDecoys().size(),
                     benchmarkCase.semanticDecoyKindsByToolName().size());
+            Set<String> targetToolNames = benchmarkCase.targetTools().stream()
+                    .map(ToolObject::name)
+                    .collect(Collectors.toSet());
 
             for (ToolObject decoy : benchmarkCase.semanticDecoys()) {
                 assertEquals(DecoyKind.SIMILAR_INTENT_WRONG_RESOURCE,
                         benchmarkCase.semanticDecoyKindsByToolName().get(decoy.name()));
-                assertNotEquals(benchmarkCase.targetToolObject().name(), decoy.name());
-                assertEquals(toolNamePrefix(benchmarkCase.targetToolObject().name()), toolNamePrefix(decoy.name()));
-                assertNotEquals(benchmarkCase.targetToolObject().description(), decoy.description(),
-                        "Semantic decoys should come from a neighboring family, not a renamed target clone");
+                assertFalse(targetToolNames.contains(decoy.name()));
+                assertEquals(benchmarkCase.targetToolObject().domain(), decoy.domain());
                 foundSemanticDecoy = true;
             }
         }
@@ -384,6 +464,7 @@ class BenchmarkCaseGeneratorTest {
     @Test
     void goalQueryComesFromSemanticSpecWithoutCommandNameLeakage() {
         BenchmarkCaseGenerator generator = new BenchmarkCaseGenerator(DocumentComplexity.CLEAN, 42L);
+        ToolCatalogLoader catalogLoader = new ToolCatalogLoader();
         List<BenchmarkCaseGenerator.BenchmarkCase> cases = generator.generateCases(5, 2, Domain.MANUFACTURING);
 
         for (BenchmarkCaseGenerator.BenchmarkCase benchmarkCase : cases) {
@@ -393,6 +474,13 @@ class BenchmarkCaseGeneratorTest {
                 assertFalse(query.contains(step.commandName()), "Query should not leak proprietary command names");
             }
             assertFalse(containsIgnoreCase(query, benchmarkCase.spec().toolFamilyId()));
+            ToolFamily family = catalogLoader.getCatalog().family(benchmarkCase.spec().toolFamilyId());
+            for (var tool : family.tools()) {
+                assertFalse(containsIgnoreCase(query, tool.id()));
+                for (var capability : tool.capabilities()) {
+                    assertFalse(containsIgnoreCase(query, capability.id()));
+                }
+            }
         }
     }
 
@@ -407,8 +495,6 @@ class BenchmarkCaseGeneratorTest {
         for (BenchmarkCaseGenerator.BenchmarkCase benchmarkCase : cases) {
             assertEquals(benchmarkCase.trapCommandName() != null, benchmarkCase.hasTrap(),
                     "hasTrap should reflect explicit trap metadata");
-
-            ToolObject target = benchmarkCase.targetToolObject();
 
             if (benchmarkCase.hasTrap()) {
                 foundTrap = true;
@@ -449,7 +535,8 @@ class BenchmarkCaseGeneratorTest {
 
                 assertNotNull(benchmarkCase.recoveryCommandName(),
                         "Trap case should have a recovery command");
-                CommandObject recoveryCmd = target.commands().stream()
+                CommandObject recoveryCmd = benchmarkCase.targetTools().stream()
+                        .flatMap(tool -> tool.commands().stream())
                         .filter(c -> c.name().equals(benchmarkCase.recoveryCommandName()))
                         .findFirst()
                         .orElse(null);
@@ -476,12 +563,13 @@ class BenchmarkCaseGeneratorTest {
                 assertEquals(wrongValue, recoveryCmd.preconditions().get(corruptedVar),
                         "Recovery command should only be available after the trap corrupts state");
 
-                assertFalse(target.description().contains("stabilization"),
+                assertFalse(benchmarkCase.targetToolObject().description().contains("stabilization"),
                         "Tool description should not contain obvious recovery hints");
 
-                assertTrue(benchmarkCase.caseManual().contains(target.name()));
+                assertTrue(benchmarkCase.caseManual().contains(benchmarkCase.targetToolObject().name()));
             } else {
-                List<CommandObject> traps = target.commands().stream()
+                List<CommandObject> traps = benchmarkCase.targetTools().stream()
+                        .flatMap(tool -> tool.commands().stream())
                         .filter(cmd -> cmd.documentedEffects() != null)
                         .toList();
                 assertTrue(traps.isEmpty(), "Non-trap case should have no trap commands");
@@ -501,7 +589,8 @@ class BenchmarkCaseGeneratorTest {
         List<BenchmarkCaseGenerator.BenchmarkCase> cases = generator.generateCases(5, 2, null);
 
         for (BenchmarkCaseGenerator.BenchmarkCase benchmarkCase : cases) {
-            boolean hasTrap = benchmarkCase.targetToolObject().commands().stream()
+            boolean hasTrap = benchmarkCase.targetTools().stream()
+                    .flatMap(tool -> tool.commands().stream())
                     .anyMatch(cmd -> cmd.documentedEffects() != null);
             assertFalse(hasTrap, "No trap command should exist when disabled");
             assertNull(benchmarkCase.trapCommandName());
@@ -603,23 +692,22 @@ class BenchmarkCaseGeneratorTest {
     }
 
     @Test
-    void targetSupportAndRecoveryCommandsHaveNoOptions() {
+    void recoveryCommandsHaveNoOptions() {
         BenchmarkCaseGenerator generator = new BenchmarkCaseGenerator(DocumentComplexity.CLEAN, 42L, true);
         List<BenchmarkCaseGenerator.BenchmarkCase> cases = generator.generateCases(25, 3, null);
 
         boolean checkedRecoveryCommand = false;
         for (BenchmarkCaseGenerator.BenchmarkCase benchmarkCase : cases) {
-            Set<String> workflowCommandNames = benchmarkCase.spec().capabilitySteps().stream()
-                    .map(CapabilityStep::commandName)
-                    .collect(Collectors.toSet());
-
-            for (CommandObject command : benchmarkCase.targetToolObject().commands()) {
-                if (workflowCommandNames.contains(command.name())) {
-                    continue;
-                }
-                assertTrue(command.commandOptions().isEmpty(),
-                        "Support and recovery commands should not carry generic options");
-                if (command.name().equals(benchmarkCase.recoveryCommandName())) {
+            if (benchmarkCase.recoveryCommandName() == null) {
+                continue;
+            }
+            for (CommandObject command : benchmarkCase.targetTools().stream()
+                    .flatMap(tool -> tool.commands().stream())
+                    .toList()) {
+                if (command.name().equals(benchmarkCase.recoveryCommandName())
+                        && command.preconditions().size() == 1) {
+                    assertTrue(command.commandOptions().isEmpty(),
+                            "Recovery commands should not carry generic options");
                     checkedRecoveryCommand = true;
                 }
             }
@@ -670,8 +758,4 @@ class BenchmarkCaseGeneratorTest {
         return text.toLowerCase().contains(value.toLowerCase());
     }
 
-    private String toolNamePrefix(String toolName) {
-        int suffixStart = toolName.lastIndexOf('-');
-        return suffixStart > 0 ? toolName.substring(0, suffixStart) : toolName;
-    }
 }

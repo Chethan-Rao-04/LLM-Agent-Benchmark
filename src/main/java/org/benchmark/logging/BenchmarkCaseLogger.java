@@ -53,13 +53,12 @@ public class BenchmarkCaseLogger {
         payload.put("caseIndex", index);
         payload.put("sessionId", sessionId);
         payload.put("userQuery", userQuery);
-        payload.put("targetTool", benchmarkCase.targetToolObject().name());
         payload.put("scenarioPattern", benchmarkCase.scenario().patternName());
-        payload.put("targetSteps", benchmarkCase.spec().capabilitySteps().stream()
-                .map(step -> formatTargetStep(benchmarkCase.targetToolObject(), step.commandName()))
-                .toList());
+        payload.put("targetTools", targetToolNames(benchmarkCase));
+        payload.put("targetPath", formatTargetPath(benchmarkCase));
+        payload.put("targetSteps", formatTargetPath(benchmarkCase));
         payload.put("expectedState", benchmarkCase.expectedState());
-        payload.put("targetTools", List.of(benchmarkCase.targetToolObject().name()));
+        payload.put("expectedStateByTool", benchmarkCase.expectedStateByTool());
         payload.put("semanticDecoys", benchmarkCase.semanticDecoys().stream().map(ToolObject::name).toList());
         payload.put("targetLikeWrongTools", targetLikeWrongToolPairs(benchmarkCase));
         payload.put("randomDistractors", benchmarkCase.randomDistractors().stream().map(ToolObject::name).toList());
@@ -77,9 +76,9 @@ public class BenchmarkCaseLogger {
                 Case {}
                 sessionId: {}
                 query: {}
-                targetTool: {}
+                targetTools: {}
                 scenario: {}
-                targetSteps:
+                targetPath:
                 {}
                 availableTools: {}
                 targetLikeWrongTools:
@@ -89,7 +88,7 @@ public class BenchmarkCaseLogger {
                 index,
                 sessionId,
                 userQuery,
-                benchmarkCase.targetToolObject().name(),
+                targetToolNames(benchmarkCase),
                 benchmarkCase.scenario().patternName(),
                 formatTargetSteps(benchmarkCase),
                 benchmarkCase.allTools().size(),
@@ -217,7 +216,9 @@ public class BenchmarkCaseLogger {
         payload.put("decoyResistance", score.decoyResistance());
         payload.put("targetLikeWrongToolAvoidance", score.decoyResistance());
         payload.put("targetLikeWrongTools", targetLikeWrongToolPairs(benchmarkCase));
-        payload.put("targetToolState", stateManager.getToolStateSnapshot(sessionId, benchmarkCase.targetToolObject().name()));
+        payload.put("targetTools", targetToolNames(benchmarkCase));
+        payload.put("targetPath", formatTargetPath(benchmarkCase));
+        payload.put("targetToolStates", targetToolStates(sessionId, benchmarkCase));
         payload.put("sessionState", stateManager.getSessionStateSnapshot(sessionId));
         payload.put("executionLog", stateManager.executionLog(sessionId));
         eventLogger.logPayload(payload);
@@ -268,16 +269,39 @@ public class BenchmarkCaseLogger {
     }
 
     private String formatTargetSteps(BenchmarkCaseGenerator.BenchmarkCase benchmarkCase) {
-        return benchmarkCase.spec().capabilitySteps().stream()
-                .map(step -> formatTargetStep(benchmarkCase.targetToolObject(), step.commandName()))
+        return benchmarkCase.targetPath().stream()
+                .map(step -> formatTargetStep(benchmarkCase, step))
                 .map(step -> "  - " + step)
                 .collect(Collectors.joining(System.lineSeparator()));
     }
 
+    private List<String> targetToolNames(BenchmarkCaseGenerator.BenchmarkCase benchmarkCase) {
+        return benchmarkCase.targetTools().stream()
+                .map(ToolObject::name)
+                .toList();
+    }
+
+    private List<String> formatTargetPath(BenchmarkCaseGenerator.BenchmarkCase benchmarkCase) {
+        return benchmarkCase.targetPath().stream()
+                .map(step -> formatTargetStep(benchmarkCase, step))
+                .toList();
+    }
+
+    private Map<String, Map<String, String>> targetToolStates(String sessionId,
+                                                              BenchmarkCaseGenerator.BenchmarkCase benchmarkCase) {
+        return benchmarkCase.targetTools().stream()
+                .collect(Collectors.toMap(
+                        ToolObject::name,
+                        tool -> stateManager.getToolStateSnapshot(sessionId, tool.name()),
+                        (left, right) -> right,
+                        java.util.LinkedHashMap::new
+                ));
+    }
+
     private List<Map<String, String>> targetLikeWrongToolPairs(BenchmarkCaseGenerator.BenchmarkCase benchmarkCase) {
-        String targetTool = benchmarkCase.targetToolObject().name();
         return benchmarkCase.semanticDecoys().stream()
-                .map(decoy -> Map.of("targetTool", targetTool, "wrongTool", decoy.name()))
+                .flatMap(decoy -> benchmarkCase.targetTools().stream()
+                        .map(targetTool -> Map.of("targetTool", targetTool.name(), "wrongTool", decoy.name())))
                 .toList();
     }
 
@@ -285,9 +309,8 @@ public class BenchmarkCaseLogger {
         if (benchmarkCase.semanticDecoys().isEmpty()) {
             return "  none";
         }
-        String targetTool = benchmarkCase.targetToolObject().name();
         return benchmarkCase.semanticDecoys().stream()
-                .map(decoy -> "  - " + targetTool + " -> " + decoy.name())
+                .map(decoy -> "  - " + String.join(", ", targetToolNames(benchmarkCase)) + " -> " + decoy.name())
                 .collect(Collectors.joining(System.lineSeparator()));
     }
 
@@ -319,12 +342,18 @@ public class BenchmarkCaseLogger {
         return value == null || value.isBlank() ? fallback : value;
     }
 
-    private String formatTargetStep(ToolObject targetTool, String commandName) {
+    private String formatTargetStep(BenchmarkCaseGenerator.BenchmarkCase benchmarkCase,
+                                    BenchmarkCaseGenerator.TargetStep targetStep) {
+        ToolObject targetTool = benchmarkCase.findTool(targetStep.toolName());
+        if (targetTool == null) {
+            return targetStep.toolName() + " " + targetStep.commandName() + "{options=[]}";
+        }
         return targetTool.commands().stream()
-                .filter(command -> command.name().equalsIgnoreCase(commandName))
+                .filter(command -> command.name().equalsIgnoreCase(targetStep.commandName()))
                 .findFirst()
-                .map(command -> commandName + formatOptions(command.commandOptions()))
-                .orElse(commandName + "{options=[]}");
+                .map(command -> targetStep.toolName() + " " + targetStep.commandName()
+                        + formatOptions(command.commandOptions()))
+                .orElse(targetStep.toolName() + " " + targetStep.commandName() + "{options=[]}");
     }
 
     private String formatOptions(List<OptionEntity> options) {

@@ -25,687 +25,919 @@ optionProfiles:
     valueMode: PROFILE_SUFFIX
 
 families:
-  - id: compressed_air_unit
+  - id: metal_pipe_generation
     domain: MANUFACTURING
-    purpose: compressed air delivery and pressure stabilization for manufacturing service paths
-    nameFragments: [aircore, pneuline, pressor, flowcell]
-    decoyFamilyIds: [coolant_pump, backup_generator]
-    stateVariables: [fault_status, pressure_path, service_state, line_status, control_state, output_state, readiness_state]
-    fillerCommandRoles: [inspect sensor, calibrate line, measure compressor, verify valve]
-    querySymptoms:
-      - "Restore stable air delivery for the affected production cell and leave the service path %s."
-      - "Recover pressure output for the affected line and return the operating state to %s."
-      - "Bring the delivery circuit back under control and finish with the system %s."
-  - id: weld_cell
-    domain: MANUFACTURING
-    purpose: material joining, torch alignment, and seam readiness for manufacturing workstations
-    nameFragments: [arcunit, seamcore, joinbay, weldcell]
-    decoyFamilyIds: [seal_press, compressed_air_unit]
-    stateVariables: [fault_status, fixture_state, seam_state, quality_state, assembly_state, nozzle_state, torch_state]
-    fillerCommandRoles: [inspect fixture, align jig, calibrate nozzle, verify batch]
-    querySymptoms:
-      - "Recover seam quality on the affected station and leave the workflow %s."
-      - "Restore joining readiness for the production cell and finish %s."
-      - "Bring the affected assembly path back into a %s state."
-  - id: seal_press
-    domain: MANUFACTURING
-    purpose: closure integrity, compression readiness, and containment verification for manufacturing assemblies
-    nameFragments: [sealbay, presslock, clampcore, closurex]
-    decoyFamilyIds: [weld_cell, compressed_air_unit]
-    stateVariables: [mold_state, seal_state, containment_state, fault_status, fixture_state, die_state, readiness_state]
-    fillerCommandRoles: [inspect mold, align fixture, clamp chassis, verify assembly]
-    querySymptoms:
-      - "Restore containment integrity on the affected line and leave the process %s."
-      - "Recover the closure path for the affected assembly and finish %s."
-      - "Bring the affected compression workflow back to a %s state."
-  - id: coolant_pump
-    domain: MANUFACTURING
-    purpose: coolant circulation, loop balancing, and service readiness for manufacturing equipment
-    nameFragments: [coolflow, loopcell, thermpath, cirunit]
-    decoyFamilyIds: [compressed_air_unit, backup_generator]
-    stateVariables: [valve_state, coolant_path, service_state, channel_state, loop_state, flow_state, readiness_state]
-    fillerCommandRoles: [inspect valve, isolate line, synchronize module, verify service]
-    querySymptoms:
-      - "Restore stable coolant circulation for the affected equipment and leave the system %s."
-      - "Recover flow balance on the affected service path and finish %s."
-      - "Bring the thermal support path back under control and leave it %s."
-  - id: backup_generator
-    domain: MANUFACTURING
-    purpose: backup power recovery, load stabilization, and output readiness for manufacturing systems
-    nameFragments: [loadcore, genback, powercell, busline]
-    decoyFamilyIds: [compressed_air_unit, coolant_pump]
-    stateVariables: [fault_status, load_path, service_state, channel_state, protection_state, output_state, readiness_state]
-    fillerCommandRoles: [diagnose module, isolate channel, measure generator, verify service]
-    querySymptoms:
-      - "Restore stable backup power for the affected cell and leave the output path %s."
-      - "Recover load support for the affected system and finish %s."
-      - "Bring the standby power path back into a %s condition."
-  - id: router_mesh
-    domain: NETWORK_INFRA
-    purpose: route repair, uplink stabilization, and service verification for network paths
-    nameFragments: [routex, uplcore, meshline, pathrtr]
-    decoyFamilyIds: [switch_fabric, vpn_gateway]
-    stateVariables: [auth_token, route_state, service_state, uplink_state, readiness_state]
-    fillerCommandRoles: [inspect router, configure gateway, verify uplink, trace packet]
-    querySymptoms:
-      - "Restore routing service for the affected path and leave connectivity %s."
-      - "Recover the affected uplink service path and finish %s."
-      - "Bring the traffic path back under control and leave the network %s."
-  - id: firewall_cluster
-    domain: NETWORK_INFRA
-    purpose: policy restoration, inspection readiness, and protected service verification for network boundaries
-    nameFragments: [guardmesh, policyx, wallcore, secpath]
-    decoyFamilyIds: [vpn_gateway, load_balancer_array]
-    stateVariables: [auth_token, policy_state, service_state, module_state, protection_state, readiness_state]
-    fillerCommandRoles: [inspect firewall, configure module, enable firewall, verify service]
-    querySymptoms:
-      - "Restore protected access on the affected boundary path and leave the service %s."
-      - "Recover the inspection path for the affected segment and finish %s."
-      - "Bring the perimeter control workflow back to a %s condition."
-  - id: switch_fabric
-    domain: NETWORK_INFRA
-    purpose: switching path repair, vlan readiness, and uplink verification for network fabrics
-    nameFragments: [switchx, trunkcore, vlanmesh, fabricon]
-    decoyFamilyIds: [router_mesh, load_balancer_array]
-    stateVariables: [auth_token, port_state, vlan_state, service_state, trunk_state, uplink_state, readiness_state]
-    fillerCommandRoles: [inspect switchport, configure vlan, verify trunk, synchronize uplink]
-    querySymptoms:
-      - "Restore switching readiness for the affected segment and leave the path %s."
-      - "Recover the vlan service flow for the affected connection and finish %s."
-      - "Bring the fabric path back to a %s state."
-  - id: vpn_gateway
-    domain: NETWORK_INFRA
-    purpose: remote tunnel restoration, peer synchronization, and gateway service verification for network access
-    nameFragments: [tunnelx, peergate, remotecore, vpnline]
-    decoyFamilyIds: [firewall_cluster, router_mesh]
-    stateVariables: [auth_token, tunnel_state, service_state, peer_state, readiness_state]
-    fillerCommandRoles: [inspect tunnel, configure gateway, synchronize peer, verify service]
-    querySymptoms:
-      - "Restore remote access service for the affected path and leave connectivity %s."
-      - "Recover the tunnel workflow for the affected connection and finish %s."
-      - "Bring the remote access path back into a %s condition."
-  - id: load_balancer_array
-    domain: NETWORK_INFRA
-    purpose: traffic distribution recovery, pool alignment, and service verification for network entry paths
-    nameFragments: [poolcore, balpath, distmesh, arrayx]
-    decoyFamilyIds: [router_mesh, switch_fabric]
-    stateVariables: [auth_token, traffic_state, service_state, pool_state, readiness_state]
-    fillerCommandRoles: [inspect service, configure module, align service, verify gateway]
-    querySymptoms:
-      - "Restore balanced traffic delivery for the affected entry path and leave the service %s."
-      - "Recover distribution readiness for the affected pool and finish %s."
-      - "Bring the traffic handling path back into a %s condition."
+    purpose: pipe forming, thermal handling, and joining support for metal production
+    queryTemplates:
+      - "Bring the affected pipe process to a %s condition using the documented tools."
+      - "Recover the pipe production path so the final result is %s."
+    tools:
+      - id: welder
+        purpose: material joining and seam readiness for pipe sections
+        nameFragments: [arcunit, seamcore, joinbay]
+        stateVariables: [torch_state, seam_state, weld_state]
+        fillerCommandRoles: [inspect torch, align seam, verify joint]
+        capabilities:
+          - id: inspect_torch
+            role: inspect
+            verbSeeds: [inspect]
+            nounSeeds: [torch, nozzle]
+            preconditionTemplate: {}
+            effectTemplate: { torch_state: inspected }
+            optionProfile: confirm_required
+          - id: align_seam
+            role: align
+            verbSeeds: [align]
+            nounSeeds: [seam, joint]
+            preconditionTemplate: { torch_state: inspected }
+            effectTemplate: { seam_state: aligned }
+            optionProfile: zone_required
+          - id: weld_joint
+            role: weld
+            verbSeeds: [weld]
+            nounSeeds: [joint, pipe]
+            preconditionTemplate: { seam_state: aligned }
+            effectTemplate: { weld_state: joined }
+            optionProfile: path_required
+          - id: verify_weld
+            role: verify
+            verbSeeds: [verify]
+            nounSeeds: [joint, seam]
+            preconditionTemplate: { weld_state: joined }
+            effectTemplate: { weld_state: verified }
+            optionProfile: confirm_required
+      - id: shape_maintainer
+        purpose: profile stabilization and pipe geometry control
+        nameFragments: [shapehub, profilex, formcell]
+        stateVariables: [shape_state, profile_state, fixture_state]
+        fillerCommandRoles: [inspect fixture, clamp profile, verify shape]
+        capabilities:
+          - id: clamp_pipe
+            role: clamp
+            verbSeeds: [clamp]
+            nounSeeds: [fixture, pipe]
+            preconditionTemplate: {}
+            effectTemplate: { shape_state: clamped }
+            optionProfile: zone_required
+          - id: stabilize_profile
+            role: stabilize
+            verbSeeds: [align, calibrate]
+            nounSeeds: [profile, fixture]
+            preconditionTemplate: { shape_state: clamped }
+            effectTemplate: { profile_state: stable }
+            optionProfile: profile_required
+          - id: verify_shape
+            role: verify
+            verbSeeds: [verify]
+            nounSeeds: [profile, shape]
+            preconditionTemplate: { profile_state: stable }
+            effectTemplate: { shape_state: verified }
+            optionProfile: confirm_required
+      - id: cooler
+        purpose: coolant flow and thermal reduction for hot pipe sections
+        nameFragments: [coolflow, loopcell, thermpath]
+        stateVariables: [coolant_state, cooling_state, loop_state]
+        fillerCommandRoles: [inspect valve, synchronize loop, verify coolant]
+        capabilities:
+          - id: prime_loop
+            role: prime
+            verbSeeds: [inspect, synchronize]
+            nounSeeds: [loop, valve]
+            preconditionTemplate: {}
+            effectTemplate: { coolant_state: primed }
+            optionProfile: line_required
+          - id: cool_pipe
+            role: cool
+            verbSeeds: [restart, synchronize]
+            nounSeeds: [loop, channel]
+            preconditionTemplate: { coolant_state: primed }
+            effectTemplate: { cooling_state: active }
+            optionProfile: path_required
+          - id: verify_cooling
+            role: verify
+            verbSeeds: [verify]
+            nounSeeds: [coolant, service]
+            preconditionTemplate: { cooling_state: active }
+            effectTemplate: { cooling_state: verified }
+            optionProfile: confirm_required
+      - id: temperature_controller
+        purpose: heat measurement and temperature governance for forming lines
+        nameFragments: [thermctl, heatcore, tempbay]
+        stateVariables: [heat_state, temperature_state, controller_state]
+        fillerCommandRoles: [inspect sensor, calibrate controller, verify heat]
+        capabilities:
+          - id: measure_heat
+            role: measure
+            verbSeeds: [measure, inspect]
+            nounSeeds: [sensor, heat]
+            preconditionTemplate: {}
+            effectTemplate: { heat_state: measured }
+            optionProfile: zone_required
+          - id: govern_temperature
+            role: govern
+            verbSeeds: [calibrate, enable]
+            nounSeeds: [controller, mode]
+            preconditionTemplate: { heat_state: measured }
+            effectTemplate: { temperature_state: governed }
+            optionProfile: profile_required
+          - id: verify_temperature
+            role: verify
+            verbSeeds: [verify]
+            nounSeeds: [sensor, service]
+            preconditionTemplate: { temperature_state: governed }
+            effectTemplate: { controller_state: verified }
+            optionProfile: confirm_required
+    workflows:
+      - id: weld_shape_control
+        intent: Weld the raw metal while preserving pipe geometry
+        outcomePhrases: [joined and shape-stable, welded with verified geometry]
+        steps:
+          - toolId: shape_maintainer
+            capabilityId: clamp_pipe
+          - toolId: shape_maintainer
+            capabilityId: stabilize_profile
+          - toolId: welder
+            capabilityId: inspect_torch
+          - toolId: welder
+            capabilityId: align_seam
+          - toolId: welder
+            capabilityId: weld_joint
+          - toolId: shape_maintainer
+            capabilityId: verify_shape
+      - id: cool_temperature_governance
+        intent: Cool the hot pipe section while governing temperature output
+        outcomePhrases: [cooled under governed temperature, thermally stable and verified]
+        steps:
+          - toolId: temperature_controller
+            capabilityId: measure_heat
+          - toolId: cooler
+            capabilityId: prime_loop
+          - toolId: cooler
+            capabilityId: cool_pipe
+          - toolId: temperature_controller
+            capabilityId: govern_temperature
+          - toolId: cooler
+            capabilityId: verify_cooling
 
-workflows:
-  - id: pressure_recovery_path
-    familyId: compressed_air_unit
-    intent: Recover the pressure delivery path and verify service readiness
-    steps:
-      - role: diagnose
-        verbSeeds: [diagnose, inspect]
-        nounSeeds: [sensor, line]
-        preconditionTemplate: {}
-        effectTemplate: { fault_status: identified }
-        optionProfile: profile_required
-      - role: isolate
-        verbSeeds: [isolate]
-        nounSeeds: [valve, line]
-        preconditionTemplate: { fault_status: identified }
-        effectTemplate: { pressure_path: isolated }
-        optionProfile: line_required
-      - role: restore
-        verbSeeds: [calibrate, restart]
-        nounSeeds: [compressor, line]
-        preconditionTemplate: { pressure_path: isolated }
-        effectTemplate: { pressure_path: stabilized }
-        optionProfile: path_required
-      - role: verify
-        verbSeeds: [verify, measure]
-        nounSeeds: [service, compressor]
-        preconditionTemplate: { pressure_path: stabilized }
-        effectTemplate: { service_state: ready }
-        optionProfile: confirm_required
-  - id: calibration_readiness_path
-    familyId: compressed_air_unit
-    intent: Prepare the delivery controls and verify readiness for stable output
-    steps:
-      - role: inspect
-        verbSeeds: [inspect]
-        nounSeeds: [line, sensor]
-        preconditionTemplate: {}
-        effectTemplate: { line_status: inspected }
-        optionProfile: line_required
-      - role: enable
-        verbSeeds: [enable]
-        nounSeeds: [precision_mode]
-        preconditionTemplate: { line_status: inspected }
-        effectTemplate: { control_state: active }
-        optionProfile: profile_required
-      - role: measure
-        verbSeeds: [measure]
-        nounSeeds: [compressor, sensor]
-        preconditionTemplate: { control_state: active }
-        effectTemplate: { output_state: balanced }
-        optionProfile: zone_required
-      - role: verify
-        verbSeeds: [verify]
-        nounSeeds: [service]
-        preconditionTemplate: { output_state: balanced }
-        effectTemplate: { readiness_state: verified }
-        optionProfile: confirm_required
-  - id: weld_fault_recovery
-    familyId: weld_cell
-    intent: Recover seam production after a joining fault and verify quality
-    steps:
-      - role: diagnose
-        verbSeeds: [diagnose]
-        nounSeeds: [sensor]
-        preconditionTemplate: {}
-        effectTemplate: { fault_status: identified }
-        optionProfile: profile_required
-      - role: inspect
-        verbSeeds: [inspect]
-        nounSeeds: [fixture]
-        preconditionTemplate: { fault_status: identified }
-        effectTemplate: { fixture_state: inspected }
-        optionProfile: confirm_required
-      - role: align
-        verbSeeds: [align]
-        nounSeeds: [jig]
-        preconditionTemplate: { fixture_state: inspected }
-        effectTemplate: { fixture_state: aligned }
-        optionProfile: zone_required
-      - role: join
-        verbSeeds: [weld]
-        nounSeeds: [chassis, parts]
-        preconditionTemplate: { fixture_state: aligned }
-        effectTemplate: { seam_state: joined }
-        optionProfile: path_required
-      - role: verify
-        verbSeeds: [verify]
-        nounSeeds: [batch]
-        preconditionTemplate: { seam_state: joined }
-        effectTemplate: { quality_state: verified }
-        optionProfile: confirm_required
-  - id: torch_alignment_readiness
-    familyId: weld_cell
-    intent: Prepare joining alignment and verify workstation readiness
-    steps:
-      - role: inspect
-        verbSeeds: [inspect]
-        nounSeeds: [nozzle, fixture]
-        preconditionTemplate: {}
-        effectTemplate: { nozzle_state: inspected }
-        optionProfile: confirm_required
-      - role: calibrate
-        verbSeeds: [calibrate, align]
-        nounSeeds: [fixture, jig]
-        preconditionTemplate: { nozzle_state: inspected }
-        effectTemplate: { torch_state: calibrated }
-        optionProfile: profile_required
-      - role: join
-        verbSeeds: [weld]
-        nounSeeds: [parts, chassis]
-        preconditionTemplate: { torch_state: calibrated }
-        effectTemplate: { seam_state: fused }
-        optionProfile: path_required
-      - role: verify
-        verbSeeds: [verify]
-        nounSeeds: [assembly]
-        preconditionTemplate: { seam_state: fused }
-        effectTemplate: { assembly_state: verified }
-        optionProfile: confirm_required
-  - id: seal_integrity_recovery
-    familyId: seal_press
-    intent: Recover closure integrity and verify containment readiness
-    steps:
-      - role: inspect
-        verbSeeds: [inspect]
-        nounSeeds: [mold]
-        preconditionTemplate: {}
-        effectTemplate: { mold_state: inspected }
-        optionProfile: confirm_required
-      - role: align
-        verbSeeds: [align]
-        nounSeeds: [fixture, mold]
-        preconditionTemplate: { mold_state: inspected }
-        effectTemplate: { mold_state: aligned }
-        optionProfile: zone_required
-      - role: seal
-        verbSeeds: [seal, clamp]
-        nounSeeds: [chassis, assembly]
-        preconditionTemplate: { mold_state: aligned }
-        effectTemplate: { seal_state: secured }
-        optionProfile: path_required
-      - role: verify
-        verbSeeds: [verify]
-        nounSeeds: [batch, assembly]
-        preconditionTemplate: { seal_state: secured }
-        effectTemplate: { containment_state: verified }
-        optionProfile: confirm_required
-  - id: die_alignment_readiness
-    familyId: seal_press
-    intent: Prepare compression alignment and verify assembly readiness
-    steps:
-      - role: diagnose
-        verbSeeds: [diagnose]
-        nounSeeds: [sensor]
-        preconditionTemplate: {}
-        effectTemplate: { fault_status: identified }
-        optionProfile: profile_required
-      - role: clamp
-        verbSeeds: [clamp]
-        nounSeeds: [fixture]
-        preconditionTemplate: { fault_status: identified }
-        effectTemplate: { fixture_state: clamped }
-        optionProfile: zone_required
-      - role: align
-        verbSeeds: [align]
-        nounSeeds: [mold, fixture]
-        preconditionTemplate: { fixture_state: clamped }
-        effectTemplate: { die_state: aligned }
-        optionProfile: profile_required
-      - role: verify
-        verbSeeds: [verify]
-        nounSeeds: [assembly]
-        preconditionTemplate: { die_state: aligned }
-        effectTemplate: { readiness_state: verified }
-        optionProfile: confirm_required
-  - id: coolant_flow_restore
-    familyId: coolant_pump
-    intent: Recover circulation flow and verify service readiness
-    steps:
-      - role: inspect
-        verbSeeds: [inspect]
-        nounSeeds: [valve]
-        preconditionTemplate: {}
-        effectTemplate: { valve_state: inspected }
-        optionProfile: line_required
-      - role: isolate
-        verbSeeds: [isolate]
-        nounSeeds: [line, channel]
-        preconditionTemplate: { valve_state: inspected }
-        effectTemplate: { coolant_path: isolated }
-        optionProfile: path_required
-      - role: restore
-        verbSeeds: [restart, synchronize]
-        nounSeeds: [module, channel]
-        preconditionTemplate: { coolant_path: isolated }
-        effectTemplate: { coolant_path: circulating }
-        optionProfile: zone_required
-      - role: verify
-        verbSeeds: [verify]
-        nounSeeds: [service]
-        preconditionTemplate: { coolant_path: circulating }
-        effectTemplate: { service_state: ready }
-        optionProfile: confirm_required
-  - id: loop_balance_verify
-    familyId: coolant_pump
-    intent: Balance the support loop and verify readiness for stable flow
-    steps:
-      - role: inspect
-        verbSeeds: [inspect]
-        nounSeeds: [channel]
-        preconditionTemplate: {}
-        effectTemplate: { channel_state: inspected }
-        optionProfile: zone_required
-      - role: synchronize
-        verbSeeds: [synchronize]
-        nounSeeds: [module, channel]
-        preconditionTemplate: { channel_state: inspected }
-        effectTemplate: { loop_state: synchronized }
-        optionProfile: path_required
-      - role: measure
-        verbSeeds: [measure]
-        nounSeeds: [sensor]
-        preconditionTemplate: { loop_state: synchronized }
-        effectTemplate: { flow_state: balanced }
-        optionProfile: profile_required
-      - role: verify
-        verbSeeds: [verify]
-        nounSeeds: [service]
-        preconditionTemplate: { flow_state: balanced }
-        effectTemplate: { readiness_state: verified }
-        optionProfile: confirm_required
-  - id: load_restore_sequence
-    familyId: backup_generator
-    intent: Recover the standby load path and verify service readiness
-    steps:
-      - role: diagnose
-        verbSeeds: [diagnose]
-        nounSeeds: [module]
-        preconditionTemplate: {}
-        effectTemplate: { fault_status: identified }
-        optionProfile: profile_required
-      - role: isolate
-        verbSeeds: [isolate]
-        nounSeeds: [channel]
-        preconditionTemplate: { fault_status: identified }
-        effectTemplate: { load_path: isolated }
-        optionProfile: path_required
-      - role: restore
-        verbSeeds: [restart]
-        nounSeeds: [generator]
-        preconditionTemplate: { load_path: isolated }
-        effectTemplate: { load_path: restored }
-        optionProfile: confirm_required
-      - role: verify
-        verbSeeds: [verify]
-        nounSeeds: [service]
-        preconditionTemplate: { load_path: restored }
-        effectTemplate: { service_state: ready }
-        optionProfile: confirm_required
-  - id: output_stability_sequence
-    familyId: backup_generator
-    intent: Stabilize standby output and verify readiness for protected load
-    steps:
-      - role: inspect
-        verbSeeds: [inspect]
-        nounSeeds: [channel]
-        preconditionTemplate: {}
-        effectTemplate: { channel_state: inspected }
-        optionProfile: zone_required
-      - role: protect
-        verbSeeds: [enable]
-        nounSeeds: [thermal_protection]
-        preconditionTemplate: { channel_state: inspected }
-        effectTemplate: { protection_state: active }
-        optionProfile: profile_required
-      - role: measure
-        verbSeeds: [measure]
-        nounSeeds: [generator]
-        preconditionTemplate: { protection_state: active }
-        effectTemplate: { output_state: stable }
-        optionProfile: confirm_required
-      - role: verify
-        verbSeeds: [verify]
-        nounSeeds: [service]
-        preconditionTemplate: { output_state: stable }
-        effectTemplate: { readiness_state: verified }
-        optionProfile: confirm_required
-  - id: route_repair_sequence
-    familyId: router_mesh
-    intent: Restore route handling and verify service readiness
-    steps:
-      - role: authenticate
-        verbSeeds: [authenticate]
-        nounSeeds: [server, cluster]
-        preconditionTemplate: {}
-        effectTemplate: { auth_token: valid }
-        optionProfile: confirm_required
-      - role: inspect
-        verbSeeds: [inspect]
-        nounSeeds: [router]
-        preconditionTemplate: { auth_token: valid }
-        effectTemplate: { route_state: inspected }
-        optionProfile: line_required
-      - role: repair
-        verbSeeds: [configure, route]
-        nounSeeds: [router, gateway]
-        preconditionTemplate: { route_state: inspected }
-        effectTemplate: { route_state: repaired }
-        optionProfile: path_required
-      - role: verify
-        verbSeeds: [verify]
-        nounSeeds: [uplink, service]
-        preconditionTemplate: { route_state: repaired }
-        effectTemplate: { service_state: verified }
-        optionProfile: confirm_required
-  - id: uplink_stabilization_sequence
-    familyId: router_mesh
-    intent: Stabilize the uplink path and verify readiness for service traffic
-    steps:
-      - role: authenticate
-        verbSeeds: [authenticate]
-        nounSeeds: [cluster, server]
-        preconditionTemplate: {}
-        effectTemplate: { auth_token: valid }
-        optionProfile: confirm_required
-      - role: inspect
-        verbSeeds: [inspect]
-        nounSeeds: [uplink]
-        preconditionTemplate: { auth_token: valid }
-        effectTemplate: { uplink_state: inspected }
-        optionProfile: zone_required
-      - role: synchronize
-        verbSeeds: [synchronize]
-        nounSeeds: [router, gateway]
-        preconditionTemplate: { uplink_state: inspected }
-        effectTemplate: { uplink_state: synchronized }
-        optionProfile: path_required
-      - role: verify
-        verbSeeds: [verify]
-        nounSeeds: [service]
-        preconditionTemplate: { uplink_state: synchronized }
-        effectTemplate: { readiness_state: verified }
-        optionProfile: confirm_required
-  - id: policy_restore_sequence
-    familyId: firewall_cluster
-    intent: Restore boundary policy handling and verify protected service
-    steps:
-      - role: authenticate
-        verbSeeds: [authenticate]
-        nounSeeds: [cluster, server]
-        preconditionTemplate: {}
-        effectTemplate: { auth_token: valid }
-        optionProfile: confirm_required
-      - role: inspect
-        verbSeeds: [inspect]
-        nounSeeds: [firewall]
-        preconditionTemplate: { auth_token: valid }
-        effectTemplate: { policy_state: inspected }
-        optionProfile: policy_required
-      - role: restore
-        verbSeeds: [configure]
-        nounSeeds: [firewall, module]
-        preconditionTemplate: { policy_state: inspected }
-        effectTemplate: { policy_state: restored }
-        optionProfile: policy_required
-      - role: verify
-        verbSeeds: [verify]
-        nounSeeds: [service]
-        preconditionTemplate: { policy_state: restored }
-        effectTemplate: { service_state: verified }
-        optionProfile: confirm_required
-  - id: inspection_activation_sequence
-    familyId: firewall_cluster
-    intent: Activate inspection readiness and verify the protected path
-    steps:
-      - role: authenticate
-        verbSeeds: [authenticate]
-        nounSeeds: [server]
-        preconditionTemplate: {}
-        effectTemplate: { auth_token: valid }
-        optionProfile: confirm_required
-      - role: inspect
-        verbSeeds: [inspect]
-        nounSeeds: [module]
-        preconditionTemplate: { auth_token: valid }
-        effectTemplate: { module_state: inspected }
-        optionProfile: zone_required
-      - role: protect
-        verbSeeds: [enable]
-        nounSeeds: [firewall]
-        preconditionTemplate: { module_state: inspected }
-        effectTemplate: { protection_state: active }
-        optionProfile: policy_required
-      - role: verify
-        verbSeeds: [verify]
-        nounSeeds: [service]
-        preconditionTemplate: { protection_state: active }
-        effectTemplate: { readiness_state: verified }
-        optionProfile: confirm_required
-  - id: vlan_readiness_sequence
-    familyId: switch_fabric
-    intent: Prepare switching readiness and verify the service trunk
-    steps:
-      - role: authenticate
-        verbSeeds: [authenticate]
-        nounSeeds: [server]
-        preconditionTemplate: {}
-        effectTemplate: { auth_token: valid }
-        optionProfile: confirm_required
-      - role: inspect
-        verbSeeds: [inspect]
-        nounSeeds: [switchport]
-        preconditionTemplate: { auth_token: valid }
-        effectTemplate: { port_state: inspected }
-        optionProfile: zone_required
-      - role: configure
-        verbSeeds: [configure]
-        nounSeeds: [vlan]
-        preconditionTemplate: { port_state: inspected }
-        effectTemplate: { vlan_state: configured }
-        optionProfile: policy_required
-      - role: verify
-        verbSeeds: [verify]
-        nounSeeds: [trunk, service]
-        preconditionTemplate: { vlan_state: configured }
-        effectTemplate: { service_state: verified }
-        optionProfile: confirm_required
-  - id: trunk_repair_sequence
-    familyId: switch_fabric
-    intent: Recover the trunk path and verify uplink readiness
-    steps:
-      - role: authenticate
-        verbSeeds: [authenticate]
-        nounSeeds: [cluster]
-        preconditionTemplate: {}
-        effectTemplate: { auth_token: valid }
-        optionProfile: confirm_required
-      - role: inspect
-        verbSeeds: [inspect]
-        nounSeeds: [trunk]
-        preconditionTemplate: { auth_token: valid }
-        effectTemplate: { trunk_state: inspected }
-        optionProfile: zone_required
-      - role: restore
-        verbSeeds: [configure]
-        nounSeeds: [switchport]
-        preconditionTemplate: { trunk_state: inspected }
-        effectTemplate: { trunk_state: restored }
-        optionProfile: path_required
-      - role: synchronize
-        verbSeeds: [synchronize]
-        nounSeeds: [uplink]
-        preconditionTemplate: { trunk_state: restored }
-        effectTemplate: { uplink_state: synchronized }
-        optionProfile: path_required
-      - role: verify
-        verbSeeds: [verify]
-        nounSeeds: [service]
-        preconditionTemplate: { uplink_state: synchronized }
-        effectTemplate: { readiness_state: verified }
-        optionProfile: confirm_required
-  - id: tunnel_restore_sequence
-    familyId: vpn_gateway
-    intent: Restore the remote tunnel path and verify service readiness
-    steps:
-      - role: authenticate
-        verbSeeds: [authenticate]
-        nounSeeds: [gateway, cluster]
-        preconditionTemplate: {}
-        effectTemplate: { auth_token: valid }
-        optionProfile: confirm_required
-      - role: inspect
-        verbSeeds: [inspect]
-        nounSeeds: [gateway, service]
-        preconditionTemplate: { auth_token: valid }
-        effectTemplate: { tunnel_state: inspected }
-        optionProfile: path_required
-      - role: restore
-        verbSeeds: [configure]
-        nounSeeds: [gateway]
-        preconditionTemplate: { tunnel_state: inspected }
-        effectTemplate: { tunnel_state: restored }
-        optionProfile: path_required
-      - role: verify
-        verbSeeds: [verify]
-        nounSeeds: [service]
-        preconditionTemplate: { tunnel_state: restored }
-        effectTemplate: { service_state: verified }
-        optionProfile: confirm_required
-  - id: peer_readiness_sequence
-    familyId: vpn_gateway
-    intent: Synchronize the peer path and verify remote readiness
-    steps:
-      - role: authenticate
-        verbSeeds: [authenticate]
-        nounSeeds: [cluster]
-        preconditionTemplate: {}
-        effectTemplate: { auth_token: valid }
-        optionProfile: confirm_required
-      - role: inspect
-        verbSeeds: [inspect]
-        nounSeeds: [peer, gateway]
-        preconditionTemplate: { auth_token: valid }
-        effectTemplate: { peer_state: inspected }
-        optionProfile: zone_required
-      - role: synchronize
-        verbSeeds: [synchronize]
-        nounSeeds: [gateway, peer]
-        preconditionTemplate: { peer_state: inspected }
-        effectTemplate: { peer_state: synchronized }
-        optionProfile: path_required
-      - role: verify
-        verbSeeds: [verify]
-        nounSeeds: [service]
-        preconditionTemplate: { peer_state: synchronized }
-        effectTemplate: { readiness_state: verified }
-        optionProfile: confirm_required
-  - id: traffic_restore_sequence
-    familyId: load_balancer_array
-    intent: Restore traffic distribution and verify service readiness
-    steps:
-      - role: authenticate
-        verbSeeds: [authenticate]
-        nounSeeds: [cluster]
-        preconditionTemplate: {}
-        effectTemplate: { auth_token: valid }
-        optionProfile: confirm_required
-      - role: inspect
-        verbSeeds: [inspect]
-        nounSeeds: [service]
-        preconditionTemplate: { auth_token: valid }
-        effectTemplate: { traffic_state: inspected }
-        optionProfile: path_required
-      - role: restore
-        verbSeeds: [configure]
-        nounSeeds: [load_balancer]
-        preconditionTemplate: { traffic_state: inspected }
-        effectTemplate: { traffic_state: restored }
-        optionProfile: policy_required
-      - role: verify
-        verbSeeds: [verify]
-        nounSeeds: [gateway, service]
-        preconditionTemplate: { traffic_state: restored }
-        effectTemplate: { service_state: verified }
-        optionProfile: confirm_required
-  - id: pool_alignment_sequence
-    familyId: load_balancer_array
-    intent: Align the service pool and verify readiness for balanced entry traffic
-    steps:
-      - role: authenticate
-        verbSeeds: [authenticate]
-        nounSeeds: [server]
-        preconditionTemplate: {}
-        effectTemplate: { auth_token: valid }
-        optionProfile: confirm_required
-      - role: inspect
-        verbSeeds: [inspect]
-        nounSeeds: [module, service]
-        preconditionTemplate: { auth_token: valid }
-        effectTemplate: { pool_state: inspected }
-        optionProfile: zone_required
-      - role: align
-        verbSeeds: [align]
-        nounSeeds: [service, module]
-        preconditionTemplate: { pool_state: inspected }
-        effectTemplate: { pool_state: aligned }
-        optionProfile: policy_required
-      - role: verify
-        verbSeeds: [verify]
-        nounSeeds: [client, service]
-        preconditionTemplate: { pool_state: aligned }
-        effectTemplate: { readiness_state: verified }
-        optionProfile: confirm_required
+  - id: assembly_finishing
+    domain: MANUFACTURING
+    purpose: fixture alignment, closure sealing, and finished assembly verification
+    queryTemplates:
+      - "Return the affected finishing workflow to a %s result using the documented tools."
+      - "Complete the assembly finishing path so the final condition is %s."
+    tools:
+      - id: fixture_aligner
+        purpose: fixture positioning and assembly alignment
+        nameFragments: [alignbay, jigcore, fitline]
+        stateVariables: [fixture_state, alignment_state, die_state]
+        fillerCommandRoles: [inspect fixture, align jig, verify die]
+        capabilities:
+          - id: inspect_fixture
+            role: inspect
+            verbSeeds: [inspect]
+            nounSeeds: [fixture, jig]
+            preconditionTemplate: {}
+            effectTemplate: { fixture_state: inspected }
+            optionProfile: confirm_required
+          - id: align_fixture
+            role: align
+            verbSeeds: [align, calibrate]
+            nounSeeds: [fixture, jig]
+            preconditionTemplate: { fixture_state: inspected }
+            effectTemplate: { alignment_state: aligned }
+            optionProfile: zone_required
+          - id: verify_alignment
+            role: verify
+            verbSeeds: [verify]
+            nounSeeds: [fixture, assembly]
+            preconditionTemplate: { alignment_state: aligned }
+            effectTemplate: { die_state: verified }
+            optionProfile: confirm_required
+      - id: sealer
+        purpose: closure sealing and containment preparation
+        nameFragments: [sealbay, presslock, closurex]
+        stateVariables: [seal_state, containment_state, press_state]
+        fillerCommandRoles: [inspect mold, clamp closure, verify seal]
+        capabilities:
+          - id: prepare_press
+            role: prepare
+            verbSeeds: [inspect, clamp]
+            nounSeeds: [press, mold]
+            preconditionTemplate: {}
+            effectTemplate: { press_state: ready }
+            optionProfile: profile_required
+          - id: seal_closure
+            role: seal
+            verbSeeds: [seal, clamp]
+            nounSeeds: [closure, assembly]
+            preconditionTemplate: { press_state: ready }
+            effectTemplate: { seal_state: secured }
+            optionProfile: path_required
+          - id: verify_containment
+            role: verify
+            verbSeeds: [verify]
+            nounSeeds: [containment, batch]
+            preconditionTemplate: { seal_state: secured }
+            effectTemplate: { containment_state: verified }
+            optionProfile: confirm_required
+      - id: quality_scanner
+        purpose: batch scanning and final quality confirmation
+        nameFragments: [scanline, qualbay, proofcell]
+        stateVariables: [scan_state, quality_state, batch_state]
+        fillerCommandRoles: [inspect batch, record quality, verify scanner]
+        capabilities:
+          - id: scan_batch
+            role: scan
+            verbSeeds: [inspect, measure]
+            nounSeeds: [batch, assembly]
+            preconditionTemplate: {}
+            effectTemplate: { scan_state: complete }
+            optionProfile: line_required
+          - id: record_quality
+            role: record
+            verbSeeds: [record, verify]
+            nounSeeds: [quality, batch]
+            preconditionTemplate: { scan_state: complete }
+            effectTemplate: { quality_state: recorded }
+            optionProfile: confirm_required
+          - id: release_batch
+            role: release
+            verbSeeds: [verify]
+            nounSeeds: [batch, assembly]
+            preconditionTemplate: { quality_state: recorded }
+            effectTemplate: { batch_state: released }
+            optionProfile: confirm_required
+    workflows:
+      - id: seal_aligned_assembly
+        intent: Seal an aligned assembly and verify containment
+        outcomePhrases: [sealed with verified containment, aligned and containment-ready]
+        steps:
+          - toolId: fixture_aligner
+            capabilityId: inspect_fixture
+          - toolId: fixture_aligner
+            capabilityId: align_fixture
+          - toolId: sealer
+            capabilityId: prepare_press
+          - toolId: sealer
+            capabilityId: seal_closure
+          - toolId: sealer
+            capabilityId: verify_containment
+      - id: finish_quality_release
+        intent: Align the assembly and release it after quality confirmation
+        outcomePhrases: [quality-recorded and released, aligned with released batch status]
+        steps:
+          - toolId: fixture_aligner
+            capabilityId: inspect_fixture
+          - toolId: fixture_aligner
+            capabilityId: align_fixture
+          - toolId: quality_scanner
+            capabilityId: scan_batch
+          - toolId: quality_scanner
+            capabilityId: record_quality
+          - toolId: quality_scanner
+            capabilityId: release_batch
+
+  - id: wifi_setup
+    domain: NETWORK_INFRA
+    purpose: wireless setup, bandwidth correction, and connectivity verification
+    queryTemplates:
+      - "Restore the affected wireless setup to a %s result using the documented tools."
+      - "Debug the wireless service path so the final condition is %s."
+    tools:
+      - id: router
+        purpose: wireless route activation and radio service handling
+        nameFragments: [routex, radiocore, meshline]
+        stateVariables: [route_state, radio_state, service_state]
+        fillerCommandRoles: [inspect router, configure radio, verify service]
+        capabilities:
+          - id: inspect_router
+            role: inspect
+            verbSeeds: [inspect]
+            nounSeeds: [router, radio]
+            preconditionTemplate: {}
+            effectTemplate: { route_state: inspected }
+            optionProfile: line_required
+          - id: activate_radio
+            role: activate
+            verbSeeds: [enable, configure]
+            nounSeeds: [radio, router]
+            preconditionTemplate: { route_state: inspected }
+            effectTemplate: { radio_state: active }
+            optionProfile: profile_required
+          - id: refresh_route
+            role: refresh
+            verbSeeds: [configure, route]
+            nounSeeds: [router, gateway]
+            preconditionTemplate: { radio_state: active }
+            effectTemplate: { service_state: routed }
+            optionProfile: path_required
+      - id: wiring
+        purpose: physical link inspection and wiring path readiness
+        nameFragments: [wirehub, linkbay, cablex]
+        stateVariables: [link_state, port_state, wiring_state]
+        fillerCommandRoles: [inspect port, trace cable, verify link]
+        capabilities:
+          - id: inspect_link
+            role: inspect
+            verbSeeds: [inspect, trace]
+            nounSeeds: [port, link]
+            preconditionTemplate: {}
+            effectTemplate: { link_state: inspected }
+            optionProfile: zone_required
+          - id: repair_wiring
+            role: repair
+            verbSeeds: [configure, repair]
+            nounSeeds: [port, cable]
+            preconditionTemplate: { link_state: inspected }
+            effectTemplate: { wiring_state: repaired }
+            optionProfile: path_required
+          - id: verify_link
+            role: verify
+            verbSeeds: [verify]
+            nounSeeds: [link, port]
+            preconditionTemplate: { wiring_state: repaired }
+            effectTemplate: { port_state: verified }
+            optionProfile: confirm_required
+      - id: config_setup
+        purpose: wireless configuration and mode preparation
+        nameFragments: [cfgmesh, modecore, setupx]
+        stateVariables: [config_state, mode_state, profile_state]
+        fillerCommandRoles: [inspect config, configure mode, verify profile]
+        capabilities:
+          - id: inspect_config
+            role: inspect
+            verbSeeds: [inspect]
+            nounSeeds: [config, profile]
+            preconditionTemplate: {}
+            effectTemplate: { config_state: inspected }
+            optionProfile: policy_required
+          - id: apply_config
+            role: apply
+            verbSeeds: [configure, setup]
+            nounSeeds: [config, mode]
+            preconditionTemplate: { config_state: inspected }
+            effectTemplate: { mode_state: applied }
+            optionProfile: profile_required
+          - id: verify_profile
+            role: verify
+            verbSeeds: [verify]
+            nounSeeds: [profile, config]
+            preconditionTemplate: { mode_state: applied }
+            effectTemplate: { profile_state: verified }
+            optionProfile: confirm_required
+      - id: tester
+        purpose: wireless signal and throughput verification
+        nameFragments: [testmesh, signalx, probehub]
+        stateVariables: [signal_state, throughput_state, client_state]
+        fillerCommandRoles: [inspect signal, measure client, verify throughput]
+        capabilities:
+          - id: test_signal
+            role: test
+            verbSeeds: [inspect, measure]
+            nounSeeds: [signal, client]
+            preconditionTemplate: {}
+            effectTemplate: { signal_state: tested }
+            optionProfile: zone_required
+          - id: verify_throughput
+            role: verify
+            verbSeeds: [verify, measure]
+            nounSeeds: [throughput, service]
+            preconditionTemplate: { signal_state: tested }
+            effectTemplate: { throughput_state: verified }
+            optionProfile: confirm_required
+          - id: verify_connection
+            role: verify
+            verbSeeds: [verify]
+            nounSeeds: [client, service]
+            preconditionTemplate: { signal_state: tested }
+            effectTemplate: { client_state: connected }
+            optionProfile: confirm_required
+      - id: bandwidth_setter
+        purpose: bandwidth profile adjustment and rate control
+        nameFragments: [bandctl, ratecore, widthx]
+        stateVariables: [bandwidth_state, rate_state, policy_state]
+        fillerCommandRoles: [inspect policy, configure rate, verify bandwidth]
+        capabilities:
+          - id: inspect_bandwidth
+            role: inspect
+            verbSeeds: [inspect, measure]
+            nounSeeds: [bandwidth, policy]
+            preconditionTemplate: {}
+            effectTemplate: { bandwidth_state: inspected }
+            optionProfile: policy_required
+          - id: set_bandwidth
+            role: set
+            verbSeeds: [configure, throttle]
+            nounSeeds: [bandwidth, rate]
+            preconditionTemplate: { bandwidth_state: inspected }
+            effectTemplate: { rate_state: adjusted }
+            optionProfile: profile_required
+          - id: verify_bandwidth
+            role: verify
+            verbSeeds: [verify]
+            nounSeeds: [bandwidth, service]
+            preconditionTemplate: { rate_state: adjusted }
+            effectTemplate: { policy_state: verified }
+            optionProfile: confirm_required
+    workflows:
+      - id: debug_bandwidth_issue
+        intent: Debug wireless bandwidth issues and verify throughput
+        outcomePhrases: [bandwidth-adjusted with verified throughput, wireless throughput verified]
+        steps:
+          - toolId: tester
+            capabilityId: test_signal
+          - toolId: bandwidth_setter
+            capabilityId: inspect_bandwidth
+          - toolId: bandwidth_setter
+            capabilityId: set_bandwidth
+          - toolId: router
+            capabilityId: inspect_router
+          - toolId: router
+            capabilityId: activate_radio
+          - toolId: tester
+            capabilityId: verify_throughput
+      - id: setup_wireless_connectivity
+        intent: Prepare wireless connectivity and verify client service
+        outcomePhrases: [configured with connected client service, wireless service connected]
+        steps:
+          - toolId: wiring
+            capabilityId: inspect_link
+          - toolId: wiring
+            capabilityId: repair_wiring
+          - toolId: config_setup
+            capabilityId: inspect_config
+          - toolId: config_setup
+            capabilityId: apply_config
+          - toolId: router
+            capabilityId: inspect_router
+          - toolId: router
+            capabilityId: activate_radio
+          - toolId: tester
+            capabilityId: test_signal
+          - toolId: tester
+            capabilityId: verify_connection
+
+  - id: vpn_access_setup
+    domain: NETWORK_INFRA
+    purpose: remote access restoration, policy setup, and tunnel verification
+    queryTemplates:
+      - "Recover the remote access path so the final state is %s."
+      - "Use the documented tools to bring the access workflow to a %s result."
+    tools:
+      - id: gateway
+        purpose: gateway tunnel activation and peer readiness
+        nameFragments: [gatecore, tunnelx, peergate]
+        stateVariables: [gateway_state, tunnel_state, peer_state]
+        fillerCommandRoles: [inspect gateway, configure tunnel, verify peer]
+        capabilities:
+          - id: inspect_gateway
+            role: inspect
+            verbSeeds: [inspect]
+            nounSeeds: [gateway, peer]
+            preconditionTemplate: {}
+            effectTemplate: { gateway_state: inspected }
+            optionProfile: path_required
+          - id: restore_tunnel
+            role: restore
+            verbSeeds: [configure, tunnel]
+            nounSeeds: [gateway, tunnel]
+            preconditionTemplate: { gateway_state: inspected }
+            effectTemplate: { tunnel_state: restored }
+            optionProfile: path_required
+          - id: verify_peer
+            role: verify
+            verbSeeds: [verify]
+            nounSeeds: [peer, service]
+            preconditionTemplate: { tunnel_state: restored }
+            effectTemplate: { peer_state: verified }
+            optionProfile: confirm_required
+      - id: policy_config
+        purpose: access policy preparation and protected route setup
+        nameFragments: [policyx, guardmesh, rulecore]
+        stateVariables: [policy_state, access_state, protection_state]
+        fillerCommandRoles: [inspect policy, configure rule, verify access]
+        capabilities:
+          - id: inspect_policy
+            role: inspect
+            verbSeeds: [inspect]
+            nounSeeds: [policy, rule]
+            preconditionTemplate: {}
+            effectTemplate: { policy_state: inspected }
+            optionProfile: policy_required
+          - id: apply_access_rule
+            role: apply
+            verbSeeds: [configure, allow]
+            nounSeeds: [policy, access]
+            preconditionTemplate: { policy_state: inspected }
+            effectTemplate: { access_state: allowed }
+            optionProfile: policy_required
+          - id: enable_protection
+            role: protect
+            verbSeeds: [enable]
+            nounSeeds: [protection, firewall]
+            preconditionTemplate: { access_state: allowed }
+            effectTemplate: { protection_state: active }
+            optionProfile: confirm_required
+      - id: tunnel_tester
+        purpose: tunnel probing and remote service verification
+        nameFragments: [probevpn, testgate, remcheck]
+        stateVariables: [probe_state, remote_state, service_state]
+        fillerCommandRoles: [inspect tunnel, measure remote, verify service]
+        capabilities:
+          - id: probe_tunnel
+            role: probe
+            verbSeeds: [inspect, trace]
+            nounSeeds: [tunnel, gateway]
+            preconditionTemplate: {}
+            effectTemplate: { probe_state: complete }
+            optionProfile: zone_required
+          - id: verify_remote_service
+            role: verify
+            verbSeeds: [verify]
+            nounSeeds: [remote, service]
+            preconditionTemplate: { probe_state: complete }
+            effectTemplate: { remote_state: verified }
+            optionProfile: confirm_required
+          - id: confirm_service
+            role: confirm
+            verbSeeds: [verify]
+            nounSeeds: [service, client]
+            preconditionTemplate: { remote_state: verified }
+            effectTemplate: { service_state: confirmed }
+            optionProfile: confirm_required
+      - id: route_checker
+        purpose: route path inspection and access route readiness
+        nameFragments: [pathrtr, routecheck, uplcore]
+        stateVariables: [route_state, uplink_state, readiness_state]
+        fillerCommandRoles: [inspect route, synchronize uplink, verify path]
+        capabilities:
+          - id: inspect_route
+            role: inspect
+            verbSeeds: [inspect, route]
+            nounSeeds: [route, uplink]
+            preconditionTemplate: {}
+            effectTemplate: { route_state: inspected }
+            optionProfile: line_required
+          - id: stabilize_route
+            role: stabilize
+            verbSeeds: [synchronize, configure]
+            nounSeeds: [route, uplink]
+            preconditionTemplate: { route_state: inspected }
+            effectTemplate: { uplink_state: synchronized }
+            optionProfile: path_required
+          - id: verify_readiness
+            role: verify
+            verbSeeds: [verify]
+            nounSeeds: [path, service]
+            preconditionTemplate: { uplink_state: synchronized }
+            effectTemplate: { readiness_state: verified }
+            optionProfile: confirm_required
+    workflows:
+      - id: restore_remote_tunnel
+        intent: Restore remote tunnel access and verify service
+        outcomePhrases: [remote service verified through restored tunnel, tunnel-restored and service-confirmed]
+        steps:
+          - toolId: policy_config
+            capabilityId: inspect_policy
+          - toolId: policy_config
+            capabilityId: apply_access_rule
+          - toolId: gateway
+            capabilityId: inspect_gateway
+          - toolId: gateway
+            capabilityId: restore_tunnel
+          - toolId: tunnel_tester
+            capabilityId: probe_tunnel
+          - toolId: tunnel_tester
+            capabilityId: verify_remote_service
+      - id: stabilize_access_route
+        intent: Stabilize route access and confirm readiness
+        outcomePhrases: [route-stable with verified readiness, protected access path verified]
+        steps:
+          - toolId: route_checker
+            capabilityId: inspect_route
+          - toolId: route_checker
+            capabilityId: stabilize_route
+          - toolId: policy_config
+            capabilityId: inspect_policy
+          - toolId: policy_config
+            capabilityId: apply_access_rule
+          - toolId: gateway
+            capabilityId: inspect_gateway
+          - toolId: gateway
+            capabilityId: restore_tunnel
+          - toolId: route_checker
+            capabilityId: verify_readiness
+
+  - id: precision_packaging
+    domain: MANUFACTURING
+    purpose: label application, carton closure, and package verification for finished goods
+    queryTemplates:
+      - "Bring the affected packaging path to a %s condition using the documented tools."
+      - "Complete the packaging workflow so the final result is %s."
+    tools:
+      - id: labeler
+        purpose: label stock preparation and package marking
+        nameFragments: [markcell, tagcore, printbay]
+        stateVariables: [stock_state, label_state, mark_state]
+        fillerCommandRoles: [inspect stock, align label, verify mark]
+        capabilities:
+          - id: inspect_stock
+            role: inspect
+            verbSeeds: [inspect]
+            nounSeeds: [stock, roll]
+            preconditionTemplate: {}
+            effectTemplate: { stock_state: inspected }
+            optionProfile: line_required
+          - id: apply_label
+            role: apply
+            verbSeeds: [apply]
+            nounSeeds: [label, marker]
+            preconditionTemplate: { stock_state: inspected }
+            effectTemplate: { label_state: applied }
+            optionProfile: zone_required
+          - id: verify_mark
+            role: verify
+            verbSeeds: [verify]
+            nounSeeds: [mark, label]
+            preconditionTemplate: { label_state: applied }
+            effectTemplate: { mark_state: verified }
+            optionProfile: confirm_required
+      - id: carton_closer
+        purpose: carton folding and closure handling
+        nameFragments: [foldbay, packcore, cartonx]
+        stateVariables: [carton_state, closure_state, flap_state]
+        fillerCommandRoles: [inspect carton, align flap, verify closure]
+        capabilities:
+          - id: inspect_carton
+            role: inspect
+            verbSeeds: [inspect]
+            nounSeeds: [carton, flap]
+            preconditionTemplate: {}
+            effectTemplate: { carton_state: inspected }
+            optionProfile: profile_required
+          - id: close_carton
+            role: close
+            verbSeeds: [close]
+            nounSeeds: [carton, flap]
+            preconditionTemplate: { carton_state: inspected }
+            effectTemplate: { closure_state: sealed }
+            optionProfile: path_required
+          - id: verify_closure
+            role: verify
+            verbSeeds: [verify]
+            nounSeeds: [closure, carton]
+            preconditionTemplate: { closure_state: sealed }
+            effectTemplate: { flap_state: verified }
+            optionProfile: confirm_required
+      - id: weight_checker
+        purpose: package weighing and release tolerance confirmation
+        nameFragments: [weighcell, masscore, scalehub]
+        stateVariables: [scale_state, weight_state, release_state]
+        fillerCommandRoles: [inspect scale, measure weight, verify release]
+        capabilities:
+          - id: calibrate_scale
+            role: calibrate
+            verbSeeds: [calibrate]
+            nounSeeds: [scale, gauge]
+            preconditionTemplate: {}
+            effectTemplate: { scale_state: calibrated }
+            optionProfile: profile_required
+          - id: measure_package
+            role: measure
+            verbSeeds: [measure]
+            nounSeeds: [package, load]
+            preconditionTemplate: { scale_state: calibrated }
+            effectTemplate: { weight_state: measured }
+            optionProfile: line_required
+          - id: release_weight
+            role: release
+            verbSeeds: [release]
+            nounSeeds: [package, batch]
+            preconditionTemplate: { weight_state: measured }
+            effectTemplate: { release_state: cleared }
+            optionProfile: confirm_required
+      - id: seal_inspector
+        purpose: seal inspection and package closure proofing
+        nameFragments: [sealcheck, proofbay, closurecell]
+        stateVariables: [inspection_state, seal_state, proof_state]
+        fillerCommandRoles: [inspect seal, record proof, verify package]
+        capabilities:
+          - id: inspect_seal
+            role: inspect
+            verbSeeds: [inspect]
+            nounSeeds: [seal, edge]
+            preconditionTemplate: {}
+            effectTemplate: { inspection_state: complete }
+            optionProfile: zone_required
+          - id: record_proof
+            role: record
+            verbSeeds: [record]
+            nounSeeds: [proof, seal]
+            preconditionTemplate: { inspection_state: complete }
+            effectTemplate: { seal_state: recorded }
+            optionProfile: policy_required
+          - id: verify_package
+            role: verify
+            verbSeeds: [verify]
+            nounSeeds: [package, seal]
+            preconditionTemplate: { seal_state: recorded }
+            effectTemplate: { proof_state: verified }
+            optionProfile: confirm_required
+    workflows:
+      - id: label_pack_release
+        intent: Label and close packages before release checking
+        outcomePhrases: [labeled, closed, and release-cleared, packaged with verified release weight]
+        steps:
+          - toolId: labeler
+            capabilityId: inspect_stock
+          - toolId: labeler
+            capabilityId: apply_label
+          - toolId: carton_closer
+            capabilityId: inspect_carton
+          - toolId: carton_closer
+            capabilityId: close_carton
+          - toolId: weight_checker
+            capabilityId: calibrate_scale
+          - toolId: weight_checker
+            capabilityId: measure_package
+          - toolId: weight_checker
+            capabilityId: release_weight
+      - id: seal_proof_release
+        intent: Close cartons and verify seal proof before release
+        outcomePhrases: [sealed with verified package proof, closure-proofed and release-cleared]
+        steps:
+          - toolId: carton_closer
+            capabilityId: inspect_carton
+          - toolId: carton_closer
+            capabilityId: close_carton
+          - toolId: seal_inspector
+            capabilityId: inspect_seal
+          - toolId: seal_inspector
+            capabilityId: record_proof
+          - toolId: seal_inspector
+            capabilityId: verify_package
+          - toolId: weight_checker
+            capabilityId: calibrate_scale
+          - toolId: weight_checker
+            capabilityId: measure_package
+
+  - id: identity_access_setup
+    domain: NETWORK_INFRA
+    purpose: account preparation, access policy enforcement, and sign-in verification
+    queryTemplates:
+      - "Restore the affected access setup to a %s result using the documented tools."
+      - "Complete the identity workflow so the final condition is %s."
+    tools:
+      - id: directory_service
+        purpose: account lookup and directory record preparation
+        nameFragments: [dircore, accountbay, recordmesh]
+        stateVariables: [directory_state, record_state, account_state]
+        fillerCommandRoles: [inspect account, synchronize record, verify directory]
+        capabilities:
+          - id: inspect_account
+            role: inspect
+            verbSeeds: [inspect]
+            nounSeeds: [account, record]
+            preconditionTemplate: {}
+            effectTemplate: { directory_state: inspected }
+            optionProfile: policy_required
+          - id: synchronize_record
+            role: synchronize
+            verbSeeds: [synchronize]
+            nounSeeds: [record, account]
+            preconditionTemplate: { directory_state: inspected }
+            effectTemplate: { record_state: synchronized }
+            optionProfile: path_required
+          - id: verify_directory
+            role: verify
+            verbSeeds: [verify]
+            nounSeeds: [directory, account]
+            preconditionTemplate: { record_state: synchronized }
+            effectTemplate: { account_state: verified }
+            optionProfile: confirm_required
+      - id: credential_issuer
+        purpose: credential setup and token readiness
+        nameFragments: [credhub, tokenbay, keymesh]
+        stateVariables: [credential_state, token_state, key_state]
+        fillerCommandRoles: [inspect token, rotate key, verify credential]
+        capabilities:
+          - id: inspect_credential
+            role: inspect
+            verbSeeds: [inspect]
+            nounSeeds: [credential, token]
+            preconditionTemplate: {}
+            effectTemplate: { credential_state: inspected }
+            optionProfile: profile_required
+          - id: issue_token
+            role: issue
+            verbSeeds: [issue]
+            nounSeeds: [token, credential]
+            preconditionTemplate: { credential_state: inspected }
+            effectTemplate: { token_state: issued }
+            optionProfile: path_required
+          - id: verify_token
+            role: verify
+            verbSeeds: [verify]
+            nounSeeds: [token, key]
+            preconditionTemplate: { token_state: issued }
+            effectTemplate: { key_state: verified }
+            optionProfile: confirm_required
+      - id: policy_enforcer
+        purpose: access rule application and protection setup
+        nameFragments: [rulemesh, accesscore, guardbay]
+        stateVariables: [rule_state, permission_state, guard_state]
+        fillerCommandRoles: [inspect rule, apply permission, verify guard]
+        capabilities:
+          - id: inspect_rule
+            role: inspect
+            verbSeeds: [inspect]
+            nounSeeds: [rule, policy]
+            preconditionTemplate: {}
+            effectTemplate: { rule_state: inspected }
+            optionProfile: policy_required
+          - id: apply_permission
+            role: apply
+            verbSeeds: [apply]
+            nounSeeds: [permission, policy]
+            preconditionTemplate: { rule_state: inspected }
+            effectTemplate: { permission_state: applied }
+            optionProfile: policy_required
+          - id: verify_guard
+            role: verify
+            verbSeeds: [verify]
+            nounSeeds: [guard, access]
+            preconditionTemplate: { permission_state: applied }
+            effectTemplate: { guard_state: verified }
+            optionProfile: confirm_required
+      - id: access_tester
+        purpose: sign-in probing and service access confirmation
+        nameFragments: [signinprobe, accesstest, sessionhub]
+        stateVariables: [probe_state, session_state, service_state]
+        fillerCommandRoles: [inspect session, test service, verify access]
+        capabilities:
+          - id: probe_signin
+            role: probe
+            verbSeeds: [probe]
+            nounSeeds: [signin, session]
+            preconditionTemplate: {}
+            effectTemplate: { probe_state: complete }
+            optionProfile: zone_required
+          - id: test_service
+            role: test
+            verbSeeds: [test]
+            nounSeeds: [service, access]
+            preconditionTemplate: { probe_state: complete }
+            effectTemplate: { session_state: tested }
+            optionProfile: line_required
+          - id: verify_access
+            role: verify
+            verbSeeds: [verify]
+            nounSeeds: [access, service]
+            preconditionTemplate: { session_state: tested }
+            effectTemplate: { service_state: reachable }
+            optionProfile: confirm_required
+    workflows:
+      - id: provision_account_access
+        intent: Prepare account records and verify service access
+        outcomePhrases: [account-ready with reachable service access, synchronized and access-verified]
+        steps:
+          - toolId: directory_service
+            capabilityId: inspect_account
+          - toolId: directory_service
+            capabilityId: synchronize_record
+          - toolId: credential_issuer
+            capabilityId: inspect_credential
+          - toolId: credential_issuer
+            capabilityId: issue_token
+          - toolId: policy_enforcer
+            capabilityId: inspect_rule
+          - toolId: policy_enforcer
+            capabilityId: apply_permission
+          - toolId: access_tester
+            capabilityId: probe_signin
+          - toolId: access_tester
+            capabilityId: test_service
+          - toolId: access_tester
+            capabilityId: verify_access
+      - id: validate_policy_signin
+        intent: Apply access policy and validate sign-in readiness
+        outcomePhrases: [policy-applied with verified sign-in access, guarded and service-reachable]
+        steps:
+          - toolId: policy_enforcer
+            capabilityId: inspect_rule
+          - toolId: policy_enforcer
+            capabilityId: apply_permission
+          - toolId: directory_service
+            capabilityId: inspect_account
+          - toolId: directory_service
+            capabilityId: synchronize_record
+          - toolId: credential_issuer
+            capabilityId: inspect_credential
+          - toolId: credential_issuer
+            capabilityId: issue_token
+          - toolId: credential_issuer
+            capabilityId: verify_token
+          - toolId: access_tester
+            capabilityId: probe_signin
+          - toolId: access_tester
+            capabilityId: verify_access

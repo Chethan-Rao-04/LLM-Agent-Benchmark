@@ -8,6 +8,8 @@ import org.benchmark.gen.BenchmarkCaseGenerator;
 import org.benchmark.gen.query_generator.UserQueryGenerator;
 import org.benchmark.gen.scenario.ResolvedScenario;
 import org.benchmark.gen.scenario.ResolvedStep;
+import org.benchmark.gen.spec.BenchmarkCaseSpec;
+import org.benchmark.gen.spec.DecoyKind;
 import org.benchmark.gen.tool_generator.CommandAbbreviator;
 import org.benchmark.logging.BenchmarkEventLogger;
 import org.benchmark.model.enums.Domain;
@@ -150,6 +152,66 @@ class BenchmarkToolServiceTest {
         assertFalse(stateManager.executionLog(SESSION_ID).get(0).success());
         assertTrue(stateManager.commandRejectionLog(SESSION_ID).isEmpty());
         assertNull(stateManager.getToolState(SESSION_ID, "WRONG-TOOL-456", "status"));
+    }
+
+    @Test
+    void commandOnAnyTargetToolCanExecuteWithLocalState() {
+        SessionStateManager stateManager = new SessionStateManager();
+        BenchmarkToolService server = createServer(stateManager);
+        BenchmarkCaseGenerator.BenchmarkCase benchmarkCase = createMultiTargetBenchmarkCase();
+        ToolObject secondTarget = benchmarkCase.targetTools().get(1);
+
+        stateManager.initializeSession(SESSION_ID, benchmarkCase, benchmarkCase.allTools());
+        stateManager.startAttempt(SESSION_ID);
+
+        BenchmarkToolService.CommandExecutionResponse response = server.executeCommand(
+                SESSION_ID,
+                secondTarget.name(),
+                "activate_backup",
+                ""
+        );
+
+        assertEquals(BenchmarkToolService.CommandOutcomeType.EXECUTED, response.outcomeType());
+        assertTrue(response.success());
+        assertEquals("ready", stateManager.getToolState(SESSION_ID, secondTarget.name(), "backup_status"));
+        assertNull(stateManager.getToolState(SESSION_ID, benchmarkCase.targetToolObject().name(), "primary_status"));
+        Map<String, String> familyState = stateManager.getTargetFamilyStateSnapshot(SESSION_ID, benchmarkCase);
+        assertNull(familyState.get("primary_status"));
+        assertEquals("ready", familyState.get("backup_status"));
+        assertEquals(1, stateManager.executionLog(SESSION_ID).size());
+    }
+
+    @Test
+    void wrongToolStillFailsAndConsumesAttemptForMultiTargetCase() {
+        SessionStateManager stateManager = new SessionStateManager();
+        BenchmarkToolService server = createServer(stateManager);
+        BenchmarkCaseGenerator.BenchmarkCase benchmarkCase = createMultiTargetBenchmarkCaseWithWrongTool();
+        ToolObject wrongTool = benchmarkCase.distractors().getFirst();
+
+        stateManager.initializeSession(SESSION_ID, benchmarkCase, benchmarkCase.allTools());
+        stateManager.startAttempt(SESSION_ID);
+
+        BenchmarkToolService.CommandExecutionResponse wrongToolResponse = server.executeCommand(
+                SESSION_ID,
+                wrongTool.name(),
+                "activate_backup",
+                ""
+        );
+        BenchmarkToolService.CommandExecutionResponse followUp = server.executeCommand(
+                SESSION_ID,
+                benchmarkCase.targetTools().get(1).name(),
+                "activate_backup",
+                ""
+        );
+
+        assertEquals(BenchmarkToolService.CommandOutcomeType.EXECUTED, wrongToolResponse.outcomeType());
+        assertFalse(wrongToolResponse.success());
+        assertTrue(wrongToolResponse.message().contains("Wrong tool selected"));
+        assertEquals(BenchmarkToolService.CommandOutcomeType.REJECTED, followUp.outcomeType());
+        assertTrue(followUp.message().contains("single execution"));
+        assertEquals(1, stateManager.executionLog(SESSION_ID).size());
+        assertFalse(stateManager.executionLog(SESSION_ID).getFirst().success());
+        assertNull(stateManager.getToolState(SESSION_ID, wrongTool.name(), "backup_status"));
     }
 
     @Test
@@ -419,6 +481,113 @@ class BenchmarkToolServiceTest {
                 List.of(wrongTool),
                 List.of(wrongTool),
                 List.of(),
+                benchmarkCase.userQuery(),
+                benchmarkCase.hasTrap(),
+                benchmarkCase.trapCommandName(),
+                benchmarkCase.recoveryCommandName()
+        );
+    }
+
+    private BenchmarkCaseGenerator.BenchmarkCase createMultiTargetBenchmarkCase() {
+        CommandObject primaryCommand = new CommandObject(
+                "activate_primary",
+                List.of(),
+                "Activate primary",
+                List.of(new EffectObject("primary_status", EffectOp.ASSIGN, "ready")),
+                Map.of()
+        );
+        CommandObject backupCommand = new CommandObject(
+                "activate_backup",
+                List.of(),
+                "Activate backup",
+                List.of(new EffectObject("backup_status", EffectOp.ASSIGN, "ready")),
+                Map.of()
+        );
+        ToolObject primaryTool = new ToolObject(
+                "TARGET-PRIMARY-123",
+                "Primary target",
+                Domain.NETWORK_INFRA,
+                List.of(primaryCommand),
+                Map.of("primary_status", "string")
+        );
+        ToolObject backupTool = new ToolObject(
+                "TARGET-BACKUP-456",
+                "Backup target",
+                Domain.NETWORK_INFRA,
+                List.of(backupCommand),
+                Map.of("backup_status", "string")
+        );
+        ResolvedStep primaryStep = new ResolvedStep("activate", "primary",
+                Map.of(), Map.of("primary_status", "ready"));
+        ResolvedStep backupStep = new ResolvedStep("activate", "backup",
+                Map.of(), Map.of("backup_status", "ready"));
+        ResolvedScenario scenario = new ResolvedScenario(
+                "multi_target",
+                "Activate primary and backup",
+                Domain.NETWORK_INFRA,
+                List.of(primaryStep, backupStep),
+                Map.of("primary_status", "ready", "backup_status", "ready"),
+                Map.of()
+        );
+
+        return new BenchmarkCaseGenerator.BenchmarkCase(
+                scenario,
+                BenchmarkCaseSpec.fromScenario(scenario, 0, 0),
+                primaryTool,
+                List.of(primaryTool, backupTool),
+                List.of(
+                        new BenchmarkCaseGenerator.TargetStep(primaryTool.name(), "activate_primary"),
+                        new BenchmarkCaseGenerator.TargetStep(backupTool.name(), "activate_backup")
+                ),
+                scenario.steps(),
+                "Tool documentation",
+                scenario.cumulativeExpectedState(),
+                Map.of(
+                        primaryTool.name(), primaryStep.effect(),
+                        backupTool.name(), backupStep.effect()
+                ),
+                List.of(),
+                List.of(),
+                List.of(),
+                Map.of(),
+                "Use the documented tools to complete the work.",
+                false,
+                null,
+                null
+        );
+    }
+
+    private BenchmarkCaseGenerator.BenchmarkCase createMultiTargetBenchmarkCaseWithWrongTool() {
+        BenchmarkCaseGenerator.BenchmarkCase benchmarkCase = createMultiTargetBenchmarkCase();
+        CommandObject wrongCommand = new CommandObject(
+                "activate_backup",
+                List.of(),
+                "Wrong backup command",
+                List.of(new EffectObject("backup_status", EffectOp.ASSIGN, "ready")),
+                Map.of()
+        );
+        ToolObject wrongTool = new ToolObject(
+                "WRONG-BACKUP-789",
+                "Wrong backup",
+                Domain.NETWORK_INFRA,
+                List.of(wrongCommand),
+                Map.of("backup_status", "string")
+        );
+
+        return new BenchmarkCaseGenerator.BenchmarkCase(
+                benchmarkCase.scenario(),
+                benchmarkCase.spec(),
+                benchmarkCase.targetToolObject(),
+                benchmarkCase.targetTools(),
+                benchmarkCase.targetPath(),
+                benchmarkCase.targetSteps(),
+                benchmarkCase.caseManual(),
+                benchmarkCase.expectedState(),
+                benchmarkCase.expectedStateByTool(),
+                List.of(wrongTool),
+                List.of(wrongTool),
+                List.of(),
+                Map.of(wrongTool.name(), DecoyKind.SIMILAR_INTENT_WRONG_RESOURCE),
                 benchmarkCase.userQuery(),
                 benchmarkCase.hasTrap(),
                 benchmarkCase.trapCommandName(),

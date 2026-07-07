@@ -69,7 +69,7 @@ class BenchmarkToolExecutionService {
                         normalizedOption,
                         false,
                         "Wrong tool selected: " + tool.name()
-                                + ". Expected target tool: " + benchmarkCase.targetToolObject().name()
+                                + ". Expected target tool: " + expectedTargetTools(benchmarkCase)
                 ));
             }
 
@@ -128,7 +128,14 @@ class BenchmarkToolExecutionService {
     }
 
     private boolean isTargetTool(BenchmarkCaseGenerator.BenchmarkCase benchmarkCase, ToolObject tool) {
-        return benchmarkCase.targetToolObject().name().equalsIgnoreCase(tool.name());
+        return benchmarkCase.targetTools().stream()
+                .anyMatch(targetTool -> targetTool.name().equalsIgnoreCase(tool.name()));
+    }
+
+    private String expectedTargetTools(BenchmarkCaseGenerator.BenchmarkCase benchmarkCase) {
+        return benchmarkCase.targetTools().stream()
+                .map(ToolObject::name)
+                .collect(Collectors.joining(", "));
     }
 
     private String unknownCommandMessage(ToolObject tool, String commandName) {

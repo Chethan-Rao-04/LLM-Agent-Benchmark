@@ -8,7 +8,8 @@ import java.util.List;
 record BenchmarkRunCaseReport(
         int caseIndex,
         String sessionId,
-        String targetTool,
+        List<String> targetTools,
+        List<String> targetPath,
         List<String> targetLikeWrongTools,
         boolean passed,
         boolean recovery,
@@ -22,7 +23,6 @@ record BenchmarkRunCaseReport(
         double efficiency,
         double commandPrecision,
         double decoyResistance,
-        List<String> expectedSteps,
         List<String> executions
 ) {
 }

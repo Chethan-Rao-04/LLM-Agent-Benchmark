@@ -17,8 +17,9 @@ class BenchmarkRunArtifactWriterTest {
         summary.caseReports.add(new BenchmarkRunCaseReport(
                 1,
                 "abc",
-                "MAN-VALVE-123",
-                List.of("MAN-VALVE-123 -> MAN-VALVE-555"),
+                List.of("MAN-VALVE-123", "MAN-PUMP-456"),
+                List.of("MAN-VALVE-123 diag_vlv", "MAN-PUMP-456 rpr_pmp --retry", "MAN-VALVE-123 vfy_vlv"),
+                List.of("MAN-VALVE-123, MAN-PUMP-456 -> MAN-VALVE-555"),
                 true,
                 false,
                 2,
@@ -31,7 +32,6 @@ class BenchmarkRunArtifactWriterTest {
                 0.80,
                 0.90,
                 0.75,
-                List.of("diag_vlv", "rpr_vlv --retry", "vfy_vlv"),
                 List.of(
                         "SUCCESS MAN-VALVE-123 diag_vlv",
                         "ERROR MAN-PUMP-555 rpr_pmp",
@@ -61,12 +61,16 @@ class BenchmarkRunArtifactWriterTest {
         assertTrue(markdown.contains("# Benchmark Run Report"));
         assertTrue(markdown.contains("## Case 1"));
         assertTrue(markdown.contains("Session: abc"));
-        assertTrue(markdown.contains("- MAN-VALVE-123 -> MAN-VALVE-555"));
+        assertTrue(markdown.contains("Target tools:"));
+        assertTrue(markdown.contains("- MAN-PUMP-456"));
+        assertTrue(markdown.contains("- MAN-VALVE-123, MAN-PUMP-456 -> MAN-VALVE-555"));
+        assertTrue(markdown.contains("### Target Path"));
+        assertTrue(markdown.contains("- MAN-PUMP-456 rpr_pmp --retry"));
         assertTrue(markdown.contains("Target-like wrong tool avoidance: 0.75"));
         assertTrue(markdown.contains("- SUCCESS MAN-VALVE-123 rpr_vlv --retry"));
         assertTrue(markdown.contains("- Average target-like wrong tool avoidance: 0.75"));
 
-        assertTrue(csv.contains("case,session,passed,score,attempts,executions,toolSelection,stepCompletion,orderingAccuracy,stateAccuracy,efficiency,commandPrecision,targetLikeWrongToolAvoidance,recovery"));
-        assertTrue(csv.contains("1,abc,true,0.860,2,4,1.00,1.00,0.75,1.00,0.80,0.90,0.75,false"));
+        assertTrue(csv.contains("case,session,targetTools,targetPath,passed,score,attempts,executions,toolSelection,stepCompletion,orderingAccuracy,stateAccuracy,efficiency,commandPrecision,targetLikeWrongToolAvoidance,recovery"));
+        assertTrue(csv.contains("1,abc,MAN-VALVE-123 | MAN-PUMP-456,MAN-VALVE-123 diag_vlv | MAN-PUMP-456 rpr_pmp --retry | MAN-VALVE-123 vfy_vlv,true,0.860,2,4,1.00,1.00,0.75,1.00,0.80,0.90,0.75,false"));
     }
 }

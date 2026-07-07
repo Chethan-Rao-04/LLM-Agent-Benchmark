@@ -8,6 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
@@ -283,6 +284,25 @@ public class SessionStateManager {
                     .forEach(entry -> snapshots.put(entry.getKey(), entry.getValue().snapshot()));
         }
         return snapshots;
+    }
+
+    /**
+     * Returns an aggregate read-only view across all target-tool states.
+     *
+     * <p>Each underlying tool still owns its own mutable environment. This helper only flattens
+     * target snapshots for migration paths that still consume a single state map.</p>
+     */
+    public Map<String, String> getTargetFamilyStateSnapshot(String sessionId,
+                                                            BenchmarkCaseGenerator.BenchmarkCase benchmarkCase) {
+        if (benchmarkCase == null) {
+            return Map.of();
+        }
+
+        Map<String, String> snapshot = new LinkedHashMap<>();
+        for (ToolObject targetTool : benchmarkCase.targetTools()) {
+            snapshot.putAll(getToolStateSnapshot(sessionId, targetTool.name()));
+        }
+        return Collections.unmodifiableMap(snapshot);
     }
 
     /**

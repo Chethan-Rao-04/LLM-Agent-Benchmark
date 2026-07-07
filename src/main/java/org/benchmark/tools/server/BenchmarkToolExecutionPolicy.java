@@ -59,9 +59,9 @@ class BenchmarkToolExecutionPolicy {
 
     private boolean scenarioAlreadyComplete(String sessionId, BenchmarkCaseGenerator.BenchmarkCase benchmarkCase) {
         return benchmarkScorer.hasSuccessfulScenarioCompletion(
+                sessionId,
                 stateManager.executionLog(sessionId),
-                benchmarkCase,
-                stateManager.getToolStateSnapshot(sessionId, benchmarkCase.targetToolObject().name())
+                benchmarkCase
         );
     }
 }

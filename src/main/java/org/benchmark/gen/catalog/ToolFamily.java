@@ -6,35 +6,37 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Static semantic family used to generate proprietary tool instances.
+ * Static process family used to generate related proprietary tool instances.
  *
  * @param id unique family identifier
  * @param domain owning benchmark domain
  * @param purpose neutral family purpose statement
- * @param nameFragments dynamic tool-name fragments
- * @param decoyFamilyIds neighboring semantic families used for decoys
- * @param stateVariables family-shaped state schema hints
- * @param fillerCommandRoles family-shaped filler command phrases
- * @param querySymptoms symptom-oriented user query templates
+ * @param queryTemplates outcome-oriented user query templates
+ * @param tools abstract tools available inside this process family
+ * @param workflows ordered multi-tool workflows for this family
  */
 public record ToolFamily(
         String id,
         Domain domain,
         String purpose,
-        List<String> nameFragments,
-        List<String> decoyFamilyIds,
-        List<String> stateVariables,
-        List<String> fillerCommandRoles,
-        List<String> querySymptoms
+        List<String> queryTemplates,
+        List<CatalogTool> tools,
+        List<WorkflowTemplate> workflows
 ) {
     public ToolFamily {
         id = Objects.requireNonNull(id, "id must not be null");
         domain = Objects.requireNonNull(domain, "domain must not be null");
         purpose = Objects.requireNonNull(purpose, "purpose must not be null");
-        nameFragments = List.copyOf(Objects.requireNonNull(nameFragments, "nameFragments must not be null"));
-        decoyFamilyIds = List.copyOf(Objects.requireNonNull(decoyFamilyIds, "decoyFamilyIds must not be null"));
-        stateVariables = List.copyOf(Objects.requireNonNull(stateVariables, "stateVariables must not be null"));
-        fillerCommandRoles = List.copyOf(Objects.requireNonNull(fillerCommandRoles, "fillerCommandRoles must not be null"));
-        querySymptoms = List.copyOf(Objects.requireNonNull(querySymptoms, "querySymptoms must not be null"));
+        queryTemplates = List.copyOf(Objects.requireNonNull(queryTemplates, "queryTemplates must not be null"));
+        tools = List.copyOf(Objects.requireNonNull(tools, "tools must not be null"));
+        workflows = List.copyOf(Objects.requireNonNull(workflows, "workflows must not be null"));
+    }
+
+    public CatalogTool tool(String toolId) {
+        return tools.stream()
+                .filter(tool -> tool.id().equals(toolId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("Unknown tool '" + toolId
+                        + "' for family '" + id + "'"));
     }
 }

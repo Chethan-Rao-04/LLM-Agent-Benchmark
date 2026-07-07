@@ -10,21 +10,45 @@ import java.util.Objects;
  * Semantic representation of one required capability in a benchmark case.
  *
  * @param intent human-readable action target used by future query and documentation generators
+ * @param toolId hidden abstract tool id that owns this capability, or blank for legacy single-tool cases
  * @param verb resolved action verb before proprietary command naming is applied
  * @param noun resolved action noun before proprietary command naming is applied
  * @param commandName executable command identity for the resolved action
  * @param precondition state required before the capability can be applied
  * @param effect state change produced by the capability
+ * @param optionProfile catalog option profile id, or blank when no profile applies
  */
 public record CapabilityStep(
         String intent,
+        String toolId,
         String verb,
         String noun,
         String commandName,
         Map<String, String> precondition,
-        Map<String, String> effect
+        Map<String, String> effect,
+        String optionProfile
 ) {
+    public CapabilityStep(String intent,
+                          String verb,
+                          String noun,
+                          String commandName,
+                          Map<String, String> precondition,
+                          Map<String, String> effect) {
+        this(intent, "", verb, noun, commandName, precondition, effect, "");
+    }
+
+    public CapabilityStep(String intent,
+                          String toolId,
+                          String verb,
+                          String noun,
+                          String commandName,
+                          Map<String, String> precondition,
+                          Map<String, String> effect) {
+        this(intent, toolId, verb, noun, commandName, precondition, effect, "");
+    }
+
     public CapabilityStep {
+        toolId = toolId == null ? "" : toolId;
         verb = Objects.requireNonNull(verb, "verb must not be null");
         noun = Objects.requireNonNull(noun, "noun must not be null");
         commandName = Objects.requireNonNull(commandName, "commandName must not be null");
@@ -33,6 +57,7 @@ public record CapabilityStep(
                 : intent;
         precondition = precondition == null ? Map.of() : Map.copyOf(precondition);
         effect = effect == null ? Map.of() : Map.copyOf(effect);
+        optionProfile = optionProfile == null ? "" : optionProfile;
     }
 
     /**

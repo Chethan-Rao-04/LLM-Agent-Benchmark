@@ -52,7 +52,8 @@ class BenchmarkRunSummaryAggregator {
         summary.caseReports.add(new BenchmarkRunCaseReport(
                 caseIndex,
                 sessionId,
-                benchmarkCase.targetToolObject().name(),
+                targetToolNames(benchmarkCase),
+                formatTargetPath(benchmarkCase),
                 formatTargetLikeWrongTools(benchmarkCase),
                 result.passed(),
                 result.recovery(),
@@ -66,7 +67,6 @@ class BenchmarkRunSummaryAggregator {
                 result.efficiency(),
                 result.commandPrecision(),
                 result.decoyResistance(),
-                formatExpectedSteps(benchmarkCase),
                 formatExecutions(executionLog)
         ));
     }
@@ -93,18 +93,24 @@ class BenchmarkRunSummaryAggregator {
         return iterations <= 0 ? 0.0 : total / iterations;
     }
 
-    private List<String> formatExpectedSteps(BenchmarkCaseGenerator.BenchmarkCase benchmarkCase) {
+    private List<String> formatTargetPath(BenchmarkCaseGenerator.BenchmarkCase benchmarkCase) {
         List<String> steps = new ArrayList<>();
-        for (var step : benchmarkCase.spec().capabilitySteps()) {
-            steps.add(formatTargetStep(benchmarkCase.targetToolObject(), step.commandName()));
+        for (var step : benchmarkCase.targetPath()) {
+            steps.add(formatTargetStep(benchmarkCase, step));
         }
         return List.copyOf(steps);
     }
 
+    private List<String> targetToolNames(BenchmarkCaseGenerator.BenchmarkCase benchmarkCase) {
+        return benchmarkCase.targetTools().stream()
+                .map(ToolObject::name)
+                .toList();
+    }
+
     private List<String> formatTargetLikeWrongTools(BenchmarkCaseGenerator.BenchmarkCase benchmarkCase) {
-        String targetTool = benchmarkCase.targetToolObject().name();
+        String targetTools = String.join(", ", targetToolNames(benchmarkCase));
         return benchmarkCase.semanticDecoys().stream()
-                .map(decoy -> targetTool + " -> " + decoy.name())
+                .map(decoy -> targetTools + " -> " + decoy.name())
                 .toList();
     }
 
@@ -118,12 +124,18 @@ class BenchmarkRunSummaryAggregator {
                 .toList();
     }
 
-    private String formatTargetStep(ToolObject targetTool, String commandName) {
+    private String formatTargetStep(BenchmarkCaseGenerator.BenchmarkCase benchmarkCase,
+                                    BenchmarkCaseGenerator.TargetStep targetStep) {
+        ToolObject targetTool = benchmarkCase.findTool(targetStep.toolName());
+        if (targetTool == null) {
+            return targetStep.toolName() + " " + targetStep.commandName();
+        }
         return targetTool.commands().stream()
-                .filter(command -> command.name().equalsIgnoreCase(commandName))
+                .filter(command -> command.name().equalsIgnoreCase(targetStep.commandName()))
                 .findFirst()
-                .map(command -> commandName + formatOptions(command.commandOptions()))
-                .orElse(commandName);
+                .map(command -> targetStep.toolName() + " " + targetStep.commandName()
+                        + formatOptions(command.commandOptions()))
+                .orElse(targetStep.toolName() + " " + targetStep.commandName());
     }
 
     private String formatOptions(List<OptionEntity> options) {

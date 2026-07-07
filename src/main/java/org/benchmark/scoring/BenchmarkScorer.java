@@ -9,8 +9,11 @@ import org.benchmark.model.objects.ToolObject;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Computes benchmark metrics from execution logs and tool state for multi-step scenarios.
@@ -84,7 +87,8 @@ public class BenchmarkScorer {
         double toolSelection = scoreToolSelection(logs, benchmarkCase);
         double stepCompletion = scoreStepCompletion(logs, benchmarkCase);
         double ordering = scoreOrdering(logs, benchmarkCase);
-        double stateAccuracy = scoreExpectedState(benchmarkCase.expectedState(), targetToolState(sessionId, benchmarkCase));
+        double stateAccuracy = scoreExpectedStateByTool(
+                benchmarkCase.expectedStateByTool(), targetToolStates(sessionId, benchmarkCase));
         double efficiency = scoreEfficiency(logs, benchmarkCase);
         double commandPrecision = scoreCommandPrecision(logs, benchmarkCase);
         double decoyResistance = scoreDecoyResistance(logs, benchmarkCase);
@@ -118,13 +122,12 @@ public class BenchmarkScorer {
         List<ExecutionRecord> logs = stateManager.executionLog(sessionId);
         double stepCompletion = scoreStepCompletion(logs, benchmarkCase);
         double ordering = scoreOrdering(logs, benchmarkCase);
-        boolean scenarioComplete = hasSuccessfulScenarioCompletion(logs, benchmarkCase,
-                targetToolState(sessionId, benchmarkCase));
+        boolean scenarioComplete = hasSuccessfulScenarioCompletion(sessionId, logs, benchmarkCase);
         return new AttemptMetrics(
                 scoreToolSelection(logs, benchmarkCase),
                 stepCompletion,
                 ordering,
-                scoreExpectedState(benchmarkCase.expectedState(), targetToolState(sessionId, benchmarkCase)),
+                scoreExpectedStateByTool(benchmarkCase.expectedStateByTool(), targetToolStates(sessionId, benchmarkCase)),
                 scoreEfficiency(logs, benchmarkCase),
                 scoreCommandPrecision(logs, benchmarkCase),
                 scoreDecoyResistance(logs, benchmarkCase),
@@ -139,19 +142,20 @@ public class BenchmarkScorer {
      *
      * @param executions full execution log for the case
      * @param benchmarkCase generated benchmark case
-     * @param actualToolState latest target-tool state snapshot
+     * @param sessionId active benchmark session identifier
      * @return {@code true} when the attempt satisfied the scenario completely
      */
-    public boolean hasSuccessfulScenarioCompletion(List<ExecutionRecord> executions,
-                                                    BenchmarkCaseGenerator.BenchmarkCase benchmarkCase,
-                                                    Map<String, String> actualToolState) {
+    public boolean hasSuccessfulScenarioCompletion(String sessionId,
+                                                   List<ExecutionRecord> executions,
+                                                   BenchmarkCaseGenerator.BenchmarkCase benchmarkCase) {
         return scoreStepCompletion(executions, benchmarkCase) == 1.0
                 && scoreOrdering(executions, benchmarkCase) == 1.0
-                && scoreExpectedState(benchmarkCase.expectedState(), actualToolState) == 1.0;
+                && scoreExpectedStateByTool(
+                benchmarkCase.expectedStateByTool(), targetToolStates(sessionId, benchmarkCase)) == 1.0;
     }
 
     /**
-     * Scores how many required scenario steps have at least one successful execution on the target tool.
+     * Scores how many required target-path steps have at least one successful execution.
      *
      * @param logs full execution log for the case
      * @param benchmarkCase generated benchmark case
@@ -159,19 +163,17 @@ public class BenchmarkScorer {
      */
     public double scoreStepCompletion(List<ExecutionRecord> logs,
                                        BenchmarkCaseGenerator.BenchmarkCase benchmarkCase) {
-        String targetTool = benchmarkCase.targetToolObject().name();
-        List<String> requiredCommands = requiredCommandNames(benchmarkCase);
-        if (requiredCommands.isEmpty()) return 1.0;
+        List<BenchmarkCaseGenerator.TargetStep> targetPath = benchmarkCase.targetPath();
+        if (targetPath.isEmpty()) return 1.0;
 
         int completed = 0;
-        for (String requiredCommand : requiredCommands) {
+        for (BenchmarkCaseGenerator.TargetStep requiredStep : targetPath) {
             boolean found = logs.stream().anyMatch(r ->
                     r.success()
-                            && r.toolName().equalsIgnoreCase(targetTool)
-                            && commandMatches(r.commandName(), requiredCommand));
+                            && targetStepMatches(r, requiredStep));
             if (found) completed++;
         }
-        return (double) completed / requiredCommands.size();
+        return (double) completed / targetPath.size();
     }
 
     /**
@@ -183,15 +185,14 @@ public class BenchmarkScorer {
      */
     public double scoreOrdering(List<ExecutionRecord> logs,
                                  BenchmarkCaseGenerator.BenchmarkCase benchmarkCase) {
-        String targetTool = benchmarkCase.targetToolObject().name();
-        List<String> requiredCommands = requiredCommandNames(benchmarkCase);
-        if (requiredCommands.isEmpty()) return 1.0;
+        List<BenchmarkCaseGenerator.TargetStep> targetPath = benchmarkCase.targetPath();
+        if (targetPath.isEmpty()) return 1.0;
 
         List<Integer> stepIndices = new ArrayList<>();
         for (ExecutionRecord log : logs) {
-            if (!log.success() || !log.toolName().equalsIgnoreCase(targetTool)) continue;
-            for (int i = 0; i < requiredCommands.size(); i++) {
-                if (commandMatches(log.commandName(), requiredCommands.get(i))) {
+            if (!log.success()) continue;
+            for (int i = 0; i < targetPath.size(); i++) {
+                if (targetStepMatches(log, targetPath.get(i))) {
                     stepIndices.add(i);
                     break;
                 }
@@ -200,7 +201,7 @@ public class BenchmarkScorer {
 
         if (stepIndices.isEmpty()) return 0.0;
         int lisLength = longestIncreasingSubsequence(stepIndices);
-        return (double) lisLength / requiredCommands.size();
+        return (double) lisLength / targetPath.size();
     }
 
     /**
@@ -226,6 +227,30 @@ public class BenchmarkScorer {
     }
 
     /**
+     * Scores expected final state separately for each target tool.
+     */
+    public double scoreExpectedStateByTool(Map<String, Map<String, String>> expectedStateByTool,
+                                           Map<String, Map<String, String>> actualStateByTool) {
+        if (expectedStateByTool.isEmpty()) return 1.0;
+
+        int expectedValues = 0;
+        int matches = 0;
+        for (Map.Entry<String, Map<String, String>> expectedToolState : expectedStateByTool.entrySet()) {
+            Map<String, String> actualToolState = actualStateByTool.getOrDefault(expectedToolState.getKey(), Map.of());
+            for (Map.Entry<String, String> expected : expectedToolState.getValue().entrySet()) {
+                expectedValues++;
+                String actualValue = actualToolState.get(expected.getKey());
+                if (expected.getValue() == null) {
+                    if (actualValue == null) matches++;
+                } else if (expected.getValue().equals(actualValue)) {
+                    matches++;
+                }
+            }
+        }
+        return expectedValues == 0 ? 1.0 : (double) matches / expectedValues;
+    }
+
+    /**
      * Efficiency = requiredSteps / weightedExecutions, capped at 1.0.
      * Failed executions (e.g. option hallucination, precondition failures) count 1.5x
      * to penalize bad reasoning more heavily than mere extra calls.
@@ -234,7 +259,7 @@ public class BenchmarkScorer {
     private double scoreEfficiency(List<ExecutionRecord> logs,
                                    BenchmarkCaseGenerator.BenchmarkCase benchmarkCase) {
         if (logs.isEmpty()) return 0.0;
-        int requiredSteps = requiredCommandNames(benchmarkCase).size();
+        int requiredSteps = benchmarkCase.targetPath().size();
         if (benchmarkCase.hasTrap()) {
             requiredSteps += 2; // recovery command + retry of failed step
         }
@@ -253,17 +278,10 @@ public class BenchmarkScorer {
                                         BenchmarkCaseGenerator.BenchmarkCase benchmarkCase) {
         if (logs.isEmpty()) return 0.0;
 
-        String targetTool = benchmarkCase.targetToolObject().name();
-        List<String> requiredCommands = new ArrayList<>(requiredCommandNames(benchmarkCase));
-        if (benchmarkCase.recoveryCommandName() != null) {
-            requiredCommands.add(benchmarkCase.recoveryCommandName());
-        }
-
         long requiredExecs = logs.stream()
                 .filter(ExecutionRecord::success)
-                .filter(r -> r.toolName().equalsIgnoreCase(targetTool))
-                .filter(r -> requiredCommands.stream()
-                        .anyMatch(req -> commandMatches(r.commandName(), req)))
+                .filter(record -> isRequiredTargetExecution(record, benchmarkCase)
+                        || isRecoveryExecution(record, benchmarkCase))
                 .count();
 
         return Math.min(1.0, (double) requiredExecs / logs.size());
@@ -282,13 +300,14 @@ public class BenchmarkScorer {
         }
 
         double penalty = 0.0;
+        Set<String> targetToolNames = targetToolNames(benchmarkCase);
         for (ExecutionRecord record : logs) {
-            ToolObject semanticDecoy = semanticDecoyTool(record.toolName(), benchmarkCase);
-            if (semanticDecoy == null) {
+            if (record.toolName() == null || targetToolNames.contains(record.toolName().toLowerCase())) {
                 continue;
             }
 
-            CommandObject command = findCommand(semanticDecoy, record.commandName());
+            ToolObject tool = benchmarkCase.findTool(record.toolName());
+            CommandObject command = findCommand(tool, record.commandName());
             boolean mutatesState = record.success()
                     && command != null
                     && command.commandEffectObjects() != null
@@ -300,36 +319,57 @@ public class BenchmarkScorer {
 
     private double scoreToolSelection(List<ExecutionRecord> logs,
                                       BenchmarkCaseGenerator.BenchmarkCase benchmarkCase) {
-        String targetTool = benchmarkCase.targetToolObject().name();
-        return logs.stream().anyMatch(log -> log.toolName().equalsIgnoreCase(targetTool)) ? 1.0 : 0.0;
+        Set<String> targetToolNames = targetToolNames(benchmarkCase);
+        if (targetToolNames.isEmpty()) return 1.0;
+
+        Set<String> selectedTargets = logs.stream()
+                .map(ExecutionRecord::toolName)
+                .filter(name -> name != null && targetToolNames.contains(name.toLowerCase()))
+                .map(String::toLowerCase)
+                .collect(java.util.stream.Collectors.toCollection(LinkedHashSet::new));
+        return (double) selectedTargets.size() / targetToolNames.size();
     }
 
-    private Map<String, String> targetToolState(String sessionId,
-                                                BenchmarkCaseGenerator.BenchmarkCase benchmarkCase) {
-        return stateManager.getToolStateSnapshot(sessionId, benchmarkCase.targetToolObject().name());
+    private Map<String, Map<String, String>> targetToolStates(String sessionId,
+                                                              BenchmarkCaseGenerator.BenchmarkCase benchmarkCase) {
+        Map<String, Map<String, String>> targetStates = new LinkedHashMap<>();
+        for (ToolObject targetTool : benchmarkCase.targetTools()) {
+            targetStates.put(targetTool.name(), stateManager.getToolStateSnapshot(sessionId, targetTool.name()));
+        }
+        return Map.copyOf(targetStates);
     }
 
-    private List<String> requiredCommandNames(BenchmarkCaseGenerator.BenchmarkCase benchmarkCase) {
-        return benchmarkCase.spec().capabilitySteps().stream()
-                .map(step -> step.commandName())
-                .toList();
+    private boolean isRequiredTargetExecution(ExecutionRecord record,
+                                              BenchmarkCaseGenerator.BenchmarkCase benchmarkCase) {
+        return benchmarkCase.targetPath().stream()
+                .anyMatch(targetStep -> targetStepMatches(record, targetStep));
+    }
+
+    private boolean isRecoveryExecution(ExecutionRecord record,
+                                        BenchmarkCaseGenerator.BenchmarkCase benchmarkCase) {
+        return benchmarkCase.recoveryCommandName() != null
+                && record.toolName() != null
+                && targetToolNames(benchmarkCase).contains(record.toolName().toLowerCase())
+                && commandMatches(record.commandName(), benchmarkCase.recoveryCommandName());
+    }
+
+    private boolean targetStepMatches(ExecutionRecord record, BenchmarkCaseGenerator.TargetStep targetStep) {
+        return record.toolName() != null
+                && record.toolName().equalsIgnoreCase(targetStep.toolName())
+                && commandMatches(record.commandName(), targetStep.commandName());
+    }
+
+    private Set<String> targetToolNames(BenchmarkCaseGenerator.BenchmarkCase benchmarkCase) {
+        return benchmarkCase.targetTools().stream()
+                .map(ToolObject::name)
+                .map(String::toLowerCase)
+                .collect(java.util.stream.Collectors.toCollection(LinkedHashSet::new));
     }
 
     private boolean commandMatches(String actualCommandName, String expectedCommandName) {
         return actualCommandName != null
                 && expectedCommandName != null
                 && actualCommandName.equalsIgnoreCase(expectedCommandName);
-    }
-
-    private ToolObject semanticDecoyTool(String toolName,
-                                         BenchmarkCaseGenerator.BenchmarkCase benchmarkCase) {
-        if (toolName == null || toolName.isBlank()) {
-            return null;
-        }
-        return benchmarkCase.semanticDecoys().stream()
-                .filter(tool -> tool.name().equalsIgnoreCase(toolName))
-                .findFirst()
-                .orElse(null);
     }
 
     private CommandObject findCommand(ToolObject tool, String commandName) {

@@ -59,8 +59,11 @@ public class UserQueryGenerator {
                                     ToolFamily family,
                                     WorkflowTemplate workflow) {
         String finalState = readableFinalState(spec, spec.capabilitySteps().get(spec.capabilitySteps().size() - 1));
-        if (family != null && !family.querySymptoms().isEmpty()) {
-            return formatTemplate(pick(family.querySymptoms()), finalState);
+        if (workflow != null && !workflow.outcomePhrases().isEmpty()) {
+            finalState = pick(workflow.outcomePhrases());
+        }
+        if (family != null && !family.queryTemplates().isEmpty()) {
+            return formatTemplate(pick(family.queryTemplates()), finalState);
         }
 
         String indirectTemplate = "Complete the documented workflow so the affected service path ends %s.";

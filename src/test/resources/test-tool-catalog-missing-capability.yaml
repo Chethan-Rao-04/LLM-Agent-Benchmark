@@ -1,7 +1,7 @@
 optionProfiles:
-  - id: broken_required
+  - id: confirm_required
     style: REQUIRED
-    allowedFlags: []
+    allowedFlags: [confirm]
     valueMode: NONE
 
 families:
@@ -23,7 +23,7 @@ families:
             nounSeeds: [router]
             preconditionTemplate: {}
             effectTemplate: { route_state: inspected }
-            optionProfile: broken_required
+            optionProfile: confirm_required
       - id: verifier
         purpose: service verification
         nameFragments: [verifyx]
@@ -36,13 +36,13 @@ families:
             nounSeeds: [service]
             preconditionTemplate: {}
             effectTemplate: { service_state: verified }
-            optionProfile: broken_required
+            optionProfile: confirm_required
     workflows:
       - id: route_verify_sequence
         intent: Restore route handling and verify service readiness
         outcomePhrases: [verified]
         steps:
           - toolId: router
-            capabilityId: inspect_router
+            capabilityId: missing_router_capability
           - toolId: verifier
             capabilityId: verify_service
