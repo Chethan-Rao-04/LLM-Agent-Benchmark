@@ -1,5 +1,5 @@
-
-
+# TODOS
+## COMPLETED TODOS
 
 1. Fix Option Eval- options are not being evaluated correctly (verify if fixed correctly)
 3. Imrpove query, commands, scenarios, and scoring - Tool descriptions are very simple and straightforward and hints the LLM largely. (Paritially fixed)
@@ -69,7 +69,10 @@ executions:
 rejectedCommands:
   none
 
-## Future plan(ONLY AFTER A STABLE MVP)
+
+## Pending TODOS
+
+### Future plan(ONLY AFTER A STABLE MVP)
 5. COmpare RAG vs ICL
 6. COmpare ICL in diff docs complexity
 7. compare ICL for diff models
@@ -79,5 +82,6 @@ rejectedCommands:
 
 
 1. Explain why we did not choose MCP
-2. Start with the Methodology
-3. Explain Spring AI and the features we added.
+2. Explain Spring AI and the features we added.
+3. Explain about propritary and how we designed to make the tools propritary
+4. 
