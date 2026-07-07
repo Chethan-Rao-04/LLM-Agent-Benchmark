@@ -1,6 +1,10 @@
 package org.benchmark.gen.catalog;
 
 import org.benchmark.model.enums.Domain;
+import org.benchmark.model.enums.EffectOp;
+import org.benchmark.model.enums.StateScope;
+import org.benchmark.model.objects.EffectObject;
+import org.benchmark.model.objects.StateRequirement;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.IOException;
@@ -110,6 +114,11 @@ public class ToolCatalogLoader {
         List<ToolCapability> capabilities = new ArrayList<>(rawCapabilities.size());
         for (Object rawCapability : rawCapabilities) {
             Map<String, Object> entry = requireMap(rawCapability, "tool capability");
+            boolean hasLegacyState = entry.containsKey("preconditionTemplate") || entry.containsKey("effectTemplate");
+            boolean hasScopedState = entry.containsKey("preconditions") || entry.containsKey("effects");
+            if (hasLegacyState && hasScopedState) {
+                throw new IllegalStateException("Tool capability must not mix legacy state maps with scoped state lists");
+            }
             capabilities.add(new ToolCapability(
                     requireString(entry, "id", "tool capability"),
                     requireString(entry, "role", "tool capability"),
@@ -117,10 +126,50 @@ public class ToolCatalogLoader {
                     copyStringList(entry.get("nounSeeds"), "nounSeeds for tool capability"),
                     toStringMap(entry.get("preconditionTemplate"), "preconditionTemplate for tool capability"),
                     toStringMap(entry.get("effectTemplate"), "effectTemplate for tool capability"),
+                    parseStateRequirements(entry.get("preconditions"), "preconditions for tool capability"),
+                    parseEffects(entry.get("effects"), "effects for tool capability"),
                     optionalString(entry.get("optionProfile"))
             ));
         }
         return List.copyOf(capabilities);
+    }
+
+    private List<StateRequirement> parseStateRequirements(Object rawValue, String context) {
+        if (rawValue == null) {
+            return null;
+        }
+        List<?> rawRequirements = requireList(rawValue, context);
+        List<StateRequirement> requirements = new ArrayList<>(rawRequirements.size());
+        for (Object rawRequirement : rawRequirements) {
+            Map<String, Object> entry = requireMap(rawRequirement, context);
+            requirements.add(new StateRequirement(
+                    parseEnum(StateScope.class, requireString(entry, "scope", context), "state scope"),
+                    requireString(entry, "variable", context),
+                    requireString(entry, "value", context)
+            ));
+        }
+        return List.copyOf(requirements);
+    }
+
+    private List<EffectObject> parseEffects(Object rawValue, String context) {
+        if (rawValue == null) {
+            return null;
+        }
+        List<?> rawEffects = requireList(rawValue, context);
+        List<EffectObject> effects = new ArrayList<>(rawEffects.size());
+        for (Object rawEffect : rawEffects) {
+            Map<String, Object> entry = requireMap(rawEffect, context);
+            EffectOp operation = entry.containsKey("operation")
+                    ? parseEnum(EffectOp.class, requireString(entry, "operation", context), "effect operation")
+                    : EffectOp.ASSIGN;
+            effects.add(new EffectObject(
+                    parseEnum(StateScope.class, requireString(entry, "scope", context), "state scope"),
+                    requireString(entry, "variable", context),
+                    operation,
+                    operation == EffectOp.DELETE ? optionalString(entry.get("value")) : requireString(entry, "value", context)
+            ));
+        }
+        return List.copyOf(effects);
     }
 
     private List<WorkflowTemplate> parseWorkflows(Object rawValue, String familyId) {

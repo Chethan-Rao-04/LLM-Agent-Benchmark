@@ -1,6 +1,7 @@
 package org.benchmark.gen.description;
 
 import org.benchmark.model.enums.Domain;
+import org.benchmark.model.objects.StateRequirement;
 import org.benchmark.model.objects.EffectObject;
 
 import java.util.List;
@@ -44,21 +45,27 @@ public final class GeneratedDescriptionPolicy {
     public static String commandDescription(String intent,
                                             Map<String, String> preconditions,
                                             List<EffectObject> documentedEffects) {
+        return commandDescription(intent, StateRequirement.fromToolMap(preconditions), documentedEffects);
+    }
+
+    public static String commandDescription(String intent,
+                                            List<StateRequirement> preconditions,
+                                            List<EffectObject> documentedEffects) {
         boolean hasPreconditions = preconditions != null && !preconditions.isEmpty();
         boolean hasDocumentedEffects = documentedEffects != null && !documentedEffects.isEmpty();
         String stage = normalizedIntent(intent);
 
         if (!hasDocumentedEffects) {
-            return "Performs the documented " + stage + " check; no state update is documented.";
+            return "Runs the documented " + stage + " check; no state update is documented.";
         }
         String updateSummary = documentedEffects.size() == 1
                 ? "one documented state update"
                 : documentedEffects.size() + " documented state updates";
         if (hasPreconditions) {
-            return "Applies the documented " + stage + " procedure after required state checks pass and records "
+            return "Runs the documented " + stage + " step after required state checks pass and records "
                     + updateSummary + ".";
         }
-        return "Applies the documented " + stage + " procedure to the current tool state and records "
+        return "Runs the documented " + stage + " step and records "
                 + updateSummary + ".";
     }
 

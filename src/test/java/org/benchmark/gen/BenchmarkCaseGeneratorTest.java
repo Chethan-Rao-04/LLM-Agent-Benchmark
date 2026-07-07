@@ -13,6 +13,7 @@ import org.benchmark.gen.tool_generator.CommandDict;
 import org.benchmark.model.enums.DocumentComplexity;
 import org.benchmark.model.enums.Domain;
 import org.benchmark.model.enums.EffectOp;
+import org.benchmark.model.enums.StateScope;
 import org.benchmark.model.objects.CommandObject;
 import org.benchmark.model.objects.ToolObject;
 import org.benchmark.gen.tool_generator.CommandAbbreviator;
@@ -339,6 +340,7 @@ class BenchmarkCaseGeneratorTest {
                     .orElseThrow();
             CapabilityStep step = benchmarkCase.spec().capabilitySteps().get(index);
             Map<String, String> actualEffects = command.commandEffectObjects().stream()
+                    .filter(effect -> effect.scope() == StateScope.TOOL)
                     .collect(Collectors.toMap(
                             effect -> effect.variable(),
                             effect -> effect.valueRef() == null ? "" : effect.valueRef()
@@ -401,6 +403,7 @@ class BenchmarkCaseGeneratorTest {
                 checkedSemanticDecoy = true;
                 boolean replaysTargetFinalState = decoy.commands().stream()
                         .map(command -> command.commandEffectObjects().stream()
+                                .filter(effect -> effect.scope() == StateScope.TOOL)
                                 .collect(Collectors.toMap(
                                         effect -> effect.variable(),
                                         effect -> effect.valueRef() == null ? "" : effect.valueRef()
@@ -504,7 +507,7 @@ class BenchmarkCaseGeneratorTest {
                         "Trap lookup should use explicit trap command metadata");
 
                 List<String> effectfulStepNames = benchmarkCase.spec().capabilitySteps().stream()
-                        .filter(step -> !step.effect().isEmpty())
+                        .filter(step -> !step.scopedEffects().isEmpty())
                         .map(CapabilityStep::commandName)
                         .toList();
                 assertTrue(effectfulStepNames.contains(trapCmd.name()),
@@ -533,11 +536,33 @@ class BenchmarkCaseGeneratorTest {
                 }
                 assertTrue(hasDifference, "Real and documented effects should differ");
 
+                String corruptedVar = null;
+                StateScope corruptedScope = null;
+                String wrongValue = null;
+                for (int e = 0; e < trapCmd.documentedEffects().size(); e++) {
+                    String docValue = trapCmd.documentedEffects().get(e).valueRef();
+                    String realValue = trapCmd.commandEffectObjects().get(e).valueRef();
+                    if (!docValue.equals(realValue)) {
+                        corruptedVar = trapCmd.documentedEffects().get(e).variable();
+                        corruptedScope = trapCmd.documentedEffects().get(e).scope();
+                        wrongValue = realValue;
+                        break;
+                    }
+                }
+                assertNotNull(corruptedVar);
+                StateScope finalCorruptedScope = corruptedScope;
+                String finalCorruptedVar = corruptedVar;
+                String finalWrongValue = wrongValue;
+
                 assertNotNull(benchmarkCase.recoveryCommandName(),
                         "Trap case should have a recovery command");
                 CommandObject recoveryCmd = benchmarkCase.targetTools().stream()
                         .flatMap(tool -> tool.commands().stream())
                         .filter(c -> c.name().equals(benchmarkCase.recoveryCommandName()))
+                        .filter(command -> command.scopedPreconditions().stream()
+                                .anyMatch(precondition -> precondition.scope() == finalCorruptedScope
+                                        && precondition.variable().equals(finalCorruptedVar)
+                                        && precondition.value().equals(finalWrongValue)))
                         .findFirst()
                         .orElse(null);
                 assertNotNull(recoveryCmd, "Recovery command should be in the tool's commands");
@@ -546,21 +571,12 @@ class BenchmarkCaseGeneratorTest {
                                 .anyMatch(e -> e.operation() == EffectOp.ASSIGN),
                         "Recovery command should ASSIGN the correct value");
 
-                assertEquals(1, recoveryCmd.preconditions().size(),
+                assertEquals(1, recoveryCmd.scopedPreconditions().size(),
                         "Recovery command should require the corrupted state");
-                String corruptedVar = null;
-                String wrongValue = null;
-                for (int e = 0; e < trapCmd.documentedEffects().size(); e++) {
-                    String docValue = trapCmd.documentedEffects().get(e).valueRef();
-                    String realValue = trapCmd.commandEffectObjects().get(e).valueRef();
-                    if (!docValue.equals(realValue)) {
-                        corruptedVar = trapCmd.documentedEffects().get(e).variable();
-                        wrongValue = realValue;
-                        break;
-                    }
-                }
-                assertNotNull(corruptedVar);
-                assertEquals(wrongValue, recoveryCmd.preconditions().get(corruptedVar),
+                assertTrue(recoveryCmd.scopedPreconditions().stream()
+                                .anyMatch(precondition -> precondition.scope() == finalCorruptedScope
+                                        && precondition.variable().equals(finalCorruptedVar)
+                                        && precondition.value().equals(finalWrongValue)),
                         "Recovery command should only be available after the trap corrupts state");
 
                 assertFalse(benchmarkCase.targetToolObject().description().contains("stabilization"),
@@ -705,7 +721,7 @@ class BenchmarkCaseGeneratorTest {
                     .flatMap(tool -> tool.commands().stream())
                     .toList()) {
                 if (command.name().equals(benchmarkCase.recoveryCommandName())
-                        && command.preconditions().size() == 1) {
+                        && command.scopedPreconditions().size() == 1) {
                     assertTrue(command.commandOptions().isEmpty(),
                             "Recovery commands should not carry generic options");
                     checkedRecoveryCommand = true;

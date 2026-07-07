@@ -1,9 +1,13 @@
 package org.benchmark.gen.catalog;
 
 import org.benchmark.model.enums.Domain;
+import org.benchmark.model.enums.StateScope;
+import org.benchmark.model.objects.EffectObject;
+import org.benchmark.model.objects.StateRequirement;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 
@@ -147,6 +151,47 @@ public record ToolCatalog(
                 throw new IllegalStateException("Tool '" + tool.id()
                         + "' references missing option profile '" + capability.optionProfile() + "'");
             }
+            validateSharedStateNames(tool, capability);
         }
+    }
+
+    private static void validateSharedStateNames(CatalogTool tool, ToolCapability capability) {
+        for (StateRequirement precondition : capability.preconditions()) {
+            if (precondition.scope() == StateScope.SHARED) {
+                validateSharedStateName(tool, capability, precondition.variable());
+            }
+        }
+        for (EffectObject effect : capability.effects()) {
+            if (effect.scope() == StateScope.SHARED) {
+                validateSharedStateName(tool, capability, effect.variable());
+            }
+        }
+    }
+
+    private static void validateSharedStateName(CatalogTool tool, ToolCapability capability, String variable) {
+        String lower = variable.toLowerCase(Locale.ROOT);
+        if (lower.endsWith("_done")
+                || lower.endsWith("_success")
+                || lower.endsWith("_completed")
+                || lower.contains("_tool_")) {
+            throw new IllegalStateException("Shared state variable '" + variable
+                    + "' must describe a domain fact, not a tool completion flag");
+        }
+
+        String normalizedVariable = normalizeToken(lower);
+        String normalizedToolId = normalizeToken(tool.id());
+        String normalizedCapabilityId = normalizeToken(capability.id());
+        if (!normalizedToolId.isBlank() && normalizedVariable.contains(normalizedToolId)) {
+            throw new IllegalStateException("Shared state variable '" + variable
+                    + "' must not include producing tool id '" + tool.id() + "'");
+        }
+        if (!normalizedCapabilityId.isBlank() && normalizedVariable.contains(normalizedCapabilityId)) {
+            throw new IllegalStateException("Shared state variable '" + variable
+                    + "' must not include producing capability id '" + capability.id() + "'");
+        }
+    }
+
+    private static String normalizeToken(String value) {
+        return value == null ? "" : value.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "");
     }
 }

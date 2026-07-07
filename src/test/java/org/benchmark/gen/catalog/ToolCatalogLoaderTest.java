@@ -1,6 +1,7 @@
 package org.benchmark.gen.catalog;
 
 import org.benchmark.model.enums.Domain;
+import org.benchmark.model.enums.StateScope;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -54,5 +55,46 @@ class ToolCatalogLoaderTest {
                 () -> new ToolCatalogLoader("test-tool-catalog-missing-capability.yaml"));
 
         assertTrue(error.getMessage().contains("references missing capability"));
+    }
+
+    @Test
+    void parsesExplicitScopedPreconditionsAndEffects() {
+        ToolCatalog catalog = new ToolCatalogLoader("test-tool-catalog-scoped-state.yaml").getCatalog();
+        ToolCapability routerCapability = catalog.family("scoped_route_process").tools().getFirst().capabilities().getFirst();
+        ToolCapability verifierCapability = catalog.family("scoped_route_process").tools().get(1).capabilities().getFirst();
+
+        assertTrue(routerCapability.effects().stream()
+                .anyMatch(effect -> effect.scope() == StateScope.SHARED
+                        && effect.variable().equals("route_path_state")
+                        && effect.valueRef().equals("inspected")));
+        assertTrue(verifierCapability.preconditions().stream()
+                .anyMatch(precondition -> precondition.scope() == StateScope.SHARED
+                        && precondition.variable().equals("route_path_state")
+                        && precondition.value().equals("inspected")));
+    }
+
+    @Test
+    void adaptsLegacyStateMapsToToolScope() {
+        ToolCatalog catalog = new ToolCatalogLoader("test-tool-catalog-single-family.yaml").getCatalog();
+        ToolCapability capability = catalog.family("router_process").tools().getFirst().capabilities().getFirst();
+
+        assertTrue(capability.effects().stream()
+                .allMatch(effect -> effect.scope() == StateScope.TOOL));
+    }
+
+    @Test
+    void rejectsMixedLegacyAndScopedStateDefinitions() {
+        IllegalStateException error = assertThrows(IllegalStateException.class,
+                () -> new ToolCatalogLoader("test-tool-catalog-mixed-scoped-legacy.yaml"));
+
+        assertTrue(error.getMessage().contains("must not mix legacy state maps"));
+    }
+
+    @Test
+    void rejectsSharedStateNamesTiedToToolIds() {
+        IllegalStateException error = assertThrows(IllegalStateException.class,
+                () -> new ToolCatalogLoader("test-tool-catalog-bad-shared-state-name.yaml"));
+
+        assertTrue(error.getMessage().contains("must not include producing tool id"));
     }
 }

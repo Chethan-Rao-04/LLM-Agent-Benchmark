@@ -20,8 +20,11 @@ import org.benchmark.gen.spec.ScoringPolicy;
 import org.benchmark.gen.tool_generator.CommandDict;
 import org.benchmark.gen.tool_generator.CommandAbbreviator;
 import org.benchmark.gen.tool_generator.ScenarioToolGenerator;
+import org.benchmark.model.enums.EffectOp;
 import org.benchmark.model.enums.DocumentComplexity;
 import org.benchmark.model.enums.Domain;
+import org.benchmark.model.enums.StateScope;
+import org.benchmark.model.objects.EffectObject;
 import org.benchmark.model.objects.ToolObject;
 
 import java.util.ArrayList;
@@ -149,6 +152,7 @@ public class BenchmarkCaseGenerator {
                     caseManual,
                     targetDefinition.scenario().cumulativeExpectedState(),
                     targetDefinition.expectedStateByToolName(targetGeneration.toolNamesByCatalogId()),
+                    targetDefinition.expectedSharedState(),
                     allDistractors,
                     semanticDecoys,
                     randomDistractors,
@@ -225,6 +229,7 @@ public class BenchmarkCaseGenerator {
                     family.domain(),
                     resolvedTool.capabilities(),
                     computeExpectedState(resolvedTool.capabilities()),
+                    computeExpectedSharedState(resolvedTool.capabilities()),
                     DecoyPlan.currentDefault(0, 0),
                     ScoringPolicy.currentDefault(),
                     family.id(),
@@ -350,6 +355,7 @@ public class BenchmarkCaseGenerator {
         List<CapabilityStep> capabilities = new ArrayList<>(workflow.steps().size());
         List<CatalogTargetStep> catalogTargetPath = new ArrayList<>(workflow.steps().size());
         Map<String, Map<String, String>> expectedStateByToolId = new LinkedHashMap<>();
+        Map<String, String> expectedSharedState = new LinkedHashMap<>();
 
         for (WorkflowStepTemplate stepTemplate : workflow.steps()) {
             CapabilityStep capability = resolvedTools.get(stepTemplate.toolId())
@@ -365,9 +371,12 @@ public class BenchmarkCaseGenerator {
             catalogTargetPath.add(new CatalogTargetStep(stepTemplate.toolId(), capability.commandName()));
             expectedStateByToolId.computeIfAbsent(stepTemplate.toolId(), ignored -> new LinkedHashMap<>())
                     .putAll(capability.effect());
+            applySharedEffects(capability.scopedEffects(), expectedSharedState);
         }
 
-        Map<String, String> cumulativeExpectedState = computeExpectedState(capabilities);
+        Map<String, String> cumulativeExpectedState = expectedSharedState.isEmpty()
+                ? computeExpectedState(capabilities)
+                : Map.copyOf(expectedSharedState);
 
         ResolvedScenario scenario = new ResolvedScenario(
                 workflow.id(),
@@ -385,6 +394,7 @@ public class BenchmarkCaseGenerator {
                 family.domain(),
                 capabilities,
                 cumulativeExpectedState,
+                Map.copyOf(expectedSharedState),
                 DecoyPlan.currentDefault(semanticDecoyCount, randomDistractorCount),
                 ScoringPolicy.currentDefault(),
                 family.id(),
@@ -397,7 +407,8 @@ public class BenchmarkCaseGenerator {
                 spec,
                 resolvedTools,
                 List.copyOf(catalogTargetPath),
-                copyNestedStringMap(expectedStateByToolId)
+                copyNestedStringMap(expectedStateByToolId),
+                Map.copyOf(expectedSharedState)
         );
     }
 
@@ -409,6 +420,22 @@ public class BenchmarkCaseGenerator {
         return Map.copyOf(cumulative);
     }
 
+    private Map<String, String> computeExpectedSharedState(List<CapabilityStep> steps) {
+        Map<String, String> cumulative = new LinkedHashMap<>();
+        for (CapabilityStep step : steps) {
+            applySharedEffects(step.scopedEffects(), cumulative);
+        }
+        return Map.copyOf(cumulative);
+    }
+
+    private void applySharedEffects(List<EffectObject> effects, Map<String, String> sharedState) {
+        for (EffectObject effect : effects) {
+            if (effect.scope() == StateScope.SHARED && effect.operation() == EffectOp.ASSIGN) {
+                sharedState.put(effect.variable(), effect.valueRef());
+            }
+        }
+    }
+
     private BenchmarkCaseSpec withDecoyCounts(BenchmarkCaseSpec spec,
                                               int semanticDecoyCount,
                                               int randomDistractorCount) {
@@ -417,6 +444,7 @@ public class BenchmarkCaseGenerator {
                 spec.domain(),
                 spec.capabilitySteps(),
                 spec.expectedFinalState(),
+                spec.expectedSharedState(),
                 DecoyPlan.currentDefault(semanticDecoyCount, randomDistractorCount),
                 spec.scoringPolicy(),
                 spec.toolFamilyId(),
@@ -456,8 +484,8 @@ public class BenchmarkCaseGenerator {
                         verb,
                         noun,
                         commandName,
-                        capability.preconditionTemplate(),
-                        capability.effectTemplate(),
+                        capability.preconditions(),
+                        capability.effects(),
                         capability.optionProfile()
                 );
             }
@@ -522,6 +550,7 @@ public class BenchmarkCaseGenerator {
             String caseManual,
             Map<String, String> expectedState,
             Map<String, Map<String, String>> expectedStateByTool,
+            Map<String, String> expectedSharedState,
             List<ToolObject> distractors,
             List<ToolObject> semanticDecoys,
             List<ToolObject> randomDistractors,
@@ -559,6 +588,7 @@ public class BenchmarkCaseGenerator {
                     caseManual,
                     expectedState,
                     Map.of(targetToolObject.name(), expectedState),
+                    Map.of(),
                     distractors,
                     semanticDecoys,
                     randomDistractors,
@@ -594,6 +624,46 @@ public class BenchmarkCaseGenerator {
                     caseManual,
                     expectedState,
                     Map.of(targetToolObject.name(), expectedState),
+                    spec.expectedSharedState(),
+                    distractors,
+                    semanticDecoys,
+                    randomDistractors,
+                    semanticDecoyKindsByToolName,
+                    userQuery,
+                    hasTrap,
+                    trapCommandName,
+                    recoveryCommandName
+            );
+        }
+
+        public BenchmarkCase(ResolvedScenario scenario,
+                             BenchmarkCaseSpec spec,
+                             ToolObject targetToolObject,
+                             List<ToolObject> targetTools,
+                             List<TargetStep> targetPath,
+                             List<ResolvedStep> targetSteps,
+                             String caseManual,
+                             Map<String, String> expectedState,
+                             Map<String, Map<String, String>> expectedStateByTool,
+                             List<ToolObject> distractors,
+                             List<ToolObject> semanticDecoys,
+                             List<ToolObject> randomDistractors,
+                             Map<String, DecoyKind> semanticDecoyKindsByToolName,
+                             String userQuery,
+                             boolean hasTrap,
+                             String trapCommandName,
+                             String recoveryCommandName) {
+            this(
+                    scenario,
+                    spec,
+                    targetToolObject,
+                    targetTools,
+                    targetPath,
+                    targetSteps,
+                    caseManual,
+                    expectedState,
+                    expectedStateByTool,
+                    spec.expectedSharedState(),
                     distractors,
                     semanticDecoys,
                     randomDistractors,
@@ -672,6 +742,8 @@ public class BenchmarkCaseGenerator {
                             toolName,
                             Collections.unmodifiableMap(new LinkedHashMap<>(state))));
             expectedStateByTool = Collections.unmodifiableMap(expectedStateCopy);
+            expectedSharedState = Collections.unmodifiableMap(new LinkedHashMap<>(
+                    Objects.requireNonNull(expectedSharedState, "expectedSharedState must not be null")));
             distractors = Collections.unmodifiableList(new ArrayList<>(
                     Objects.requireNonNull(distractors, "distractors must not be null")));
             semanticDecoys = Collections.unmodifiableList(new ArrayList<>(
@@ -720,7 +792,8 @@ public class BenchmarkCaseGenerator {
             BenchmarkCaseSpec spec,
             Map<String, ResolvedCatalogTool> resolvedTools,
             List<CatalogTargetStep> catalogTargetPath,
-            Map<String, Map<String, String>> expectedStateByToolId
+            Map<String, Map<String, String>> expectedStateByToolId,
+            Map<String, String> expectedSharedState
     ) {
         private Set<String> targetToolIds() {
             return catalogTargetPath.stream()

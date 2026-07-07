@@ -10,6 +10,7 @@ import org.benchmark.gen.spec.DecoyPlan;
 import org.benchmark.gen.spec.ScoringPolicy;
 import org.benchmark.model.enums.Domain;
 import org.benchmark.model.enums.EffectOp;
+import org.benchmark.model.enums.StateScope;
 import org.benchmark.model.objects.CommandObject;
 import org.benchmark.model.objects.EffectObject;
 import org.benchmark.model.objects.ToolObject;
@@ -374,6 +375,38 @@ class BenchmarkScorerTest {
     }
 
     @Test
+    void scenarioCompletionUsesExpectedSharedStateWhenPresent() {
+        String sessionId = "shared-state-completion";
+        BenchmarkCaseGenerator.BenchmarkCase benchmarkCase = buildSharedStateBenchmarkCase();
+        stateManager.initializeSession(sessionId, benchmarkCase, benchmarkCase.allTools());
+        stateManager.recordExecution(sessionId, new SessionStateManager.ExecutionRecord(
+                "MAN-SHAPE-101",
+                "stabilize_profile",
+                "",
+                true,
+                "OK: stabilize_profile"
+        ));
+        stateManager.recordExecution(sessionId, new SessionStateManager.ExecutionRecord(
+                "MAN-WELDER-202",
+                "weld_joint",
+                "",
+                true,
+                "OK: weld_joint"
+        ));
+        stateManager.updateToolState(sessionId, "MAN-WELDER-202", "weld_state", "joined");
+
+        assertEquals(0.0, scorer.computeAttemptMetrics(sessionId, benchmarkCase, false).stateAccuracy(), 1e-9);
+        assertFalse(scorer.hasSuccessfulScenarioCompletion(
+                sessionId, stateManager.executionLog(sessionId), benchmarkCase));
+
+        stateManager.updateSharedState(sessionId, "joint_state", "joined");
+
+        assertEquals(1.0, scorer.computeAttemptMetrics(sessionId, benchmarkCase, false).stateAccuracy(), 1e-9);
+        assertTrue(scorer.hasSuccessfulScenarioCompletion(
+                sessionId, stateManager.executionLog(sessionId), benchmarkCase));
+    }
+
+    @Test
     void decoyResistancePenalizesAnyNonTargetToolExecution() {
         String sessionId = "random-distractor-decoy";
         BenchmarkCaseGenerator.BenchmarkCase benchmarkCase = buildMultiTargetBenchmarkCase();
@@ -584,6 +617,104 @@ class BenchmarkScorerTest {
                 List.of(randomDistractor),
                 List.of(),
                 List.of(randomDistractor),
+                Map.of(),
+                "Use the documented tools.",
+                false,
+                null,
+                null
+        );
+    }
+
+    private BenchmarkCaseGenerator.BenchmarkCase buildSharedStateBenchmarkCase() {
+        CommandObject stabilize = new CommandObject(
+                "stabilize_profile",
+                List.of(),
+                "Stabilize profile",
+                List.of(new EffectObject(StateScope.SHARED, "profile_state", EffectOp.ASSIGN, "stable")),
+                Map.of()
+        );
+        CommandObject weld = new CommandObject(
+                "weld_joint",
+                List.of(),
+                "Weld joint",
+                List.of(
+                        new EffectObject("weld_state", EffectOp.ASSIGN, "joined"),
+                        new EffectObject(StateScope.SHARED, "joint_state", EffectOp.ASSIGN, "joined")
+                ),
+                Map.of()
+        );
+        ToolObject shapeTool = new ToolObject(
+                "MAN-SHAPE-101",
+                "Shape target",
+                Domain.MANUFACTURING,
+                List.of(stabilize),
+                Map.of()
+        );
+        ToolObject welderTool = new ToolObject(
+                "MAN-WELDER-202",
+                "Welder target",
+                Domain.MANUFACTURING,
+                List.of(weld),
+                Map.of("weld_state", "string")
+        );
+        List<ResolvedStep> scenarioSteps = List.of(
+                new ResolvedStep("stabilize", "profile", Map.of(), Map.of()),
+                new ResolvedStep("weld", "joint", Map.of(), Map.of("weld_state", "joined"))
+        );
+        ResolvedScenario scenario = new ResolvedScenario(
+                "shared_state_flow",
+                "Stabilize and weld",
+                Domain.MANUFACTURING,
+                scenarioSteps,
+                Map.of("joint_state", "joined"),
+                Map.of()
+        );
+        BenchmarkCaseSpec spec = new BenchmarkCaseSpec(
+                "Stabilize and weld",
+                Domain.MANUFACTURING,
+                List.of(
+                        new CapabilityStep(
+                                "stabilize profile",
+                                "shape",
+                                "stabilize",
+                                "profile",
+                                "stabilize_profile",
+                                Map.of(),
+                                Map.of()
+                        ),
+                        new CapabilityStep(
+                                "weld joint",
+                                "welder",
+                                "weld",
+                                "joint",
+                                "weld_joint",
+                                Map.of(),
+                                Map.of("weld_state", "joined")
+                        )
+                ),
+                Map.of("joint_state", "joined"),
+                Map.of("joint_state", "joined"),
+                DecoyPlan.currentDefault(0, 0),
+                ScoringPolicy.currentDefault()
+        );
+
+        return new BenchmarkCaseGenerator.BenchmarkCase(
+                scenario,
+                spec,
+                shapeTool,
+                List.of(shapeTool, welderTool),
+                List.of(
+                        new BenchmarkCaseGenerator.TargetStep(shapeTool.name(), "stabilize_profile"),
+                        new BenchmarkCaseGenerator.TargetStep(welderTool.name(), "weld_joint")
+                ),
+                scenarioSteps,
+                "docs",
+                spec.expectedFinalState(),
+                Map.of(welderTool.name(), Map.of("weld_state", "joined")),
+                spec.expectedSharedState(),
+                List.of(),
+                List.of(),
+                List.of(),
                 Map.of(),
                 "Use the documented tools.",
                 false,

@@ -14,9 +14,11 @@ import org.benchmark.gen.tool_generator.CommandAbbreviator;
 import org.benchmark.logging.BenchmarkEventLogger;
 import org.benchmark.model.enums.Domain;
 import org.benchmark.model.enums.EffectOp;
+import org.benchmark.model.enums.StateScope;
 import org.benchmark.model.objects.CommandObject;
 import org.benchmark.model.objects.EffectObject;
 import org.benchmark.model.objects.OptionEntity;
+import org.benchmark.model.objects.StateRequirement;
 import org.benchmark.model.objects.ToolObject;
 import org.benchmark.scoring.BenchmarkScorer;
 import org.junit.jupiter.api.Test;
@@ -179,6 +181,30 @@ class BenchmarkToolServiceTest {
         assertNull(familyState.get("primary_status"));
         assertEquals("ready", familyState.get("backup_status"));
         assertEquals(1, stateManager.executionLog(SESSION_ID).size());
+    }
+
+    @Test
+    void commandWithMissingSharedPreconditionFailsBeforeMutation() {
+        SessionStateManager stateManager = new SessionStateManager();
+        BenchmarkToolService server = createServer(stateManager);
+        BenchmarkCaseGenerator.BenchmarkCase benchmarkCase = createSharedStateBenchmarkCase();
+        ToolObject welder = benchmarkCase.targetTools().get(1);
+
+        stateManager.initializeSession(SESSION_ID, benchmarkCase, benchmarkCase.allTools());
+        stateManager.startAttempt(SESSION_ID);
+
+        BenchmarkToolService.CommandExecutionResponse response = server.executeCommand(
+                SESSION_ID,
+                welder.name(),
+                "weld_joint",
+                ""
+        );
+
+        assertEquals(BenchmarkToolService.CommandOutcomeType.EXECUTED, response.outcomeType());
+        assertFalse(response.success());
+        assertTrue(response.message().contains("Required shared state"));
+        assertNull(stateManager.getToolState(SESSION_ID, welder.name(), "weld_state"));
+        assertNull(stateManager.getSharedState(SESSION_ID, "joint_state"));
     }
 
     @Test
@@ -592,6 +618,82 @@ class BenchmarkToolServiceTest {
                 benchmarkCase.hasTrap(),
                 benchmarkCase.trapCommandName(),
                 benchmarkCase.recoveryCommandName()
+        );
+    }
+
+    private BenchmarkCaseGenerator.BenchmarkCase createSharedStateBenchmarkCase() {
+        CommandObject shapeCommand = new CommandObject(
+                "stabilize_profile",
+                List.of(),
+                "Stabilize profile",
+                List.of(new EffectObject(StateScope.SHARED, "profile_state", EffectOp.ASSIGN, "stable")),
+                List.of()
+        );
+        CommandObject weldCommand = new CommandObject(
+                "weld_joint",
+                List.of(),
+                "Weld joint",
+                List.of(
+                        new EffectObject("weld_state", EffectOp.ASSIGN, "joined"),
+                        new EffectObject(StateScope.SHARED, "joint_state", EffectOp.ASSIGN, "joined")
+                ),
+                List.of(new StateRequirement(StateScope.SHARED, "profile_state", "stable"))
+        );
+        ToolObject shapeTool = new ToolObject(
+                "MAN-SHAPE-123",
+                "Shape target",
+                Domain.MANUFACTURING,
+                List.of(shapeCommand),
+                Map.of()
+        );
+        ToolObject welderTool = new ToolObject(
+                "MAN-WELDER-456",
+                "Welder target",
+                Domain.MANUFACTURING,
+                List.of(weldCommand),
+                Map.of("weld_state", "string")
+        );
+        ResolvedStep shapeStep = new ResolvedStep("stabilize", "profile", Map.of(), Map.of());
+        ResolvedStep weldStep = new ResolvedStep("weld", "joint", Map.of(), Map.of("weld_state", "joined"));
+        ResolvedScenario scenario = new ResolvedScenario(
+                "shared_state",
+                "Stabilize profile then weld joint",
+                Domain.MANUFACTURING,
+                List.of(shapeStep, weldStep),
+                Map.of("joint_state", "joined"),
+                Map.of()
+        );
+        BenchmarkCaseSpec spec = new BenchmarkCaseSpec(
+                "Stabilize profile then weld joint",
+                Domain.MANUFACTURING,
+                List.of(),
+                Map.of("joint_state", "joined"),
+                Map.of("joint_state", "joined"),
+                org.benchmark.gen.spec.DecoyPlan.currentDefault(0, 0),
+                org.benchmark.gen.spec.ScoringPolicy.currentDefault()
+        );
+        return new BenchmarkCaseGenerator.BenchmarkCase(
+                scenario,
+                spec,
+                shapeTool,
+                List.of(shapeTool, welderTool),
+                List.of(
+                        new BenchmarkCaseGenerator.TargetStep(shapeTool.name(), "stabilize_profile"),
+                        new BenchmarkCaseGenerator.TargetStep(welderTool.name(), "weld_joint")
+                ),
+                scenario.steps(),
+                "Tool documentation",
+                spec.expectedFinalState(),
+                Map.of(welderTool.name(), Map.of("weld_state", "joined")),
+                spec.expectedSharedState(),
+                List.of(),
+                List.of(),
+                List.of(),
+                Map.of(),
+                "Use the documented tools to complete the work.",
+                false,
+                null,
+                null
         );
     }
 

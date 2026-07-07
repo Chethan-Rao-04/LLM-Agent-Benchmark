@@ -1,0 +1,51 @@
+optionProfiles:
+  - id: confirm_required
+    style: REQUIRED
+    allowedFlags: [confirm]
+    valueMode: NONE
+
+families:
+  - id: mixed_route_process
+    domain: NETWORK_INFRA
+    purpose: route setup and connectivity verification
+    queryTemplates:
+      - "Restore routing service and leave connectivity %s."
+    tools:
+      - id: router
+        purpose: route handling
+        nameFragments: [routex]
+        stateVariables: [route_state]
+        fillerCommandRoles: [inspect router]
+        capabilities:
+          - id: inspect_router
+            role: inspect
+            verbSeeds: [inspect]
+            nounSeeds: [router]
+            preconditionTemplate: {}
+            effects:
+              - scope: SHARED
+                variable: route_path_state
+                value: inspected
+            optionProfile: confirm_required
+      - id: verifier
+        purpose: service verification
+        nameFragments: [verifyx]
+        stateVariables: [service_state]
+        fillerCommandRoles: [verify service]
+        capabilities:
+          - id: verify_service
+            role: verify
+            verbSeeds: [verify]
+            nounSeeds: [service]
+            preconditionTemplate: {}
+            effectTemplate: { service_state: verified }
+            optionProfile: confirm_required
+    workflows:
+      - id: route_verify_sequence
+        intent: Restore route handling and verify service readiness
+        outcomePhrases: [verified]
+        steps:
+          - toolId: router
+            capabilityId: inspect_router
+          - toolId: verifier
+            capabilityId: verify_service

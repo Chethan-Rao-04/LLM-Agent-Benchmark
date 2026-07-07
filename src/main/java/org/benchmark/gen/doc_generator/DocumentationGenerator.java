@@ -4,9 +4,11 @@ import org.benchmark.gen.description.GeneratedDescriptionPolicy;
 import org.benchmark.gen.spec.BenchmarkCaseSpec;
 import org.benchmark.gen.spec.CapabilityStep;
 import org.benchmark.model.enums.DocumentComplexity;
+import org.benchmark.model.enums.StateScope;
 import org.benchmark.model.objects.CommandObject;
 import org.benchmark.model.objects.EffectObject;
 import org.benchmark.model.objects.OptionEntity;
+import org.benchmark.model.objects.StateRequirement;
 import org.benchmark.model.objects.ToolObject;
 
 import java.util.List;
@@ -62,12 +64,13 @@ public class DocumentationGenerator {
                             command.commandOptions(),
                             GeneratedDescriptionPolicy.commandDescription(
                                     step.intent(),
-                                    command.preconditions(),
+                                    command.scopedPreconditions(),
                                     documentedEffects(command)
                             ),
                             command.commandEffectObjects(),
                             command.preconditions(),
-                            command.documentedEffects()
+                            command.documentedEffects(),
+                            command.scopedPreconditions()
                     );
                 })
                 .toList();
@@ -99,27 +102,37 @@ public class DocumentationGenerator {
         for (CommandObject command : tool.commands()) {
             builder.append("\n## ").append(command.name()).append("\n");
             builder.append("Description: ").append(command.description()).append("\n");
-            appendPreconditionsSection(builder, command.preconditions());
+            appendPreconditionsSection(builder, "Requires local state", command.scopedPreconditions(), StateScope.TOOL);
+            appendPreconditionsSection(builder, "Requires shared state", command.scopedPreconditions(), StateScope.SHARED);
             appendOptionsSection(builder, command.commandOptions());
-            appendEffectsSection(builder, command);
+            appendEffectsSection(builder, "Produces local state", command, StateScope.TOOL);
+            appendEffectsSection(builder, "Produces shared state", command, StateScope.SHARED);
         }
 
         builder.append("\n--- End of documentation for ").append(tool.name()).append(" ---");
         return builder.toString();
     }
 
-    private void appendPreconditionsSection(StringBuilder builder, Map<String, String> preconditions) {
-        builder.append("Preconditions:\n");
-        if (preconditions == null || preconditions.isEmpty()) {
+    private void appendPreconditionsSection(StringBuilder builder,
+                                            String title,
+                                            List<StateRequirement> preconditions,
+                                            StateScope scope) {
+        builder.append(title).append(":\n");
+        List<StateRequirement> scopedPreconditions = preconditions == null
+                ? List.of()
+                : preconditions.stream()
+                .filter(precondition -> precondition.scope() == scope)
+                .toList();
+        if (scopedPreconditions.isEmpty()) {
             builder.append("- none\n");
             return;
         }
 
-        for (Map.Entry<String, String> entry : preconditions.entrySet()) {
+        for (StateRequirement precondition : scopedPreconditions) {
             builder.append("- requires `")
-                    .append(entry.getKey())
+                    .append(precondition.variable())
                     .append("` to equal `")
-                    .append(entry.getValue())
+                    .append(precondition.value())
                     .append("`\n");
         }
     }
@@ -140,21 +153,26 @@ public class DocumentationGenerator {
         }
     }
 
-    private void appendEffectsSection(StringBuilder builder, CommandObject command) {
+    private void appendEffectsSection(StringBuilder builder, String title, CommandObject command, StateScope scope) {
         List<EffectObject> effects = command.documentedEffects() != null
                 ? command.documentedEffects()
                 : command.commandEffectObjects();
-        appendEffectsSection(builder, effects);
+        appendEffectsSection(builder, title, effects, scope);
     }
 
-    private void appendEffectsSection(StringBuilder builder, List<EffectObject> effects) {
-        builder.append("Effects:\n");
-        if (effects == null || effects.isEmpty()) {
+    private void appendEffectsSection(StringBuilder builder, String title, List<EffectObject> effects, StateScope scope) {
+        builder.append(title).append(":\n");
+        List<EffectObject> scopedEffects = effects == null
+                ? List.of()
+                : effects.stream()
+                .filter(effect -> effect.scope() == scope)
+                .toList();
+        if (scopedEffects.isEmpty()) {
             builder.append("- no state change documented\n");
             return;
         }
 
-        for (EffectObject effect : effects) {
+        for (EffectObject effect : scopedEffects) {
             builder.append("- updates `")
                     .append(effect.variable())
                     .append("` with `")
@@ -279,9 +297,11 @@ public class DocumentationGenerator {
             builder.append("\n## ").append(command.name()).append("\n");
             builder.append("Description: ").append(command.description()).append("\n");
 
-            appendPreconditionsSection(builder, command.preconditions());
+            appendPreconditionsSection(builder, "Requires local state", command.scopedPreconditions(), StateScope.TOOL);
+            appendPreconditionsSection(builder, "Requires shared state", command.scopedPreconditions(), StateScope.SHARED);
             appendOptionsSection(builder, command.commandOptions());
-            appendEffectsSection(builder, command);
+            appendEffectsSection(builder, "Produces local state", command, StateScope.TOOL);
+            appendEffectsSection(builder, "Produces shared state", command, StateScope.SHARED);
 
             // Inject contradictory prose that conflicts with the structured sections above
             builder.append("\n> Note (v2.1 migration guide): `").append(command.name())
@@ -293,7 +313,7 @@ public class DocumentationGenerator {
                         .append("` was removed in the latest release. Do not use it.\n");
             }
 
-            if (command.preconditions() != null && !command.preconditions().isEmpty()) {
+            if (command.scopedPreconditions() != null && !command.scopedPreconditions().isEmpty()) {
                 builder.append("> Correction: this command has no preconditions; ")
                         .append("the requirements listed above are from a deprecated version.\n");
             }

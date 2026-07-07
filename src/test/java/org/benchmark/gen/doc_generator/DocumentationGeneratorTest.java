@@ -4,9 +4,11 @@ import org.benchmark.gen.BenchmarkCaseGenerator;
 import org.benchmark.model.enums.DocumentComplexity;
 import org.benchmark.model.enums.Domain;
 import org.benchmark.model.enums.EffectOp;
+import org.benchmark.model.enums.StateScope;
 import org.benchmark.model.objects.CommandObject;
 import org.benchmark.model.objects.EffectObject;
 import org.benchmark.model.objects.OptionEntity;
+import org.benchmark.model.objects.StateRequirement;
 import org.benchmark.model.objects.ToolObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -147,6 +149,49 @@ class DocumentationGeneratorTest {
                 assertFalse(containsIgnoreCase(descriptionLine, effect.getValue().replace('_', ' ')));
             }
         }
+    }
+
+    @Test
+    void cleanDocSeparatesLocalAndSharedStateSections() {
+        ToolObject tool = new ToolObject(
+                "MAN-WELDER-123",
+                "A welding tool",
+                Domain.MANUFACTURING,
+                List.of(new CommandObject(
+                        "weld_joint",
+                        List.of(),
+                        "Runs the documented weld step.",
+                        List.of(
+                                new EffectObject("weld_state", EffectOp.ASSIGN, "complete"),
+                                new EffectObject(StateScope.SHARED, "joint_state", EffectOp.ASSIGN, "joined")
+                        ),
+                        List.of(
+                                new StateRequirement("seam_state", "aligned"),
+                                new StateRequirement(StateScope.SHARED, "profile_state", "stable")
+                        )
+                )),
+                Map.of("seam_state", "string", "weld_state", "string")
+        );
+
+        String doc = generator.generateDocumentation(tool, DocumentComplexity.CLEAN);
+
+        assertTrue(doc.contains("Requires local state:"));
+        assertTrue(doc.contains("- requires `seam_state` to equal `aligned`"));
+        assertTrue(doc.contains("Requires shared state:"));
+        assertTrue(doc.contains("- requires `profile_state` to equal `stable`"));
+        assertTrue(doc.contains("Produces local state:"));
+        assertTrue(doc.contains("- updates `weld_state` with `ASSIGN` using `complete`"));
+        assertTrue(doc.contains("Produces shared state:"));
+        assertTrue(doc.contains("- updates `joint_state` with `ASSIGN` using `joined`"));
+    }
+
+    @Test
+    void targetDocumentationAvoidsNoisyProcedureWording() {
+        BenchmarkCaseGenerator benchmarkGenerator = new BenchmarkCaseGenerator(DocumentComplexity.CLEAN, 42L);
+        BenchmarkCaseGenerator.BenchmarkCase benchmarkCase =
+                benchmarkGenerator.generateCases(1, 2, Domain.MANUFACTURING).getFirst();
+
+        assertFalse(benchmarkCase.caseManual().contains("Applies the documented"));
     }
 
     private String commandDescriptionLine(String manual, String commandName) {

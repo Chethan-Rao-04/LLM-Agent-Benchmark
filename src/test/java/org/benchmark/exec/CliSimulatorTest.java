@@ -2,9 +2,11 @@ package org.benchmark.exec;
 
 import org.benchmark.model.enums.Domain;
 import org.benchmark.model.enums.EffectOp;
+import org.benchmark.model.enums.StateScope;
 import org.benchmark.model.objects.CommandObject;
 import org.benchmark.model.objects.EffectObject;
 import org.benchmark.model.objects.OptionEntity;
+import org.benchmark.model.objects.StateRequirement;
 import org.benchmark.model.objects.ToolObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -188,5 +190,69 @@ class CliSimulatorTest {
 
         assertFalse(result.success());
         assertTrue(result.stderr().contains("Unknown command"));
+    }
+
+    @Test
+    void executeRejectsUnmetSharedPreconditionWithoutMutation() {
+        ToolObject tool = new ToolObject(
+                TOOL_NAME,
+                "Test tool",
+                Domain.MANUFACTURING,
+                List.of(new CommandObject(
+                        "weld_joint",
+                        List.of(),
+                        "Weld joint",
+                        List.of(
+                                new EffectObject("weld_state", EffectOp.ASSIGN, "complete"),
+                                new EffectObject(StateScope.SHARED, "joint_state", EffectOp.ASSIGN, "joined")
+                        ),
+                        List.of(
+                                new StateRequirement("seam_state", "aligned"),
+                                new StateRequirement(StateScope.SHARED, "profile_state", "stable")
+                        )
+                )),
+                Map.of("weld_state", "string", "seam_state", "string")
+        );
+        stateManager.updateToolState(SESSION_ID, TOOL_NAME, "seam_state", "aligned");
+
+        CliSimulator.ExecutionResult result = simulator.execute(tool, "weld_joint", "", stateManager, SESSION_ID);
+
+        assertFalse(result.success());
+        assertTrue(result.stderr().contains("Required shared state"));
+        assertEquals("aligned", stateManager.getToolState(SESSION_ID, TOOL_NAME, "seam_state"));
+        assertEquals("old-value", stateManager.getToolState(SESSION_ID, TOOL_NAME, "label"));
+        assertEquals(null, stateManager.getToolState(SESSION_ID, TOOL_NAME, "weld_state"));
+        assertEquals(null, stateManager.getSharedState(SESSION_ID, "joint_state"));
+    }
+
+    @Test
+    void executeAppliesScopedEffectsToToolAndSharedState() {
+        ToolObject tool = new ToolObject(
+                TOOL_NAME,
+                "Test tool",
+                Domain.MANUFACTURING,
+                List.of(new CommandObject(
+                        "weld_joint",
+                        List.of(),
+                        "Weld joint",
+                        List.of(
+                                new EffectObject("weld_state", EffectOp.ASSIGN, "complete"),
+                                new EffectObject(StateScope.SHARED, "joint_state", EffectOp.ASSIGN, "joined")
+                        ),
+                        List.of(
+                                new StateRequirement("seam_state", "aligned"),
+                                new StateRequirement(StateScope.SHARED, "profile_state", "stable")
+                        )
+                )),
+                Map.of("weld_state", "string", "seam_state", "string")
+        );
+        stateManager.updateToolState(SESSION_ID, TOOL_NAME, "seam_state", "aligned");
+        stateManager.updateSharedState(SESSION_ID, "profile_state", "stable");
+
+        CliSimulator.ExecutionResult result = simulator.execute(tool, "weld_joint", "", stateManager, SESSION_ID);
+
+        assertTrue(result.success());
+        assertEquals("complete", stateManager.getToolState(SESSION_ID, TOOL_NAME, "weld_state"));
+        assertEquals("joined", stateManager.getSharedState(SESSION_ID, "joint_state"));
     }
 }

@@ -1,8 +1,10 @@
 package org.benchmark.exec;
 
 import lombok.extern.slf4j.Slf4j;
+import org.benchmark.model.enums.StateScope;
 import org.benchmark.model.objects.CommandObject;
 import org.benchmark.model.objects.OptionEntity;
+import org.benchmark.model.objects.StateRequirement;
 import org.benchmark.model.objects.ToolObject;
 import org.springframework.stereotype.Component;
 
@@ -90,19 +92,29 @@ public class CliSimulator {
                                        String sessionId,
                                        String toolName) {
         if (command.preconditions() == null || command.preconditions().isEmpty()) {
+            if (command.scopedPreconditions() == null || command.scopedPreconditions().isEmpty()) {
+                return null;
+            }
+        }
+
+        if (command.scopedPreconditions() == null || command.scopedPreconditions().isEmpty()) {
             return null;
         }
 
-        Map<String, String> currentState = stateManager.getToolStateSnapshot(sessionId, toolName);
-        for (Map.Entry<String, String> required : command.preconditions().entrySet()) {
-            String actual = currentState.get(required.getKey());
-            if (!required.getValue().equals(actual)) {
+        for (StateRequirement required : command.scopedPreconditions()) {
+            String actual = stateManager.getState(sessionId, toolName, required.scope(), required.variable());
+            if (!required.value().equals(actual)) {
                 return "Precondition not met for command: " + command.name()
-                        + ". Required: {" + required.getKey() + "=" + required.getValue()
-                        + "}, actual: {" + required.getKey() + "=" + actual + "}";
+                        + ". Required " + formatScope(required.scope()) + ": {"
+                        + required.variable() + "=" + required.value()
+                        + "}, actual: {" + required.variable() + "=" + actual + "}";
             }
         }
         return null;
+    }
+
+    private String formatScope(StateScope scope) {
+        return scope == StateScope.SHARED ? "shared state" : "local state";
     }
 
     /**

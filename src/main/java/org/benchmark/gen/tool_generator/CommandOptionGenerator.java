@@ -64,7 +64,7 @@ final class CommandOptionGenerator {
     private String describeOption(String flagBase, OptionValueMode valueMode) {
         String label = flagBase.replace('_', ' ');
         if (valueMode == OptionValueMode.NONE) {
-            return "Applies the documented " + label + " flag.";
+            return "Uses the documented " + label + " flag.";
         }
         return switch (valueMode) {
             case LETTER_SUFFIX -> "Selects the documented " + label + " lane for this procedure.";

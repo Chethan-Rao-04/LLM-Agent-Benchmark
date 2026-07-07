@@ -53,4 +53,24 @@ class SessionStateManagerTest {
         assertEquals(taskCount, stateManager.executionLog(sessionId).size());
         assertTrue(stateManager.getToolState(sessionId, toolName, "status").startsWith("value_"));
     }
+
+    @Test
+    void initializeSessionResetsSharedStateForSameSession() {
+        SessionStateManager stateManager = new SessionStateManager();
+        String sessionId = "shared-reset-session";
+        ToolObject tool = new ToolObject(
+                "TEST-TOOL-001",
+                "Test tool",
+                Domain.MANUFACTURING,
+                List.of(),
+                Map.of("status", "string")
+        );
+
+        stateManager.initializeSession(sessionId, null, List.of(tool));
+        stateManager.updateSharedState(sessionId, "profile_state", "stable");
+
+        stateManager.initializeSession(sessionId, null, List.of(tool));
+
+        assertTrue(stateManager.getSharedStateSnapshot(sessionId).isEmpty());
+    }
 }

@@ -18,7 +18,8 @@ public record CommandObject(String name,
                             String description,
                             List<EffectObject> commandEffectObjects,
                             Map<String, String> preconditions,
-                            List<EffectObject> documentedEffects) {
+                            List<EffectObject> documentedEffects,
+                            List<StateRequirement> scopedPreconditions) {
     /**
      * Creates a command whose documentation should mirror its real effects.
      *
@@ -36,10 +37,31 @@ public record CommandObject(String name,
         this(name, commandOptions, description, commandEffectObjects, preconditions, null);
     }
 
+    public CommandObject(String name,
+                         List<OptionEntity> commandOptions,
+                         String description,
+                         List<EffectObject> commandEffectObjects,
+                         List<StateRequirement> scopedPreconditions) {
+        this(name, commandOptions, description, commandEffectObjects, null, null, scopedPreconditions);
+    }
+
     /**
      * Normalizes optional preconditions so simulator code can treat missing maps as empty state constraints.
      */
     public CommandObject {
-        preconditions = preconditions == null ? Map.of() : Map.copyOf(preconditions);
+        scopedPreconditions = scopedPreconditions == null
+                ? StateRequirement.fromToolMap(preconditions)
+                : List.copyOf(scopedPreconditions);
+        preconditions = StateRequirement.toolMap(scopedPreconditions);
+    }
+
+    public CommandObject(String name,
+                         List<OptionEntity> commandOptions,
+                         String description,
+                         List<EffectObject> commandEffectObjects,
+                         Map<String, String> preconditions,
+                         List<EffectObject> documentedEffects) {
+        this(name, commandOptions, description, commandEffectObjects,
+                preconditions, documentedEffects, StateRequirement.fromToolMap(preconditions));
     }
 }

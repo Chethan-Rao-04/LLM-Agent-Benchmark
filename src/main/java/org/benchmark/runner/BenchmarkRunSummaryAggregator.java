@@ -55,6 +55,8 @@ class BenchmarkRunSummaryAggregator {
                 targetToolNames(benchmarkCase),
                 formatTargetPath(benchmarkCase),
                 formatTargetLikeWrongTools(benchmarkCase),
+                formatState(benchmarkCase.expectedSharedState()),
+                formatState(stateManager.getSharedStateSnapshot(sessionId)),
                 result.passed(),
                 result.recovery(),
                 attemptsUsed,
@@ -121,6 +123,15 @@ class BenchmarkRunSummaryAggregator {
                         record.toolName(),
                         record.commandName(),
                         formatOption(record.option())))
+                .toList();
+    }
+
+    private List<String> formatState(Map<String, String> state) {
+        if (state == null || state.isEmpty()) {
+            return List.of();
+        }
+        return state.entrySet().stream()
+                .map(entry -> entry.getKey() + "=" + entry.getValue())
                 .toList();
     }
 

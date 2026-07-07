@@ -87,8 +87,7 @@ public class BenchmarkScorer {
         double toolSelection = scoreToolSelection(logs, benchmarkCase);
         double stepCompletion = scoreStepCompletion(logs, benchmarkCase);
         double ordering = scoreOrdering(logs, benchmarkCase);
-        double stateAccuracy = scoreExpectedStateByTool(
-                benchmarkCase.expectedStateByTool(), targetToolStates(sessionId, benchmarkCase));
+        double stateAccuracy = scoreFinalState(sessionId, benchmarkCase);
         double efficiency = scoreEfficiency(logs, benchmarkCase);
         double commandPrecision = scoreCommandPrecision(logs, benchmarkCase);
         double decoyResistance = scoreDecoyResistance(logs, benchmarkCase);
@@ -127,7 +126,7 @@ public class BenchmarkScorer {
                 scoreToolSelection(logs, benchmarkCase),
                 stepCompletion,
                 ordering,
-                scoreExpectedStateByTool(benchmarkCase.expectedStateByTool(), targetToolStates(sessionId, benchmarkCase)),
+                scoreFinalState(sessionId, benchmarkCase),
                 scoreEfficiency(logs, benchmarkCase),
                 scoreCommandPrecision(logs, benchmarkCase),
                 scoreDecoyResistance(logs, benchmarkCase),
@@ -150,8 +149,7 @@ public class BenchmarkScorer {
                                                    BenchmarkCaseGenerator.BenchmarkCase benchmarkCase) {
         return scoreStepCompletion(executions, benchmarkCase) == 1.0
                 && scoreOrdering(executions, benchmarkCase) == 1.0
-                && scoreExpectedStateByTool(
-                benchmarkCase.expectedStateByTool(), targetToolStates(sessionId, benchmarkCase)) == 1.0;
+                && scoreFinalState(sessionId, benchmarkCase) == 1.0;
     }
 
     /**
@@ -248,6 +246,15 @@ public class BenchmarkScorer {
             }
         }
         return expectedValues == 0 ? 1.0 : (double) matches / expectedValues;
+    }
+
+    private double scoreFinalState(String sessionId,
+                                   BenchmarkCaseGenerator.BenchmarkCase benchmarkCase) {
+        if (!benchmarkCase.expectedSharedState().isEmpty()) {
+            return scoreExpectedState(benchmarkCase.expectedSharedState(), stateManager.getSharedStateSnapshot(sessionId));
+        }
+        return scoreExpectedStateByTool(
+                benchmarkCase.expectedStateByTool(), targetToolStates(sessionId, benchmarkCase));
     }
 
     /**

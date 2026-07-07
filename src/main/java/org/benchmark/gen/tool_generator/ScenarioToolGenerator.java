@@ -10,9 +10,11 @@ import org.benchmark.gen.scenario.ResolvedScenario;
 import org.benchmark.gen.spec.BenchmarkCaseSpec;
 import org.benchmark.gen.spec.CapabilityStep;
 import org.benchmark.model.enums.EffectOp;
+import org.benchmark.model.enums.StateScope;
 import org.benchmark.model.objects.CommandObject;
 import org.benchmark.model.objects.EffectObject;
 import org.benchmark.model.objects.OptionEntity;
+import org.benchmark.model.objects.StateRequirement;
 import org.benchmark.model.objects.ToolObject;
 
 import java.util.ArrayList;
@@ -102,24 +104,21 @@ public class ScenarioToolGenerator {
 
         List<Integer> effectfulStepIndexes = new ArrayList<>();
         for (int i = 0; i < spec.capabilitySteps().size(); i++) {
-            if (!spec.capabilitySteps().get(i).effect().isEmpty()) {
+            if (!spec.capabilitySteps().get(i).scopedEffects().isEmpty()) {
                 effectfulStepIndexes.add(i);
             }
         }
 
         Integer trappedStepIndex = null;
-        String corruptedVar = null;
-        String correctValue = null;
+        EffectObject corruptedEffect = null;
         String wrongValue = null;
         if (includeTrapCommand && !effectfulStepIndexes.isEmpty()) {
             Collections.shuffle(effectfulStepIndexes, random);
             trappedStepIndex = effectfulStepIndexes.get(0);
 
             CapabilityStep trappedStep = spec.capabilitySteps().get(trappedStepIndex);
-            Map.Entry<String, String> targetEntry = trappedStep.effect().entrySet().iterator().next();
-            corruptedVar = targetEntry.getKey();
-            correctValue = targetEntry.getValue();
-            wrongValue = wrongValueFor(correctValue);
+            corruptedEffect = trappedStep.scopedEffects().getFirst();
+            wrongValue = wrongValueFor(corruptedEffect.valueRef());
         }
 
         // Scenario step commands
@@ -129,7 +128,7 @@ public class ScenarioToolGenerator {
             usedCommandNames.add(name);
 
             if (trappedStepIndex != null && i == trappedStepIndex) {
-                commands.add(buildTrappedStepCommand(name, step, catalog, corruptedVar, wrongValue));
+                commands.add(buildTrappedStepCommand(name, step, catalog, corruptedEffect, wrongValue));
                 trapCommandName = name;
             } else {
                 commands.add(buildStepCommand(name, step, catalog));
@@ -138,7 +137,7 @@ public class ScenarioToolGenerator {
 
         if (trapCommandName != null) {
             CommandObject recovery = buildRecoveryCommand(
-                    spec, null, corruptedVar, wrongValue, correctValue, usedCommandNames);
+                    spec, null, corruptedEffect, wrongValue, usedCommandNames);
             if (recovery == null) {
                 trapCommandName = null;
                 commands.clear();
@@ -170,7 +169,7 @@ public class ScenarioToolGenerator {
 
             List<EffectObject> effects = generateFillerEffect(stateVariables);
             commands.add(new CommandObject(name, List.of(),
-                    GeneratedDescriptionPolicy.commandDescription("support", Map.of(), effects), effects, Map.of()));
+                    GeneratedDescriptionPolicy.commandDescription("support", List.of(), effects), effects, List.of()));
         }
 
         if (recoveryCommandName != null) {
@@ -213,18 +212,15 @@ public class ScenarioToolGenerator {
         String recoveryCommandName = null;
 
         List<CapabilityStep> effectfulRequiredSteps = requiredSteps.stream()
-                .filter(step -> !step.effect().isEmpty())
+                .filter(step -> !step.scopedEffects().isEmpty())
                 .toList();
         CapabilityStep trappedStep = null;
-        String corruptedVar = null;
-        String correctValue = null;
+        EffectObject corruptedEffect = null;
         String wrongValue = null;
         if (includeTrapCommand && !effectfulRequiredSteps.isEmpty()) {
             trappedStep = effectfulRequiredSteps.get(random.nextInt(effectfulRequiredSteps.size()));
-            Map.Entry<String, String> targetEntry = trappedStep.effect().entrySet().iterator().next();
-            corruptedVar = targetEntry.getKey();
-            correctValue = targetEntry.getValue();
-            wrongValue = wrongValueFor(correctValue);
+            corruptedEffect = trappedStep.scopedEffects().getFirst();
+            wrongValue = wrongValueFor(corruptedEffect.valueRef());
         }
 
         for (CapabilityStep capability : capabilities) {
@@ -235,7 +231,7 @@ public class ScenarioToolGenerator {
             }
 
             if (trappedStep != null && name.equals(trappedStep.commandName())) {
-                commands.add(buildTrappedStepCommand(name, capability, catalog, corruptedVar, wrongValue));
+                commands.add(buildTrappedStepCommand(name, capability, catalog, corruptedEffect, wrongValue));
                 trapCommandName = name;
             } else {
                 commands.add(buildStepCommand(name, capability, catalog));
@@ -244,7 +240,7 @@ public class ScenarioToolGenerator {
 
         if (trapCommandName != null) {
             CommandObject recovery = buildRecoveryCommand(
-                    spec, catalogTool, corruptedVar, wrongValue, correctValue, usedCommandNames);
+                    spec, catalogTool, corruptedEffect, wrongValue, usedCommandNames);
             if (recovery == null) {
                 trapCommandName = null;
                 commands.clear();
@@ -274,27 +270,25 @@ public class ScenarioToolGenerator {
     private CommandObject buildTrappedStepCommand(String name,
                                                   CapabilityStep step,
                                                   ToolCatalog catalog,
-                                                  String corruptedVar, String wrongValue) {
-        // Documented effects: the correct ones (what the LLM expects)
-        List<EffectObject> documentedEffects = new ArrayList<>();
-        for (Map.Entry<String, String> entry : step.effect().entrySet()) {
-            documentedEffects.add(new EffectObject(entry.getKey(), EffectOp.ASSIGN, entry.getValue()));
-        }
+                                                  EffectObject corruptedEffect,
+                                                  String wrongValue) {
+        List<EffectObject> documentedEffects = List.copyOf(step.scopedEffects());
 
         // Real effects: same as documented, but the corrupted variable gets a wrong value
         List<EffectObject> realEffects = new ArrayList<>();
-        for (Map.Entry<String, String> entry : step.effect().entrySet()) {
-            if (entry.getKey().equals(corruptedVar)) {
-                realEffects.add(new EffectObject(entry.getKey(), EffectOp.ASSIGN, wrongValue));
+        for (EffectObject effect : step.scopedEffects()) {
+            if (effect.scope() == corruptedEffect.scope()
+                    && effect.variable().equals(corruptedEffect.variable())) {
+                realEffects.add(new EffectObject(effect.scope(), effect.variable(), effect.operation(), wrongValue));
             } else {
-                realEffects.add(new EffectObject(entry.getKey(), EffectOp.ASSIGN, entry.getValue()));
+                realEffects.add(effect);
             }
         }
 
         List<OptionEntity> options = resolveOptions(step, catalog);
         return new CommandObject(name, options,
-                GeneratedDescriptionPolicy.commandDescription(step.intent(), step.precondition(), documentedEffects),
-                realEffects, step.precondition(), documentedEffects);
+                GeneratedDescriptionPolicy.commandDescription(step.intent(), step.scopedPreconditions(), documentedEffects),
+                realEffects, step.precondition(), documentedEffects, step.scopedPreconditions());
     }
 
     /**
@@ -303,9 +297,8 @@ public class ScenarioToolGenerator {
      */
     private CommandObject buildRecoveryCommand(BenchmarkCaseSpec spec,
                                                CatalogTool catalogTool,
-                                               String corruptedVar,
+                                               EffectObject corruptedEffect,
                                                String wrongValue,
-                                               String correctValue,
                                                Set<String> usedCommandNames) {
         String recoveryName = null;
         for (int attempts = 0; attempts < 20; attempts++) {
@@ -321,9 +314,11 @@ public class ScenarioToolGenerator {
         }
 
         List<EffectObject> effects = List.of(
-                new EffectObject(corruptedVar, EffectOp.ASSIGN, correctValue)
+                new EffectObject(corruptedEffect.scope(), corruptedEffect.variable(), EffectOp.ASSIGN, corruptedEffect.valueRef())
         );
-        Map<String, String> recoveryPreconditions = Map.of(corruptedVar, wrongValue);
+        List<StateRequirement> recoveryPreconditions = List.of(
+                new StateRequirement(corruptedEffect.scope(), corruptedEffect.variable(), wrongValue)
+        );
         return new CommandObject(recoveryName, List.of(),
                 GeneratedDescriptionPolicy.commandDescription("recovery", recoveryPreconditions, effects),
                 effects, recoveryPreconditions);
@@ -337,13 +332,10 @@ public class ScenarioToolGenerator {
                                            CapabilityStep step,
                                            ToolCatalog catalog) {
         List<OptionEntity> options = resolveOptions(step, catalog);
-        List<EffectObject> effects = new ArrayList<>();
-        for (Map.Entry<String, String> entry : step.effect().entrySet()) {
-            effects.add(new EffectObject(entry.getKey(), EffectOp.ASSIGN, entry.getValue()));
-        }
+        List<EffectObject> effects = step.scopedEffects();
         return new CommandObject(abbreviatedName, options,
-                GeneratedDescriptionPolicy.commandDescription(step.intent(), step.precondition(), effects),
-                effects, step.precondition());
+                GeneratedDescriptionPolicy.commandDescription(step.intent(), step.scopedPreconditions(), effects),
+                effects, step.scopedPreconditions());
     }
 
     private Map<String, String> buildStateSchema(BenchmarkCaseSpec spec, ToolFamily family) {
@@ -366,6 +358,10 @@ public class ScenarioToolGenerator {
         for (CapabilityStep capability : capabilities) {
             capability.precondition().keySet().forEach(k -> schema.put(k, "string"));
             capability.effect().keySet().forEach(k -> schema.put(k, "string"));
+            capability.scopedEffects().stream()
+                    .filter(effect -> effect.scope() == StateScope.TOOL)
+                    .map(EffectObject::variable)
+                    .forEach(variable -> schema.put(variable, "string"));
         }
         for (int i = 0; i < 2; i++) {
             schema.putIfAbsent(commandDict.getRandomStateVariable(spec.domain()), "int");

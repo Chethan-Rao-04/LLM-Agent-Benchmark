@@ -11,6 +11,8 @@ record BenchmarkRunCaseReport(
         List<String> targetTools,
         List<String> targetPath,
         List<String> targetLikeWrongTools,
+        List<String> expectedSharedState,
+        List<String> actualSharedState,
         boolean passed,
         boolean recovery,
         int attemptsUsed,

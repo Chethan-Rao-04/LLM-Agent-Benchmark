@@ -2,6 +2,7 @@ package org.benchmark.exec;
 
 import org.benchmark.model.enums.Domain;
 import org.benchmark.model.enums.EffectOp;
+import org.benchmark.model.enums.StateScope;
 import org.benchmark.model.objects.EffectObject;
 import org.benchmark.model.objects.ToolObject;
 import org.junit.jupiter.api.BeforeEach;
@@ -83,6 +84,19 @@ class CommandEffectApplierTest {
         CommandEffectApplier.applyEffects(effects, "", stateManager, SESSION_ID, TOOL_NAME);
 
         assertNull(stateManager.getToolState(SESSION_ID, TOOL_NAME, "label"));
+    }
+
+    @Test
+    void scopedEffectsUpdateToolAndSharedStateSeparately() {
+        List<EffectObject> effects = List.of(
+                new EffectObject("label", EffectOp.ASSIGN, "ready"),
+                new EffectObject(StateScope.SHARED, "profile_state", EffectOp.ASSIGN, "stable")
+        );
+
+        CommandEffectApplier.applyEffects(effects, "", stateManager, SESSION_ID, TOOL_NAME);
+
+        assertEquals("ready", stateManager.getToolState(SESSION_ID, TOOL_NAME, "label"));
+        assertEquals("stable", stateManager.getSharedState(SESSION_ID, "profile_state"));
     }
 
     @Test

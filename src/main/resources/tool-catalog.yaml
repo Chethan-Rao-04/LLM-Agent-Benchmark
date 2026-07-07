@@ -42,8 +42,14 @@ families:
             role: inspect
             verbSeeds: [inspect]
             nounSeeds: [torch, nozzle]
-            preconditionTemplate: {}
-            effectTemplate: { torch_state: inspected }
+            preconditions:
+              - scope: SHARED
+                variable: profile_state
+                value: stable
+            effects:
+              - scope: TOOL
+                variable: torch_state
+                value: inspected
             optionProfile: confirm_required
           - id: align_seam
             role: align
@@ -56,8 +62,20 @@ families:
             role: weld
             verbSeeds: [weld]
             nounSeeds: [joint, pipe]
-            preconditionTemplate: { seam_state: aligned }
-            effectTemplate: { weld_state: joined }
+            preconditions:
+              - scope: TOOL
+                variable: seam_state
+                value: aligned
+              - scope: SHARED
+                variable: profile_state
+                value: stable
+            effects:
+              - scope: TOOL
+                variable: weld_state
+                value: joined
+              - scope: SHARED
+                variable: joint_state
+                value: joined
             optionProfile: path_required
           - id: verify_weld
             role: verify
@@ -83,15 +101,36 @@ families:
             role: stabilize
             verbSeeds: [align, calibrate]
             nounSeeds: [profile, fixture]
-            preconditionTemplate: { shape_state: clamped }
-            effectTemplate: { profile_state: stable }
+            preconditions:
+              - scope: TOOL
+                variable: shape_state
+                value: clamped
+            effects:
+              - scope: TOOL
+                variable: profile_state
+                value: stable
+              - scope: SHARED
+                variable: profile_state
+                value: stable
             optionProfile: profile_required
           - id: verify_shape
             role: verify
             verbSeeds: [verify]
             nounSeeds: [profile, shape]
-            preconditionTemplate: { profile_state: stable }
-            effectTemplate: { shape_state: verified }
+            preconditions:
+              - scope: TOOL
+                variable: profile_state
+                value: stable
+              - scope: SHARED
+                variable: joint_state
+                value: joined
+            effects:
+              - scope: TOOL
+                variable: shape_state
+                value: verified
+              - scope: SHARED
+                variable: geometry_state
+                value: verified
             optionProfile: confirm_required
       - id: cooler
         purpose: coolant flow and thermal reduction for hot pipe sections
@@ -103,22 +142,49 @@ families:
             role: prime
             verbSeeds: [inspect, synchronize]
             nounSeeds: [loop, valve]
-            preconditionTemplate: {}
-            effectTemplate: { coolant_state: primed }
+            preconditions:
+              - scope: SHARED
+                variable: heat_state
+                value: measured
+            effects:
+              - scope: TOOL
+                variable: coolant_state
+                value: primed
             optionProfile: line_required
           - id: cool_pipe
             role: cool
             verbSeeds: [restart, synchronize]
             nounSeeds: [loop, channel]
-            preconditionTemplate: { coolant_state: primed }
-            effectTemplate: { cooling_state: active }
+            preconditions:
+              - scope: TOOL
+                variable: coolant_state
+                value: primed
+            effects:
+              - scope: TOOL
+                variable: cooling_state
+                value: active
+              - scope: SHARED
+                variable: cooling_state
+                value: active
             optionProfile: path_required
           - id: verify_cooling
             role: verify
             verbSeeds: [verify]
             nounSeeds: [coolant, service]
-            preconditionTemplate: { cooling_state: active }
-            effectTemplate: { cooling_state: verified }
+            preconditions:
+              - scope: TOOL
+                variable: cooling_state
+                value: active
+              - scope: SHARED
+                variable: temperature_state
+                value: governed
+            effects:
+              - scope: TOOL
+                variable: cooling_state
+                value: verified
+              - scope: SHARED
+                variable: thermal_state
+                value: verified
             optionProfile: confirm_required
       - id: temperature_controller
         purpose: heat measurement and temperature governance for forming lines
@@ -130,15 +196,32 @@ families:
             role: measure
             verbSeeds: [measure, inspect]
             nounSeeds: [sensor, heat]
-            preconditionTemplate: {}
-            effectTemplate: { heat_state: measured }
+            effects:
+              - scope: TOOL
+                variable: heat_state
+                value: measured
+              - scope: SHARED
+                variable: heat_state
+                value: measured
             optionProfile: zone_required
           - id: govern_temperature
             role: govern
             verbSeeds: [calibrate, enable]
             nounSeeds: [controller, mode]
-            preconditionTemplate: { heat_state: measured }
-            effectTemplate: { temperature_state: governed }
+            preconditions:
+              - scope: TOOL
+                variable: heat_state
+                value: measured
+              - scope: SHARED
+                variable: cooling_state
+                value: active
+            effects:
+              - scope: TOOL
+                variable: temperature_state
+                value: governed
+              - scope: SHARED
+                variable: temperature_state
+                value: governed
             optionProfile: profile_required
           - id: verify_temperature
             role: verify
@@ -203,8 +286,17 @@ families:
             role: align
             verbSeeds: [align, calibrate]
             nounSeeds: [fixture, jig]
-            preconditionTemplate: { fixture_state: inspected }
-            effectTemplate: { alignment_state: aligned }
+            preconditions:
+              - scope: TOOL
+                variable: fixture_state
+                value: inspected
+            effects:
+              - scope: TOOL
+                variable: alignment_state
+                value: aligned
+              - scope: SHARED
+                variable: alignment_state
+                value: aligned
             optionProfile: zone_required
           - id: verify_alignment
             role: verify
@@ -223,22 +315,46 @@ families:
             role: prepare
             verbSeeds: [inspect, clamp]
             nounSeeds: [press, mold]
-            preconditionTemplate: {}
-            effectTemplate: { press_state: ready }
+            preconditions:
+              - scope: SHARED
+                variable: alignment_state
+                value: aligned
+            effects:
+              - scope: TOOL
+                variable: press_state
+                value: ready
             optionProfile: profile_required
           - id: seal_closure
             role: seal
             verbSeeds: [seal, clamp]
             nounSeeds: [closure, assembly]
-            preconditionTemplate: { press_state: ready }
-            effectTemplate: { seal_state: secured }
+            preconditions:
+              - scope: TOOL
+                variable: press_state
+                value: ready
+            effects:
+              - scope: TOOL
+                variable: seal_state
+                value: secured
+              - scope: SHARED
+                variable: closure_state
+                value: sealed
             optionProfile: path_required
           - id: verify_containment
             role: verify
             verbSeeds: [verify]
             nounSeeds: [containment, batch]
-            preconditionTemplate: { seal_state: secured }
-            effectTemplate: { containment_state: verified }
+            preconditions:
+              - scope: TOOL
+                variable: seal_state
+                value: secured
+            effects:
+              - scope: TOOL
+                variable: containment_state
+                value: verified
+              - scope: SHARED
+                variable: containment_state
+                value: verified
             optionProfile: confirm_required
       - id: quality_scanner
         purpose: batch scanning and final quality confirmation
@@ -250,8 +366,14 @@ families:
             role: scan
             verbSeeds: [inspect, measure]
             nounSeeds: [batch, assembly]
-            preconditionTemplate: {}
-            effectTemplate: { scan_state: complete }
+            preconditions:
+              - scope: SHARED
+                variable: alignment_state
+                value: aligned
+            effects:
+              - scope: TOOL
+                variable: scan_state
+                value: complete
             optionProfile: line_required
           - id: record_quality
             role: record
@@ -264,8 +386,17 @@ families:
             role: release
             verbSeeds: [verify]
             nounSeeds: [batch, assembly]
-            preconditionTemplate: { quality_state: recorded }
-            effectTemplate: { batch_state: released }
+            preconditions:
+              - scope: TOOL
+                variable: quality_state
+                value: recorded
+            effects:
+              - scope: TOOL
+                variable: batch_state
+                value: released
+              - scope: SHARED
+                variable: batch_state
+                value: released
             optionProfile: confirm_required
     workflows:
       - id: seal_aligned_assembly
@@ -314,15 +445,30 @@ families:
             role: inspect
             verbSeeds: [inspect]
             nounSeeds: [router, radio]
-            preconditionTemplate: {}
-            effectTemplate: { route_state: inspected }
+            preconditions:
+              - scope: SHARED
+                variable: wireless_profile_state
+                value: ready
+            effects:
+              - scope: TOOL
+                variable: route_state
+                value: inspected
             optionProfile: line_required
           - id: activate_radio
             role: activate
             verbSeeds: [enable, configure]
             nounSeeds: [radio, router]
-            preconditionTemplate: { route_state: inspected }
-            effectTemplate: { radio_state: active }
+            preconditions:
+              - scope: TOOL
+                variable: route_state
+                value: inspected
+            effects:
+              - scope: TOOL
+                variable: radio_state
+                value: active
+              - scope: SHARED
+                variable: radio_state
+                value: active
             optionProfile: profile_required
           - id: refresh_route
             role: refresh
@@ -348,8 +494,17 @@ families:
             role: repair
             verbSeeds: [configure, repair]
             nounSeeds: [port, cable]
-            preconditionTemplate: { link_state: inspected }
-            effectTemplate: { wiring_state: repaired }
+            preconditions:
+              - scope: TOOL
+                variable: link_state
+                value: inspected
+            effects:
+              - scope: TOOL
+                variable: wiring_state
+                value: repaired
+              - scope: SHARED
+                variable: link_path_state
+                value: repaired
             optionProfile: path_required
           - id: verify_link
             role: verify
@@ -368,15 +523,30 @@ families:
             role: inspect
             verbSeeds: [inspect]
             nounSeeds: [config, profile]
-            preconditionTemplate: {}
-            effectTemplate: { config_state: inspected }
+            preconditions:
+              - scope: SHARED
+                variable: link_path_state
+                value: repaired
+            effects:
+              - scope: TOOL
+                variable: config_state
+                value: inspected
             optionProfile: policy_required
           - id: apply_config
             role: apply
             verbSeeds: [configure, setup]
             nounSeeds: [config, mode]
-            preconditionTemplate: { config_state: inspected }
-            effectTemplate: { mode_state: applied }
+            preconditions:
+              - scope: TOOL
+                variable: config_state
+                value: inspected
+            effects:
+              - scope: TOOL
+                variable: mode_state
+                value: applied
+              - scope: SHARED
+                variable: wireless_profile_state
+                value: ready
             optionProfile: profile_required
           - id: verify_profile
             role: verify
@@ -395,22 +565,51 @@ families:
             role: test
             verbSeeds: [inspect, measure]
             nounSeeds: [signal, client]
-            preconditionTemplate: {}
-            effectTemplate: { signal_state: tested }
+            effects:
+              - scope: TOOL
+                variable: signal_state
+                value: tested
+              - scope: SHARED
+                variable: signal_state
+                value: tested
             optionProfile: zone_required
           - id: verify_throughput
             role: verify
             verbSeeds: [verify, measure]
             nounSeeds: [throughput, service]
-            preconditionTemplate: { signal_state: tested }
-            effectTemplate: { throughput_state: verified }
+            preconditions:
+              - scope: TOOL
+                variable: signal_state
+                value: tested
+              - scope: SHARED
+                variable: radio_state
+                value: active
+            effects:
+              - scope: TOOL
+                variable: throughput_state
+                value: verified
+              - scope: SHARED
+                variable: throughput_state
+                value: verified
             optionProfile: confirm_required
           - id: verify_connection
             role: verify
             verbSeeds: [verify]
             nounSeeds: [client, service]
-            preconditionTemplate: { signal_state: tested }
-            effectTemplate: { client_state: connected }
+            preconditions:
+              - scope: TOOL
+                variable: signal_state
+                value: tested
+              - scope: SHARED
+                variable: radio_state
+                value: active
+            effects:
+              - scope: TOOL
+                variable: client_state
+                value: connected
+              - scope: SHARED
+                variable: connectivity_state
+                value: verified
             optionProfile: confirm_required
       - id: bandwidth_setter
         purpose: bandwidth profile adjustment and rate control
@@ -422,15 +621,30 @@ families:
             role: inspect
             verbSeeds: [inspect, measure]
             nounSeeds: [bandwidth, policy]
-            preconditionTemplate: {}
-            effectTemplate: { bandwidth_state: inspected }
+            preconditions:
+              - scope: SHARED
+                variable: signal_state
+                value: tested
+            effects:
+              - scope: TOOL
+                variable: bandwidth_state
+                value: inspected
             optionProfile: policy_required
           - id: set_bandwidth
             role: set
             verbSeeds: [configure, throttle]
             nounSeeds: [bandwidth, rate]
-            preconditionTemplate: { bandwidth_state: inspected }
-            effectTemplate: { rate_state: adjusted }
+            preconditions:
+              - scope: TOOL
+                variable: bandwidth_state
+                value: inspected
+            effects:
+              - scope: TOOL
+                variable: rate_state
+                value: adjusted
+              - scope: SHARED
+                variable: wireless_profile_state
+                value: ready
             optionProfile: profile_required
           - id: verify_bandwidth
             role: verify
@@ -494,15 +708,30 @@ families:
             role: inspect
             verbSeeds: [inspect]
             nounSeeds: [gateway, peer]
-            preconditionTemplate: {}
-            effectTemplate: { gateway_state: inspected }
+            preconditions:
+              - scope: SHARED
+                variable: access_policy_state
+                value: allowed
+            effects:
+              - scope: TOOL
+                variable: gateway_state
+                value: inspected
             optionProfile: path_required
           - id: restore_tunnel
             role: restore
             verbSeeds: [configure, tunnel]
             nounSeeds: [gateway, tunnel]
-            preconditionTemplate: { gateway_state: inspected }
-            effectTemplate: { tunnel_state: restored }
+            preconditions:
+              - scope: TOOL
+                variable: gateway_state
+                value: inspected
+            effects:
+              - scope: TOOL
+                variable: tunnel_state
+                value: restored
+              - scope: SHARED
+                variable: tunnel_state
+                value: restored
             optionProfile: path_required
           - id: verify_peer
             role: verify
@@ -528,8 +757,17 @@ families:
             role: apply
             verbSeeds: [configure, allow]
             nounSeeds: [policy, access]
-            preconditionTemplate: { policy_state: inspected }
-            effectTemplate: { access_state: allowed }
+            preconditions:
+              - scope: TOOL
+                variable: policy_state
+                value: inspected
+            effects:
+              - scope: TOOL
+                variable: access_state
+                value: allowed
+              - scope: SHARED
+                variable: access_policy_state
+                value: allowed
             optionProfile: policy_required
           - id: enable_protection
             role: protect
@@ -548,15 +786,33 @@ families:
             role: probe
             verbSeeds: [inspect, trace]
             nounSeeds: [tunnel, gateway]
-            preconditionTemplate: {}
-            effectTemplate: { probe_state: complete }
+            preconditions:
+              - scope: SHARED
+                variable: tunnel_state
+                value: restored
+            effects:
+              - scope: TOOL
+                variable: probe_state
+                value: complete
             optionProfile: zone_required
           - id: verify_remote_service
             role: verify
             verbSeeds: [verify]
             nounSeeds: [remote, service]
-            preconditionTemplate: { probe_state: complete }
-            effectTemplate: { remote_state: verified }
+            preconditions:
+              - scope: TOOL
+                variable: probe_state
+                value: complete
+              - scope: SHARED
+                variable: tunnel_state
+                value: restored
+            effects:
+              - scope: TOOL
+                variable: remote_state
+                value: verified
+              - scope: SHARED
+                variable: remote_service_state
+                value: verified
             optionProfile: confirm_required
           - id: confirm_service
             role: confirm
@@ -582,15 +838,36 @@ families:
             role: stabilize
             verbSeeds: [synchronize, configure]
             nounSeeds: [route, uplink]
-            preconditionTemplate: { route_state: inspected }
-            effectTemplate: { uplink_state: synchronized }
+            preconditions:
+              - scope: TOOL
+                variable: route_state
+                value: inspected
+            effects:
+              - scope: TOOL
+                variable: uplink_state
+                value: synchronized
+              - scope: SHARED
+                variable: route_path_state
+                value: synchronized
             optionProfile: path_required
           - id: verify_readiness
             role: verify
             verbSeeds: [verify]
             nounSeeds: [path, service]
-            preconditionTemplate: { uplink_state: synchronized }
-            effectTemplate: { readiness_state: verified }
+            preconditions:
+              - scope: TOOL
+                variable: uplink_state
+                value: synchronized
+              - scope: SHARED
+                variable: tunnel_state
+                value: restored
+            effects:
+              - scope: TOOL
+                variable: readiness_state
+                value: verified
+              - scope: SHARED
+                variable: readiness_state
+                value: verified
             optionProfile: confirm_required
     workflows:
       - id: restore_remote_tunnel
@@ -652,8 +929,17 @@ families:
             role: apply
             verbSeeds: [apply]
             nounSeeds: [label, marker]
-            preconditionTemplate: { stock_state: inspected }
-            effectTemplate: { label_state: applied }
+            preconditions:
+              - scope: TOOL
+                variable: stock_state
+                value: inspected
+            effects:
+              - scope: TOOL
+                variable: label_state
+                value: applied
+              - scope: SHARED
+                variable: label_state
+                value: applied
             optionProfile: zone_required
           - id: verify_mark
             role: verify
@@ -679,8 +965,17 @@ families:
             role: close
             verbSeeds: [close]
             nounSeeds: [carton, flap]
-            preconditionTemplate: { carton_state: inspected }
-            effectTemplate: { closure_state: sealed }
+            preconditions:
+              - scope: TOOL
+                variable: carton_state
+                value: inspected
+            effects:
+              - scope: TOOL
+                variable: closure_state
+                value: sealed
+              - scope: SHARED
+                variable: closure_state
+                value: sealed
             optionProfile: path_required
           - id: verify_closure
             role: verify
@@ -699,8 +994,14 @@ families:
             role: calibrate
             verbSeeds: [calibrate]
             nounSeeds: [scale, gauge]
-            preconditionTemplate: {}
-            effectTemplate: { scale_state: calibrated }
+            preconditions:
+              - scope: SHARED
+                variable: package_proof_state
+                value: verified
+            effects:
+              - scope: TOOL
+                variable: scale_state
+                value: calibrated
             optionProfile: profile_required
           - id: measure_package
             role: measure
@@ -713,8 +1014,17 @@ families:
             role: release
             verbSeeds: [release]
             nounSeeds: [package, batch]
-            preconditionTemplate: { weight_state: measured }
-            effectTemplate: { release_state: cleared }
+            preconditions:
+              - scope: TOOL
+                variable: weight_state
+                value: measured
+            effects:
+              - scope: TOOL
+                variable: release_state
+                value: cleared
+              - scope: SHARED
+                variable: release_state
+                value: cleared
             optionProfile: confirm_required
       - id: seal_inspector
         purpose: seal inspection and package closure proofing
@@ -726,22 +1036,49 @@ families:
             role: inspect
             verbSeeds: [inspect]
             nounSeeds: [seal, edge]
-            preconditionTemplate: {}
-            effectTemplate: { inspection_state: complete }
+            preconditions:
+              - scope: SHARED
+                variable: closure_state
+                value: sealed
+            effects:
+              - scope: TOOL
+                variable: inspection_state
+                value: complete
             optionProfile: zone_required
           - id: record_proof
             role: record
             verbSeeds: [record]
             nounSeeds: [proof, seal]
-            preconditionTemplate: { inspection_state: complete }
-            effectTemplate: { seal_state: recorded }
+            preconditions:
+              - scope: TOOL
+                variable: inspection_state
+                value: complete
+            effects:
+              - scope: TOOL
+                variable: seal_state
+                value: recorded
+              - scope: SHARED
+                variable: seal_proof_state
+                value: recorded
             optionProfile: policy_required
           - id: verify_package
             role: verify
             verbSeeds: [verify]
             nounSeeds: [package, seal]
-            preconditionTemplate: { seal_state: recorded }
-            effectTemplate: { proof_state: verified }
+            preconditions:
+              - scope: TOOL
+                variable: seal_state
+                value: recorded
+              - scope: SHARED
+                variable: seal_proof_state
+                value: recorded
+            effects:
+              - scope: TOOL
+                variable: proof_state
+                value: verified
+              - scope: SHARED
+                variable: package_proof_state
+                value: verified
             optionProfile: confirm_required
     workflows:
       - id: label_pack_release
@@ -756,6 +1093,12 @@ families:
             capabilityId: inspect_carton
           - toolId: carton_closer
             capabilityId: close_carton
+          - toolId: seal_inspector
+            capabilityId: inspect_seal
+          - toolId: seal_inspector
+            capabilityId: record_proof
+          - toolId: seal_inspector
+            capabilityId: verify_package
           - toolId: weight_checker
             capabilityId: calibrate_scale
           - toolId: weight_checker
@@ -780,6 +1123,8 @@ families:
             capabilityId: calibrate_scale
           - toolId: weight_checker
             capabilityId: measure_package
+          - toolId: weight_checker
+            capabilityId: release_weight
 
   - id: identity_access_setup
     domain: NETWORK_INFRA
@@ -805,8 +1150,17 @@ families:
             role: synchronize
             verbSeeds: [synchronize]
             nounSeeds: [record, account]
-            preconditionTemplate: { directory_state: inspected }
-            effectTemplate: { record_state: synchronized }
+            preconditions:
+              - scope: TOOL
+                variable: directory_state
+                value: inspected
+            effects:
+              - scope: TOOL
+                variable: record_state
+                value: synchronized
+              - scope: SHARED
+                variable: account_record_state
+                value: synchronized
             optionProfile: path_required
           - id: verify_directory
             role: verify
@@ -825,22 +1179,46 @@ families:
             role: inspect
             verbSeeds: [inspect]
             nounSeeds: [credential, token]
-            preconditionTemplate: {}
-            effectTemplate: { credential_state: inspected }
+            preconditions:
+              - scope: SHARED
+                variable: account_record_state
+                value: synchronized
+            effects:
+              - scope: TOOL
+                variable: credential_state
+                value: inspected
             optionProfile: profile_required
           - id: issue_token
             role: issue
             verbSeeds: [issue]
             nounSeeds: [token, credential]
-            preconditionTemplate: { credential_state: inspected }
-            effectTemplate: { token_state: issued }
+            preconditions:
+              - scope: TOOL
+                variable: credential_state
+                value: inspected
+            effects:
+              - scope: TOOL
+                variable: token_state
+                value: issued
+              - scope: SHARED
+                variable: credential_state
+                value: issued
             optionProfile: path_required
           - id: verify_token
             role: verify
             verbSeeds: [verify]
             nounSeeds: [token, key]
-            preconditionTemplate: { token_state: issued }
-            effectTemplate: { key_state: verified }
+            preconditions:
+              - scope: TOOL
+                variable: token_state
+                value: issued
+            effects:
+              - scope: TOOL
+                variable: key_state
+                value: verified
+              - scope: SHARED
+                variable: sign_in_ready_state
+                value: ready
             optionProfile: confirm_required
       - id: policy_enforcer
         purpose: access rule application and protection setup
@@ -859,8 +1237,20 @@ families:
             role: apply
             verbSeeds: [apply]
             nounSeeds: [permission, policy]
-            preconditionTemplate: { rule_state: inspected }
-            effectTemplate: { permission_state: applied }
+            preconditions:
+              - scope: TOOL
+                variable: rule_state
+                value: inspected
+            effects:
+              - scope: TOOL
+                variable: permission_state
+                value: applied
+              - scope: SHARED
+                variable: access_policy_state
+                value: applied
+              - scope: SHARED
+                variable: sign_in_ready_state
+                value: ready
             optionProfile: policy_required
           - id: verify_guard
             role: verify
@@ -879,8 +1269,17 @@ families:
             role: probe
             verbSeeds: [probe]
             nounSeeds: [signin, session]
-            preconditionTemplate: {}
-            effectTemplate: { probe_state: complete }
+            preconditions:
+              - scope: SHARED
+                variable: credential_state
+                value: issued
+              - scope: SHARED
+                variable: sign_in_ready_state
+                value: ready
+            effects:
+              - scope: TOOL
+                variable: probe_state
+                value: complete
             optionProfile: zone_required
           - id: test_service
             role: test
@@ -893,8 +1292,20 @@ families:
             role: verify
             verbSeeds: [verify]
             nounSeeds: [access, service]
-            preconditionTemplate: { session_state: tested }
-            effectTemplate: { service_state: reachable }
+            preconditions:
+              - scope: TOOL
+                variable: session_state
+                value: tested
+              - scope: SHARED
+                variable: sign_in_ready_state
+                value: ready
+            effects:
+              - scope: TOOL
+                variable: service_state
+                value: reachable
+              - scope: SHARED
+                variable: service_state
+                value: reachable
             optionProfile: confirm_required
     workflows:
       - id: provision_account_access
@@ -939,5 +1350,7 @@ families:
             capabilityId: verify_token
           - toolId: access_tester
             capabilityId: probe_signin
+          - toolId: access_tester
+            capabilityId: test_service
           - toolId: access_tester
             capabilityId: verify_access

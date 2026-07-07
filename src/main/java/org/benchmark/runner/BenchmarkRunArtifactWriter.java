@@ -65,6 +65,10 @@ class BenchmarkRunArtifactWriter {
             appendList(markdown, report.targetTools());
             markdown.append("Target-like wrong tools:\n");
             appendList(markdown, report.targetLikeWrongTools());
+            markdown.append("Expected shared state:\n");
+            appendList(markdown, report.expectedSharedState());
+            markdown.append("Actual shared state:\n");
+            appendList(markdown, report.actualSharedState());
             markdown.append("Result: ").append(report.passed() ? "passed" : "failed").append('\n');
             markdown.append("Recovery: ").append(report.recovery()).append('\n');
             markdown.append("Attempts: ").append(report.attemptsUsed()).append('\n');
@@ -86,12 +90,14 @@ class BenchmarkRunArtifactWriter {
 
     String toCsv(BenchmarkRunSummary summary) {
         StringBuilder csv = new StringBuilder();
-        csv.append("case,session,targetTools,targetPath,passed,score,attempts,executions,toolSelection,stepCompletion,orderingAccuracy,stateAccuracy,efficiency,commandPrecision,targetLikeWrongToolAvoidance,recovery\n");
+        csv.append("case,session,targetTools,targetPath,expectedSharedState,actualSharedState,passed,score,attempts,executions,toolSelection,stepCompletion,orderingAccuracy,stateAccuracy,efficiency,commandPrecision,targetLikeWrongToolAvoidance,recovery\n");
         for (BenchmarkRunCaseReport report : summary.caseReports) {
             csv.append(report.caseIndex()).append(',')
                     .append(escapeCsv(report.sessionId())).append(',')
                     .append(escapeCsv(String.join(" | ", report.targetTools()))).append(',')
                     .append(escapeCsv(String.join(" | ", report.targetPath()))).append(',')
+                    .append(escapeCsv(String.join(" | ", report.expectedSharedState()))).append(',')
+                    .append(escapeCsv(String.join(" | ", report.actualSharedState()))).append(',')
                     .append(report.passed()).append(',')
                     .append(format(report.compositeScore(), 3)).append(',')
                     .append(report.attemptsUsed()).append(',')

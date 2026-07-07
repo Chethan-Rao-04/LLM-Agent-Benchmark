@@ -20,6 +20,8 @@ class BenchmarkRunArtifactWriterTest {
                 List.of("MAN-VALVE-123", "MAN-PUMP-456"),
                 List.of("MAN-VALVE-123 diag_vlv", "MAN-PUMP-456 rpr_pmp --retry", "MAN-VALVE-123 vfy_vlv"),
                 List.of("MAN-VALVE-123, MAN-PUMP-456 -> MAN-VALVE-555"),
+                List.of("joint_state=joined"),
+                List.of("joint_state=joined"),
                 true,
                 false,
                 2,
@@ -64,13 +66,16 @@ class BenchmarkRunArtifactWriterTest {
         assertTrue(markdown.contains("Target tools:"));
         assertTrue(markdown.contains("- MAN-PUMP-456"));
         assertTrue(markdown.contains("- MAN-VALVE-123, MAN-PUMP-456 -> MAN-VALVE-555"));
+        assertTrue(markdown.contains("Expected shared state:"));
+        assertTrue(markdown.contains("- joint_state=joined"));
+        assertTrue(markdown.contains("Actual shared state:"));
         assertTrue(markdown.contains("### Target Path"));
         assertTrue(markdown.contains("- MAN-PUMP-456 rpr_pmp --retry"));
         assertTrue(markdown.contains("Target-like wrong tool avoidance: 0.75"));
         assertTrue(markdown.contains("- SUCCESS MAN-VALVE-123 rpr_vlv --retry"));
         assertTrue(markdown.contains("- Average target-like wrong tool avoidance: 0.75"));
 
-        assertTrue(csv.contains("case,session,targetTools,targetPath,passed,score,attempts,executions,toolSelection,stepCompletion,orderingAccuracy,stateAccuracy,efficiency,commandPrecision,targetLikeWrongToolAvoidance,recovery"));
-        assertTrue(csv.contains("1,abc,MAN-VALVE-123 | MAN-PUMP-456,MAN-VALVE-123 diag_vlv | MAN-PUMP-456 rpr_pmp --retry | MAN-VALVE-123 vfy_vlv,true,0.860,2,4,1.00,1.00,0.75,1.00,0.80,0.90,0.75,false"));
+        assertTrue(csv.contains("case,session,targetTools,targetPath,expectedSharedState,actualSharedState,passed,score,attempts,executions,toolSelection,stepCompletion,orderingAccuracy,stateAccuracy,efficiency,commandPrecision,targetLikeWrongToolAvoidance,recovery"));
+        assertTrue(csv.contains("1,abc,MAN-VALVE-123 | MAN-PUMP-456,MAN-VALVE-123 diag_vlv | MAN-PUMP-456 rpr_pmp --retry | MAN-VALVE-123 vfy_vlv,joint_state=joined,joint_state=joined,true,0.860,2,4,1.00,1.00,0.75,1.00,0.80,0.90,0.75,false"));
     }
 }

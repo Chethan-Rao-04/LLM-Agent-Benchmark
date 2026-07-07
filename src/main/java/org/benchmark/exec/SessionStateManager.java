@@ -1,6 +1,7 @@
 package org.benchmark.exec;
 
 import org.benchmark.gen.BenchmarkCaseGenerator;
+import org.benchmark.model.enums.StateScope;
 import org.benchmark.model.objects.ToolObject;
 import org.springframework.stereotype.Component;
 
@@ -60,6 +61,7 @@ public class SessionStateManager {
         synchronized (data) {
             data.benchmarkCase = benchmarkCase;
             data.environments.clear();
+            data.sharedState.clear();
             data.executionLog.clear();
             data.commandRejectionLog.clear();
             data.attemptStartIndex = 0;
@@ -255,6 +257,54 @@ public class SessionStateManager {
     }
 
     /**
+     * Updates one value inside the session shared state.
+     */
+    public void updateSharedState(String sessionId, String variable, String value) {
+        SessionData data = requireSessionData(sessionId);
+        synchronized (data) {
+            if (value == null) {
+                data.sharedState.remove(variable);
+            } else {
+                data.sharedState.put(variable, value);
+            }
+        }
+    }
+
+    /**
+     * Reads one value from the session shared state.
+     */
+    public String getSharedState(String sessionId, String variable) {
+        SessionData data = sessions.get(sessionId);
+        if (data == null) {
+            return null;
+        }
+        synchronized (data) {
+            return data.sharedState.get(variable);
+        }
+    }
+
+    /**
+     * Updates state in the map selected by {@code scope}.
+     */
+    public void updateState(String sessionId, String toolName, StateScope scope, String variable, String value) {
+        if (scope == StateScope.SHARED) {
+            updateSharedState(sessionId, variable, value);
+            return;
+        }
+        updateToolState(sessionId, toolName, variable, value);
+    }
+
+    /**
+     * Reads state from the map selected by {@code scope}.
+     */
+    public String getState(String sessionId, String toolName, StateScope scope, String variable) {
+        if (scope == StateScope.SHARED) {
+            return getSharedState(sessionId, variable);
+        }
+        return getToolState(sessionId, toolName, variable);
+    }
+
+    /**
      * Returns a snapshot of one tool's current state.
      */
     public Map<String, String> getToolStateSnapshot(String sessionId, String toolName) {
@@ -287,6 +337,19 @@ public class SessionStateManager {
     }
 
     /**
+     * Returns a stable snapshot of session shared state.
+     */
+    public Map<String, String> getSharedStateSnapshot(String sessionId) {
+        SessionData data = sessions.get(sessionId);
+        if (data == null) {
+            return Map.of();
+        }
+        synchronized (data) {
+            return Collections.unmodifiableMap(new LinkedHashMap<>(data.sharedState));
+        }
+    }
+
+    /**
      * Returns an aggregate read-only view across all target-tool states.
      *
      * <p>Each underlying tool still owns its own mutable environment. This helper only flattens
@@ -309,7 +372,10 @@ public class SessionStateManager {
      * Returns a session-level state payload used in prompts and logs.
      */
     public Map<String, Object> getSessionStateSnapshot(String sessionId) {
-        return Map.of("toolStates", getAllToolStatesSnapshot(sessionId));
+        return Map.of(
+                "toolStates", getAllToolStatesSnapshot(sessionId),
+                "sharedState", getSharedStateSnapshot(sessionId)
+        );
     }
 
     /**
@@ -348,6 +414,7 @@ public class SessionStateManager {
     private static final class SessionData {
         private BenchmarkCaseGenerator.BenchmarkCase benchmarkCase;
         private final Map<String, ToolEnvironment> environments = new LinkedHashMap<>();
+        private final Map<String, String> sharedState = new LinkedHashMap<>();
         private final List<ExecutionRecord> executionLog = new ArrayList<>();
         private final List<CommandRejectionRecord> commandRejectionLog = new ArrayList<>();
         private int attemptStartIndex;

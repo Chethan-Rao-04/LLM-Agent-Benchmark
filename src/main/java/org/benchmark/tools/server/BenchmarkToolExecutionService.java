@@ -94,7 +94,8 @@ class BenchmarkToolExecutionService {
                 BenchmarkToolService.CommandOutcomeType.REJECTED,
                 false,
                 record.message(),
-                toolStates
+                toolStates,
+                stateManager.getSharedStateSnapshot(sessionId)
         );
     }
 
@@ -106,7 +107,8 @@ class BenchmarkToolExecutionService {
                 BenchmarkToolService.CommandOutcomeType.EXECUTED,
                 record.success(),
                 record.message(),
-                toolStates
+                toolStates,
+                stateManager.getSharedStateSnapshot(sessionId)
         );
     }
 

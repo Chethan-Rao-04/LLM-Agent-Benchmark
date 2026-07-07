@@ -59,6 +59,7 @@ public class BenchmarkCaseLogger {
         payload.put("targetSteps", formatTargetPath(benchmarkCase));
         payload.put("expectedState", benchmarkCase.expectedState());
         payload.put("expectedStateByTool", benchmarkCase.expectedStateByTool());
+        payload.put("expectedSharedState", benchmarkCase.expectedSharedState());
         payload.put("semanticDecoys", benchmarkCase.semanticDecoys().stream().map(ToolObject::name).toList());
         payload.put("targetLikeWrongTools", targetLikeWrongToolPairs(benchmarkCase));
         payload.put("randomDistractors", benchmarkCase.randomDistractors().stream().map(ToolObject::name).toList());
@@ -219,6 +220,8 @@ public class BenchmarkCaseLogger {
         payload.put("targetTools", targetToolNames(benchmarkCase));
         payload.put("targetPath", formatTargetPath(benchmarkCase));
         payload.put("targetToolStates", targetToolStates(sessionId, benchmarkCase));
+        payload.put("expectedSharedState", benchmarkCase.expectedSharedState());
+        payload.put("actualSharedState", stateManager.getSharedStateSnapshot(sessionId));
         payload.put("sessionState", stateManager.getSessionStateSnapshot(sessionId));
         payload.put("executionLog", stateManager.executionLog(sessionId));
         eventLogger.logPayload(payload);
@@ -263,7 +266,7 @@ public class BenchmarkCaseLogger {
     private String formatEffects(List<EffectObject> effects) {
         if (effects == null || effects.isEmpty()) return "{}";
         return effects.stream()
-                .map(e -> e.variable() + " " + e.operation().name()
+                .map(e -> e.scope().name() + " " + e.variable() + " " + e.operation().name()
                         + (e.valueRef() != null ? "=" + e.valueRef() : ""))
                 .collect(Collectors.joining(", ", "{", "}"));
     }

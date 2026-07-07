@@ -39,7 +39,10 @@ public class BenchmarkToolService {
      */
     public StateResponse getCurrentState(String sessionId) {
         stateManager.requireBenchmarkCase(sessionId);
-        return new StateResponse(stateManager.getAllToolStatesSnapshot(sessionId));
+        return new StateResponse(
+                stateManager.getAllToolStatesSnapshot(sessionId),
+                stateManager.getSharedStateSnapshot(sessionId)
+        );
     }
 
     /**
@@ -61,12 +64,25 @@ public class BenchmarkToolService {
     /**
      * Response wrapper for session-state inspection.
      */
-    public record StateResponse(Map<String, Map<String, String>> toolStates) {}
+    public record StateResponse(Map<String, Map<String, String>> toolStates,
+                                Map<String, String> sharedState) {
+        public StateResponse(Map<String, Map<String, String>> toolStates) {
+            this(toolStates, Map.of());
+        }
+    }
     /**
      * Response wrapper for benchmark tool execution results.
      */
     public record CommandExecutionResponse(CommandOutcomeType outcomeType,
                                            boolean success,
                                            String message,
-                                           Map<String, Map<String, String>> toolStates) {}
+                                           Map<String, Map<String, String>> toolStates,
+                                           Map<String, String> sharedState) {
+        public CommandExecutionResponse(CommandOutcomeType outcomeType,
+                                        boolean success,
+                                        String message,
+                                        Map<String, Map<String, String>> toolStates) {
+            this(outcomeType, success, message, toolStates, Map.of());
+        }
+    }
 }
